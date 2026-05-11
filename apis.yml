@@ -1,0 +1,58 @@
+aid: cloudquery
+name: CloudQuery
+description: >-
+  CloudQuery is a cloud infrastructure data platform that gives platform
+  engineering and cloud operations teams a queryable SQL data layer for
+  visibility, governance, and automation. It syncs configuration data from
+  AWS, GCP, Azure, and 70+ SaaS sources into normalized tables, powering
+  cloud asset inventory, security and compliance monitoring, and FinOps
+  use cases. CloudQuery exposes Platform REST APIs for managing tenants,
+  syncs, destinations, and API keys, authenticated via API key.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Cloud Infrastructure
+  - Cloud Asset Inventory
+  - CSPM
+  - Cloud Governance
+  - FinOps
+  - Data Integration
+  - Platform Engineering
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/cloudquery/refs/heads/main/apis.yml
+created: '2026-05-11'
+modified: '2026-05-11'
+specificationVersion: '0.19'
+apis:
+  - aid: cloudquery:platform-api
+    name: CloudQuery Platform API
+    description: >-
+      REST API for managing CloudQuery Platform multi-tenant accounts,
+      syncs, sources, destinations, and API keys. Authentication uses
+      API keys generated from the CloudQuery Platform UI.
+    humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
+    baseURL: https://api.cloudquery.io
+    tags:
+      - Cloud Infrastructure
+      - Cloud Asset Inventory
+      - Platform API
+      - Data Integration
+    properties:
+      - type: Documentation
+        url: https://platform-multi-tenant-api-docs.cloudquery.io/
+      - type: API Keys
+        url: https://www.cloudquery.io/docs/platform/production-deployment/api-keys
+      - type: Getting Started
+        url: https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account
+common:
+  - type: Website
+    url: https://www.cloudquery.io
+  - type: Documentation
+    url: https://www.cloudquery.io/docs/
+  - type: Pricing
+    url: https://www.cloudquery.io/pricing
+  - type: Sign Up
+    url: https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
