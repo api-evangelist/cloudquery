@@ -45,6 +45,10 @@ apis:
       - type: GettingStarted
         url: https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account
 common:
+  - type: GitHubOrganization
+    url: https://github.com/cloudquery
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/cloudqueryio
   - type: Website
     url: https://www.cloudquery.io
   - type: Documentation
