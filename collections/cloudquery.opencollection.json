@@ -1,0 +1,6394 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "healthcheck",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformIndex",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          },
+          "docs": "Index endpoint, returns 200"
+        },
+        {
+          "info": {
+            "name": "PlatformHealthCheck",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/healthcheck"
+          },
+          "docs": "Health check endpoint, returns 200"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "audit-logs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAuditLogs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/audit-logs",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "query",
+                "description": "Filter by user ID"
+              },
+              {
+                "name": "event_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by event type"
+              },
+              {
+                "name": "entity_display_name",
+                "value": "",
+                "type": "query",
+                "description": "Filter by entity display name"
+              },
+              {
+                "name": "user_ip_address",
+                "value": "",
+                "type": "query",
+                "description": "Filter by user IP address"
+              },
+              {
+                "name": "start_time",
+                "value": "",
+                "type": "query",
+                "description": "Filter by start time (inclusive)"
+              },
+              {
+                "name": "end_time",
+                "value": "",
+                "type": "query",
+                "description": "Filter by end time (inclusive)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search across user name, event type, entity display name, and user IP address"
+              }
+            ]
+          },
+          "docs": "List audit log events with pagination and filtering"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAuditLog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/audit-logs/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a specific audit log event by ID"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Default",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get OpenAPI JSON",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/openapi.json"
+          },
+          "docs": "Returns the OpenAPI definition in JSON format."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "platform",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformGetPlatformInfo",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/platform-info"
+          },
+          "docs": "Information about the platform"
+        },
+        {
+          "info": {
+            "name": "PlatformListPlatformVersions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/platform-versions",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "List platform versions"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "plugins",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPlugins",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins",
+            "params": [
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "The field to sort by"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "include_release_stages",
+                "value": "",
+                "type": "query",
+                "description": "Include these release stages in the response"
+              },
+              {
+                "name": "exclude_release_stages",
+                "value": "",
+                "type": "query",
+                "description": "Exclude these release stages from the response"
+              }
+            ]
+          },
+          "docs": "List all plugins"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlugin",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details about a given plugin."
+        },
+        {
+          "info": {
+            "name": "PlatformListPluginVersions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "The field to sort by"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "include_drafts",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include draft versions"
+              },
+              {
+                "name": "include_fips",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include fips versions"
+              },
+              {
+                "name": "include_prereleases",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include prerelease versions"
+              },
+              {
+                "name": "version_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all versions for a given plugin"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPluginVersion",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details about a given plugin version."
+        },
+        {
+          "info": {
+            "name": "PlatformDownloadPluginAsset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/assets/:target_name",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "target_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Download an asset for a given plugin version and target"
+        },
+        {
+          "info": {
+            "name": "PlatformListPluginVersionTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/tables",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "List tables for a given plugin version. This only applies to source plugins."
+        },
+        {
+          "info": {
+            "name": "PlatformGetPluginVersionTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/tables/:table_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get schema for a given table and plugin version. This only applies to source plugins."
+        },
+        {
+          "info": {
+            "name": "PlatformDownloadPluginAssetByTeam",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams/:team_name/plugins/:plugin_team/:plugin_kind/:plugin_name/versions/:version_name/assets/:target_name",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_team",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "target_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Download an asset for a given plugin version as the current team."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "alerts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllAlerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/alerts",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "state",
+                "value": "",
+                "type": "query",
+                "description": "Alert states"
+              },
+              {
+                "name": "enabled",
+                "value": "",
+                "type": "query",
+                "description": "Enabled"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Query tags"
+              }
+            ]
+          },
+          "docs": "List all alerts"
+        },
+        {
+          "info": {
+            "name": "PlatformTestUnsavedAlert",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/alerts/test",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "query",
+                "description": "ID of the query to fill in the alert"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Test an unsaved alert"
+        },
+        {
+          "info": {
+            "name": "PlatformListAllNotificationDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all notification destinations"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destinations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformTestUnsavedNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destinations/test",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "query",
+                "description": "Optional ID of an existing notification destination. When provided, secret headers with empty values are resolved from the existing destination's stored encrypted values. This supports the editing flow where the frontend receives masked (empty) secret header values."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Test an unsaved notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformGetNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformGetNotificationDestinationAlerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id/alerts",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Get notification destination alerts"
+        },
+        {
+          "info": {
+            "name": "PlatformTestNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id/test",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Test a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSlackConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/slack",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Slack connection"
+        },
+        {
+          "info": {
+            "name": "PlatformListSlackChannels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/slack/:id/channels",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Slack connection ID"
+              },
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Filter channels by name (case-insensitive partial match)"
+              }
+            ]
+          },
+          "docs": "List Slack channels for a connection"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAlert",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/queries/:query_id/alert",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete an alert associated with a saved query"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "policies",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPolicies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in policy name and description"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List all policies for a team"
+        },
+        {
+          "info": {
+            "name": "PlatformCreatePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policies",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a policy by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdatePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformDeletePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformTogglePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policies/:policy_id/toggle",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Toggle a policy's status (active/paused)"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyViolations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id/violations",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Text search term to filter violations by resource_type_label, name, account_name, cloud, or region"
+              }
+            ]
+          },
+          "docs": "Get violations for a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyViolationsHistory",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id/violations-history",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "start_time",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end_time",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Get violation history for a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyMetrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/metrics",
+            "params": [
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get policy metrics summary"
+        },
+        {
+          "info": {
+            "name": "PlatformGetViolationsByDomain",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/violations-by-domain",
+            "params": [
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get violations grouped by domain"
+        },
+        {
+          "info": {
+            "name": "PlatformGetViolationsHistory",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/violations-history",
+            "params": [
+              {
+                "name": "start_date",
+                "value": "",
+                "type": "query",
+                "description": "Start date for the query range (YYYY-MM-DD)"
+              },
+              {
+                "name": "end_date",
+                "value": "",
+                "type": "query",
+                "description": "End date for the query range (YYYY-MM-DD)"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get violations history over time"
+        },
+        {
+          "info": {
+            "name": "PlatformListPolicyGroups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policy-groups",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in policy group name and description"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter to policy groups that contain at least one policy with any of these severities"
+              }
+            ]
+          },
+          "docs": "List all policy groups"
+        },
+        {
+          "info": {
+            "name": "PlatformCreatePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policy-groups",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformListPoliciesInGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List policies in a policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdatePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformDeletePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a policy group"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "api-keys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAPIKeys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/apikeys",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all API Keys"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAPIKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/apikeys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create new API Key."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAPIKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/apikeys/:apikey_id",
+            "params": [
+              {
+                "name": "apikey_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete API Key. This will remove any future access by this API Key."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "apps",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformUpsertAppsByName",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/apps/upsert-by-name",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Idempotently upsert a list of apps by name within the caller's tenant. For each name, returns its existing app id (if the name already exists) or a freshly-generated one (if newly created). Duplicate names in the request are deduplicated server-side. Intended primarily for service-to-service use from accessory writers that materialize app memberships."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "chat",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send a message to the AI agent orchestrator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/agent-chat",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends a user message to the multi-agent orchestrator for processing. The orchestrator plans and executes actions across domain-specific agents (exploration, summary, remediation, policy, integration) and returns a summarized response."
+        },
+        {
+          "info": {
+            "name": "Get the persisted history of an agent conversation session",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent-chat/:session_id",
+            "params": [
+              {
+                "name": "session_id",
+                "value": "",
+                "type": "path",
+                "description": "The conversation session identifier."
+              }
+            ]
+          },
+          "docs": "Returns the conversation turns persisted on the backend for the given session_id, in ascending order. Used by the frontend to recover the response when the original POST /agent-chat call was cancelled (e.g. an HTTP timeout) before the agent service finished producing its answer. The agent service keeps running in the background and persists the turn even after the original caller disconnects, so a subsequent GET surfaces that result. Unknown session ids return 200 with an empty `turns` list rath"
+        },
+        {
+          "info": {
+            "name": "PlatformListAgentCustomContexts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent/custom-contexts"
+          },
+          "docs": "List custom contexts for the current tenant"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/agent/custom-contexts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new custom context for the agent"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a custom context by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a custom context"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a custom context"
+        },
+        {
+          "info": {
+            "name": "PlatformToggleAgentCustomContextAutoInclude",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id/toggle-auto-include",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Toggle a custom context's auto_include flag"
+        },
+        {
+          "info": {
+            "name": "Start a new chat conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/conversations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new AI chat conversation"
+        },
+        {
+          "info": {
+            "name": "Retrieve a chat conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/conversations/:conversation_id",
+            "params": [
+              {
+                "name": "conversation_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the chat conversation"
+              }
+            ]
+          },
+          "docs": "Get details of an existing AI chat conversation. Useful for polling for updates."
+        },
+        {
+          "info": {
+            "name": "Add a message to an existing conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/conversations/:conversation_id",
+            "params": [
+              {
+                "name": "conversation_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the chat conversation"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Send a new message to an existing AI chat conversation"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "custom-columns",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllCustomColumns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/custom-columns",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Custom column sort direction options"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter columns by name, label, or description."
+              }
+            ]
+          },
+          "docs": "List all custom columns"
+        },
+        {
+          "info": {
+            "name": "PlatformSaveCustomColumn",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/custom-columns",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save a custom column"
+        },
+        {
+          "info": {
+            "name": "PlatformGetCustomColumn",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/custom-columns/:custom_column_id",
+            "params": [
+              {
+                "name": "custom_column_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a custom column"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateCustomColumn",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/custom-columns/:custom_column_id",
+            "params": [
+              {
+                "name": "custom_column_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a custom column"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteCustomColumn",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/custom-columns/:custom_column_id",
+            "params": [
+              {
+                "name": "custom_column_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a custom column"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "filters",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              },
+              {
+                "name": "name_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "expression_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters/tags",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags"
+        },
+        {
+          "info": {
+            "name": "PlatformGetFilterByID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a table filter by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a table filter"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a table filter"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "notifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListNotifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy severities (policy matches any)"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "List all notifications for triggered, enabled, policy-bound alerts"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "onboardings",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformCreateAWSOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an interactive onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query an interactive onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update onboarding state"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSAccountsInRoot",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under organization root"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSAccountsInParent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts/:aws_orgunit_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "aws_orgunit_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under a specifc Organizational Unit"
+        },
+        {
+          "info": {
+            "name": "PlatformProvisionOnboardingConfiguration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts/provision",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Provision onboarding configuration into the cloud account"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur"
+          },
+          "docs": "Create an interactive onboarding for AWS CUR"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query an interactive onboarding for AWS CUR"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update AWS CUR onboarding state"
+        },
+        {
+          "info": {
+            "name": "PlatformVerifyAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id/verify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Trigger verification of the AWS CUR onboarding"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a unified composable onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query a unified AWS onboarding"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update unified AWS onboarding state via CloudFormation callback"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedAccountsInRoot",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under the organization root (requires asset_inventory feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedAccountsInParent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts/:aws_orgunit_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "aws_orgunit_id",
+                "value": "",
+                "type": "path",
+                "description": "Organizational Unit ID"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under a specific Organizational Unit"
+        },
+        {
+          "info": {
+            "name": "PlatformProvisionUnifiedOnboardingConfiguration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts/provision",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Provision sync roles into selected AWS accounts (requires asset_inventory feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformVerifyAWSUnifiedCUR",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/verify-cur",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Verify CUR S3 access for the unified onboarding (requires cost_and_usage feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedTestConnections",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/test-connections",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create test connections for all enabled features in one call"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedIntegrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/integrations",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create integrations for all enabled features using completed test connections"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedTestConnectionsStandalone",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/aws/unified/test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create test connections for AWS unified features without an onboarding. Frontend is expected to provide a per-feature plugin spec (with ${ENV_VAR} placeholders for sensitive values like external_id) plus an env list containing the corresponding values."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedIntegrationsStandalone",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/aws/unified/integrations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create AWS unified integrations from previously created standalone test connections (no onboarding). Like the onboarding-bound counterpart, this endpoint may create multiple syncs from a single request: asset_inventory creates a main sync plus a CloudTrail companion sync, additional_metadata creates a metadata sync, and cost_and_usage creates a CUR sync."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "sync-integrations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListSyncIntegrationGroups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-integration-groups"
+          },
+          "docs": "List integrations grouped by onboarding ID"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "queries",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllQueries",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Query tags"
+              },
+              {
+                "name": "name_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "query_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "alert_configured",
+                "value": "",
+                "type": "query",
+                "description": "Alert configured"
+              },
+              {
+                "name": "alert_message_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "alert_enabled",
+                "value": "",
+                "type": "query",
+                "description": "Alert enabled"
+              },
+              {
+                "name": "column_filter",
+                "value": "",
+                "type": "query",
+                "description": "Filter queries that return all specified columns"
+              }
+            ]
+          },
+          "docs": "List all queries"
+        },
+        {
+          "info": {
+            "name": "PlatformCheckQuerySyntax",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/check-syntax",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Validate the syntax of a ClickHouse SQL query without executing it. Returns 200 if the syntax is valid, or 400 with an error message if not.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformGetQueryColumns",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/columns",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Return the list of output column names a SELECT query would produce, without executing it. Columns from `SELECT *` are resolved against the referenced table schemas. Returns 400 if the query cannot be parsed or is not a SELECT.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformExecuteAdHocQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/execute",
+            "params": [
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Run an ad-hoc SQL query against any table.\nFurther filtering can optionally be applied on top of the raw SQL results using the optional parameters. Filtering can be useful in situations where a saved query needs to be further filtered, grouped or paginated, such as in dashboards or reports.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformSaveQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/save",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save a query to execute later"
+        },
+        {
+          "info": {
+            "name": "PlatformListQueryTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/tags",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Query Tags"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformExecuteSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/:query_id/execute",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Execute a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Query Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformQuerySaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Query Filter"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters/tags",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Saved Query"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters/tags",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Table"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "insights",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPlatformInsights",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, evidence (description), mitigation, or related fields"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud"
+              },
+              {
+                "name": "account",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account (repeat for multiple values, OR)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query",
+                "description": "Filter by region"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source (repeat for multiple values, OR)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List insights with optional filtering"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightColumnDistinctValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/columns/:column_name/distinct-values",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path",
+                "description": "Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true."
+              },
+              {
+                "name": "owner_tag",
+                "value": "",
+                "type": "query",
+                "description": "When specified, returns distinct values for this ownership tag key (e.g., \"team\", \"department\"). The column_name parameter is ignored when owner_tag is provided."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, evidence (description), mitigation, or related fields"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud"
+              },
+              {
+                "name": "account",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account (repeat for multiple values, OR)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query",
+                "description": "Filter by region"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source (repeat for multiple values, OR)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              }
+            ]
+          },
+          "docs": "Get the candidate values for the next filter dimension (`column_name`), given the current active filters. The supplied filter parameters represent where the user currently is in the filter matrix; only values for `column_name` that would yield at least one insight when added to that current position are returned. Values that would produce zero results are omitted, preventing the user from navigating to an empty state.\nThe filter parameter corresponding to `column_name` is always ignored when com"
+        },
+        {
+          "info": {
+            "name": "PlatformListInsightFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/saved-filters",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Search in filter name or description"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Filter by group by fields"
+              }
+            ]
+          },
+          "docs": "List saved insight filters"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/insights/saved-filters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformGetInsightFilterByID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a saved insight filter by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsight",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/:insight_id",
+            "params": [
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (key:value strings; all pairs must match)"
+              }
+            ]
+          },
+          "docs": "Get insight by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightAssets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/:insight_id/assets",
+            "params": [
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (key:value strings; all pairs must match)"
+              }
+            ]
+          },
+          "docs": "List assets affected by an insight"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightAssetColumnDistinctValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/assets/columns/:column_name/distinct-values",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path",
+                "description": "Filter dimension for distinct asset values. Allowed values: cloud, region, account, resource-type, instance-type, tag."
+              },
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "query",
+                "description": "Insight whose affected assets are being filtered."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, description, or mitigation (same as asset list)."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              }
+            ]
+          },
+          "docs": "Get candidate values for the next filter dimension (`column_name`) for assets listed under an insight, given the current active filters. The supplied filter parameters represent where the user is in the filter matrix; only values for `column_name` that would yield at least one matching asset row when added to that position are returned.\nThe filter parameter corresponding to `column_name` is always ignored when computing candidates (no self-filtering).\nWhen querying for `column_name=tag`, ownersh"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformAssetInsights",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/assets/:asset_id",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List insights for a specific asset (by _cq_platform_id)"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "reports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListReports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports",
+            "params": [
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter reports by title or description."
+              },
+              {
+                "name": "visibility",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Report sort direction options"
+              }
+            ]
+          },
+          "docs": "List reports"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/reports",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Report"
+        },
+        {
+          "info": {
+            "name": "PlatformGetReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ]
+          },
+          "docs": "Get Report"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update Report"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ]
+          },
+          "docs": "Delete Report"
+        },
+        {
+          "info": {
+            "name": "PlatformListReportTemplates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/templates",
+            "params": [
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter report templates by name."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Report template sort direction options"
+              }
+            ]
+          },
+          "docs": "List report templates"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/reports/templates",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformGetReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ]
+          },
+          "docs": "Get Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ]
+          },
+          "docs": "Delete Report Template"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "syncs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformCreateSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-destination-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test destination connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTestConnectionForSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnectionLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnectionLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/promote",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote a sync destination test connection to a sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync destination definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncDestinationSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name/syncs",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTestConnectionForSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name/test-connections/:sync_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get test connection details for sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-source-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test source connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTestConnectionForSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnectionLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnectionLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/promote",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote a sync source test connection to a sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncIntegrationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-integration-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an integration test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformListV2SyncIntegrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-integrations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List sync integrations"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-integrations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new integration associated with a completed test connection"
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync integration by name"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update attributes of an integration"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "delete_data",
+                "value": "",
+                "type": "query",
+                "description": "If true, also delete data associated with this integration from the relevant destinations."
+              }
+            ]
+          },
+          "docs": "Delete an integration"
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncSources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync source definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync source definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Source definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Source definition. Any syncs relying on this source must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncSourceSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name/syncs",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTestConnectionForSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name/test-connections/:sync_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get test connection details for sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync transformer definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync transformer definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Transformer definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Transformer definition. Any syncs relying on this transformer must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformerSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name/syncs",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync transformer."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformerSyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name/sync-destinations",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Sync Destinations for a given sync transformer."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncUpgrades",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-upgrades",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "path",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "platform_version",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all version upgrades for syncs"
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/syncs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create new Sync definition. Sync runs can be scheduled automatically, or triggered manually after sync is created."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a Sync"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete Sync. This will delete Sync configuration and all associated sync runs, but will not delete the associated source and destination(s). These will need to be deleted separately."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncRuns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Sync Runs."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create new SyncRun. This will trigger a manual job run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a Sync Run."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a SyncRun"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunStats",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/stats",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get statistics on a Sync Run"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/tables",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sync run table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              }
+            ]
+          },
+          "docs": "Get table details on a Sync Run"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-destination-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test destination connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync destination definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-destinations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create sync destination based on test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformPatchV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "tables",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Tables"
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesData",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/data",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Get all sources and their associated tables. Returns data in the format needed for the delete action."
+        },
+        {
+          "info": {
+            "name": "PlatformTablesDataAction",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/data",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Perform an action on table data across multiple sources. Supported actions: delete (drops partitions for specified tenant/source/table combinations)."
+        },
+        {
+          "info": {
+            "name": "PlatformTableListRows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/data",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Table Rows"
+        },
+        {
+          "info": {
+            "name": "PlatformTableRowById",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/data/:table_row_id",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table_row_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              }
+            ]
+          },
+          "docs": "Get Table row"
+        },
+        {
+          "info": {
+            "name": "PlatformTableSchema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/schema",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get Table Schema"
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesRelations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/relations"
+          },
+          "docs": "Get resource relations for all configured tables."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesRelatedResources",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/:table_name/related-resources",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path",
+                "description": "Source table name (e.g. `aws_ec2_instances`)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Execute the curated relation queries defined for the given source\ntable against a specific row, returning the related resources grouped\nby relation title. The relation templates live in\n`api/relations/configs/*.yaml` and use `{{field_name}}` placeholders\nthat are substituted from the request's `platform_id`-resolved row or\nexplicit `fields` map before each relation query is executed against\nClickHouse.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformBatchTableSchemas",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/schemas",
+            "params": [
+              {
+                "name": "tables",
+                "value": "",
+                "type": "query",
+                "description": "A list of table names to retrieve schemas for"
+              }
+            ]
+          },
+          "docs": "Get Table Schemas"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListColumns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Get Table Columns"
+        },
+        {
+          "info": {
+            "name": "PlatformTableColumnListValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns/:column_name/values",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Get Table Column Values"
+        },
+        {
+          "info": {
+            "name": "PlatformTableColumnListGrouped",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns/:column_name/grouped",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory's Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Table Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformTableSaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Table Filter"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "usage",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformGetTeamUsageSummary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/usage-summary",
+            "params": [
+              {
+                "name": "metrics",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "aggregation_period",
+                "value": "",
+                "type": "query",
+                "description": "An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month."
+              }
+            ]
+          },
+          "docs": "Get a summary of usage for the specified time range."
+        },
+        {
+          "info": {
+            "name": "PlatformGetGroupedTeamUsageSummary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/usage-summary/:group_by",
+            "params": [
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "metrics",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "aggregation_period",
+                "value": "",
+                "type": "query",
+                "description": "An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month."
+              }
+            ]
+          },
+          "docs": "Get a grouped summary of usage for the specified time range."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListUsers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "user_search",
+                "value": "",
+                "type": "query",
+                "description": "Search by user name or email"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "query",
+                "description": "Search by user role ID"
+              }
+            ]
+          },
+          "docs": "List all users"
+        },
+        {
+          "info": {
+            "name": "PlatformAddUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add new user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get user details"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update user"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete user"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteUserTOTP",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:user_id/totp",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Disable/Reset MFA for a specific user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetCurrentUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/user"
+          },
+          "docs": "Get the current authenticated user from the OAuth token\n"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateCurrentUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/user",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update attributes for the current authenticated user from the OAuth token"
+        },
+        {
+          "info": {
+            "name": "PlatformAuthenticateUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/authenticate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Authenticate a user with password"
+        },
+        {
+          "info": {
+            "name": "PlatformCheckUserAuthStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/user/authenticated-status"
+          },
+          "docs": "Return the authentication state of the current request along with the MFA\nand SAML configuration the frontend needs to render the login UI. Missing\nor invalid credentials still produce a 200 response rather than 401/205,\nso clients can probe auth state without handling unauthorized responses.\nServer-side failures (e.g. database unavailable) may still surface as 5xx.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformChangeUserPassword",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/change-password",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change user password"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPVerify",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/totp/verify",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Verify a one time password for MFA"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPSetup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/totp"
+          },
+          "docs": "Set up MFA for the current user"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPDelete",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/user/totp"
+          },
+          "docs": "Disable MFA for the current user"
+        },
+        {
+          "info": {
+            "name": "PlatformLoginUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start a session using ID token"
+        },
+        {
+          "info": {
+            "name": "PlatformLogoutUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/user/login"
+          },
+          "docs": "Logout a session"
+        },
+        {
+          "info": {
+            "name": "PlatformMagicLoginUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/magic-login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exchange a one-shot magic-link token (minted by CloudQuery cloud) for a platform ID token. The handler validates the token by calling cloud's consume endpoint and, on success, looks up the local user by email and mints an ID token. The frontend then exchanges the ID token for a session cookie via the existing `POST /user/login` endpoint.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "admin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformGetSAML",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/saml"
+          },
+          "docs": "Get SAML integration information"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSAML",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/saml",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update SAML integration information"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/auth/saml/rollover"
+          },
+          "docs": "Create new SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/auth/saml/rollover",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Delete current SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/auth/saml/rollover/promote",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings"
+          },
+          "docs": "Show current platform settings"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/settings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update platform settings"
+        },
+        {
+          "info": {
+            "name": "PlatformGetDataSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings/data"
+          },
+          "docs": "Show current platform data settings"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateDataSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/settings/data",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update platform data settings"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "rbac",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllRBACPermissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/permissions",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction options"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter permissions by name or description."
+              }
+            ]
+          },
+          "docs": "List all permissions"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/rbac/permissions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformGetRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformListAllRBACRoles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/roles",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction options"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter roles by name or description."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "Filter roles by type."
+              }
+            ]
+          },
+          "docs": "List all roles"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/rbac/roles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a role"
+        },
+        {
+          "info": {
+            "name": "PlatformGetRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a role"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a role (custom roles only)"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a role"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "teams",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListTeams",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all teams"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
