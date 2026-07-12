@@ -1,0 +1,22 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/cloudquery-openapi.json
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  sources:
+  - openapi/cloudquery-openapi.json
+- name: basicAuth
+  type: http
+  scheme: basic
+  sources:
+  - openapi/cloudquery-openapi.json
+- name: cookieAuth
+  type: http
+  scheme: cookie
+  sources:
+  - openapi/cloudquery-openapi.json
