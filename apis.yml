@@ -45,6 +45,8 @@ apis:
       - type: GettingStarted
         url: https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account
 common:
+  - type: AgenticAccess
+    url: agentic-access/cloudquery-agentic-access.yml
   - type: TrustCenter
     url: security/cloudquery-trust-center.yml
   - type: VulnerabilityDisclosure
