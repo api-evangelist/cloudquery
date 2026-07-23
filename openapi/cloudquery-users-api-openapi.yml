@@ -1,0 +1,1006 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin users API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: users
+paths:
+  /users:
+    get:
+      description: List all users
+      operationId: PlatformListUsers
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - name: user_search
+        description: Search by user name or email
+        in: query
+        schema:
+          type: string
+      - name: role_id
+        description: Search by user role ID
+        in: query
+        schema:
+          $ref: '#/components/schemas/PlatformRoleID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformUser'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+    post:
+      description: Add new user
+      operationId: PlatformAddUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              - name
+              - roles
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+                roles:
+                  description: Roles for the user
+                  type: array
+                  minItems: 0
+                  items:
+                    $ref: '#/components/schemas/PlatformRoleID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUser'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /users/{user_id}:
+    get:
+      description: Get user details
+      operationId: PlatformGetUser
+      parameters:
+      - $ref: '#/components/parameters/platform_user_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUser'
+          description: Response
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+    patch:
+      description: Update user
+      operationId: PlatformUpdateUser
+      parameters:
+      - $ref: '#/components/parameters/platform_user_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+                enabled:
+                  type: boolean
+                roles:
+                  description: Roles for the user
+                  type: array
+                  minItems: 0
+                  items:
+                    $ref: '#/components/schemas/PlatformRoleID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUser'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+    delete:
+      description: Delete user
+      operationId: PlatformDeleteUser
+      parameters:
+      - $ref: '#/components/parameters/platform_user_id'
+      responses:
+        '204':
+          description: Response
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /users/{user_id}/totp:
+    delete:
+      description: Disable/Reset MFA for a specific user
+      operationId: PlatformDeleteUserTOTP
+      parameters:
+      - $ref: '#/components/parameters/platform_user_id'
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user:
+    get:
+      description: 'Get the current authenticated user from the OAuth token
+
+        '
+      operationId: PlatformGetCurrentUser
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/PlatformUser'
+                - type: object
+                  properties:
+                    event_identifiers:
+                      type: object
+                      additionalProperties: true
+                    group_identifier:
+                      type: string
+                    registered_team_name:
+                      type: string
+                      description: The name of the team that the platform is registered with
+                    registered_team_internal:
+                      type: boolean
+                      description: Whether the team is internal or not
+                    can_set_password:
+                      type: boolean
+                      description: True only when the user has no password set and is eligible to set one (local provider, enabled). Frontends can use this after a magic-link login to optionally prompt for an initial password. False when a password is already set, for SSO-managed accounts, and for disabled users. Expired-password reset is handled separately via the `password_expired` token claim and is not affected by this field.
+          description: Response
+        '401':
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/PlatformBasicError'
+                - properties:
+                    password_reset_required:
+                      type: boolean
+                      description: Whether the user needs to reset their password
+          description: Unauthorized
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+    patch:
+      description: Update attributes for the current authenticated user from the OAuth token
+      operationId: PlatformUpdateCurrentUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  $ref: '#/components/schemas/PlatformUserName'
+                tracking_opt_in:
+                  type: boolean
+                  description: Whether to opt in or out of anonymous user tracking
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUser'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user/authenticate:
+    post:
+      description: Authenticate a user with password
+      operationId: PlatformAuthenticateUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication is successful
+          content:
+            application/json:
+              schema:
+                required:
+                - id_token
+                properties:
+                  id_token:
+                    type: string
+                    x-go-name: IDToken
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+      security: []
+  /user/authenticated-status:
+    get:
+      description: 'Return the authentication state of the current request along with the MFA
+
+        and SAML configuration the frontend needs to render the login UI. Missing
+
+        or invalid credentials still produce a 200 response rather than 401/205,
+
+        so clients can probe auth state without handling unauthorized responses.
+
+        Server-side failures (e.g. database unavailable) may still surface as 5xx.
+
+        '
+      operationId: PlatformCheckUserAuthStatus
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - authenticated
+                - mfa_required
+                properties:
+                  authenticated:
+                    type: boolean
+                    description: Whether the request can access protected resources right now. False when the user is not logged in, or when MFA is required (by tenant policy or because the user has MFA configured) and the session has not yet completed MFA verification.
+                  mfa_required:
+                    type: boolean
+                    description: Whether the tenant policy requires users to configure MFA. This reflects the org-level setting only and is independent of whether the calling user has MFA configured.
+                    x-go-name: MFARequired
+                  mfa_configured:
+                    type: boolean
+                    description: Whether the authenticated user has MFA configured. Omitted when not authenticated or when the session was authenticated with an API key.
+                    x-go-name: MFAConfigured
+                  saml_login_url:
+                    type: string
+                    description: Login URL for SAML authentication. Present only when SAML is enabled for the tenant.
+                    x-go-name: SAMLLoginURL
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      security: []
+      tags:
+      - users
+  /user/change-password:
+    post:
+      description: Change user password
+      operationId: PlatformChangeUserPassword
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              - old_password
+              - new_password
+              properties:
+                email:
+                  type: string
+                old_password:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '204':
+          description: Successful
+          headers:
+            Set-Cookie:
+              description: Reset session cookie
+              schema:
+                type: string
+                example: __session=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=3600
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user/totp/verify:
+    post:
+      description: Verify a one time password for MFA
+      operationId: PlatformUserTOTPVerify
+      parameters:
+      - name: __cqp_sess
+        in: cookie
+        style: form
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - otp
+              properties:
+                otp:
+                  type: string
+                  x-go-name: OTP
+      responses:
+        '204':
+          description: Multifactor authentication is complete.
+          headers:
+            Set-Cookie:
+              description: Session cookie
+              schema:
+                type: string
+                example: __session=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9Cg...; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=3600
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user/totp:
+    post:
+      description: Set up MFA for the current user
+      operationId: PlatformUserTOTPSetup
+      parameters: []
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - secret
+                - url
+                properties:
+                  url:
+                    type: string
+                  secret:
+                    type: string
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+    delete:
+      description: Disable MFA for the current user
+      operationId: PlatformUserTOTPDelete
+      parameters: []
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user/login:
+    post:
+      description: Start a session using ID token
+      operationId: PlatformLoginUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - id_token
+              properties:
+                id_token:
+                  type: string
+                  x-go-name: IDToken
+      responses:
+        '204':
+          description: Authentication is complete.
+          headers:
+            Set-Cookie:
+              description: Session cookie
+              schema:
+                type: string
+                example: __session=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9Cg...; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=3600
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+      security: []
+    delete:
+      description: Logout a session
+      operationId: PlatformLogoutUser
+      responses:
+        '204':
+          description: Logout is complete.
+          headers:
+            Set-Cookie:
+              description: Empty session cookie
+              schema:
+                type: string
+                example: __session=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=3600
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+  /user/magic-login:
+    post:
+      description: 'Exchange a one-shot magic-link token (minted by CloudQuery cloud) for a platform ID token. The handler validates the token by calling cloud''s consume endpoint and, on success, looks up the local user by email and mints an ID token. The frontend then exchanges the ID token for a session cookie via the existing `POST /user/login` endpoint.
+
+        '
+      operationId: PlatformMagicLoginUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Magic-link accepted; returns a platform ID token.
+          content:
+            application/json:
+              schema:
+                required:
+                - id_token
+                properties:
+                  id_token:
+                    type: string
+                    x-go-name: IDToken
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - users
+      security: []
+components:
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformRoleID:
+      description: The unique ID for the role.
+      type: string
+      format: uuid
+      x-go-name: RoleID
+    PlatformRole:
+      type: object
+      description: Role
+      required:
+      - id
+      - name
+      - description
+      - permissions
+      - created_by
+      - created_at
+      - updated_at
+      - type
+      properties:
+        id:
+          description: The unique ID for the role.
+          type: string
+          format: uuid
+          x-go-name: ID
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermission'
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        type:
+          $ref: '#/components/schemas/PlatformRoleType'
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
+    PlatformUser:
+      additionalProperties: false
+      description: User
+      properties:
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        id:
+          description: ID of the User
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          x-go-name: ID
+        email:
+          type: string
+          example: user@example.com
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          type: string
+          format: date-time
+        profile_image_url:
+          type: string
+          description: Profile image URL of user
+          x-go-name: ProfileImageURL
+        last_login_at:
+          type: string
+          format: date-time
+        provider:
+          $ref: '#/components/schemas/PlatformUserProvider'
+        tracking_opted_in:
+          type: boolean
+          description: Whether anonymous user tracking was opted into
+        mfa_configured:
+          type: boolean
+          description: Whether the user has MFA configured
+          x-go-name: MFAConfigured
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRole'
+        enabled:
+          type: boolean
+          description: Whether the user is enabled
+      required:
+      - id
+      - email
+      - enabled
+      - provider
+      - mfa_configured
+      - roles
+      title: User
+      type: object
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+    PlatformRBACPermission:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      - number_of_affected_roles
+      - number_of_affected_users
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformRBACPermissionID'
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        number_of_affected_roles:
+          type: integer
+        number_of_affected_users:
+          type: integer
+    PlatformRoleType:
+      type: string
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+    PlatformUserProvider:
+      title: LocalUserProvider
+      type: string
+      enum:
+      - local
+      - saml
+      default: local
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformMethodNotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Method not allowed
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_user_id:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformUserID'
+      x-go-name: UserID
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

@@ -1,0 +1,372 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin usage API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: usage
+paths:
+  /usage-summary:
+    get:
+      description: Get a summary of usage for the specified time range.
+      operationId: PlatformGetTeamUsageSummary
+      parameters:
+      - in: query
+        name: metrics
+        required: false
+        schema:
+          type: array
+          description: A list of metrics to include in the response. Each metric must be one of the predefined valid values. If not provided, only `paid-rows` will be included.
+          items:
+            type: string
+            enum:
+            - paid_rows
+            - cloud_vcpu_seconds
+            - cloud_vram_byte_seconds
+            - network_egress_bytes
+          default:
+          - paid_rows
+      - in: query
+        name: start
+        required: false
+        schema:
+          type: string
+          format: date-time
+          description: A valid ISO-8601-formatted date and time, indicating the inclusive start of the query time range. Defaults to 30 days ago.
+      - in: query
+        name: end
+        required: false
+        schema:
+          type: string
+          format: date-time
+          description: A valid ISO-8601-formatted date and time, indicating the exclusive end of the query time range. Defaults to the current time.
+      - in: query
+        name: aggregation_period
+        description: An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month.
+        required: false
+        schema:
+          type: string
+          default: day
+          enum:
+          - day
+          - month
+      responses:
+        '200':
+          description: A summary of usage for the specified time range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUsageSummary'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - usage
+  /usage-summary/{group_by}:
+    get:
+      description: Get a grouped summary of usage for the specified time range.
+      operationId: PlatformGetGroupedTeamUsageSummary
+      parameters:
+      - in: path
+        name: group_by
+        required: true
+        schema:
+          type: string
+          enum:
+          - price_category
+          - plugin
+          - sync_id
+          description: Group by usage summary. `plugin` and `price_category` groupings are only available for `paid-rows`.
+      - in: query
+        name: metrics
+        required: false
+        schema:
+          type: array
+          description: A list of metrics to include in the response. Each metric must be one of the predefined valid values. If not provided, only `paid-rows` will be included.
+          items:
+            type: string
+            enum:
+            - paid_rows
+            - cloud_vcpu_seconds
+            - cloud_vram_byte_seconds
+            - network_egress_bytes
+          default:
+          - paid_rows
+      - in: query
+        name: start
+        required: false
+        schema:
+          type: string
+          format: date-time
+          description: A valid ISO-8601-formatted date and time, indicating the inclusive start of the query time range. Defaults to 30 days ago.
+      - in: query
+        name: end
+        required: false
+        schema:
+          type: string
+          format: date-time
+          description: A valid ISO-8601-formatted date and time, indicating the exclusive end of the query time range. Defaults to the current time.
+      - in: query
+        name: aggregation_period
+        description: An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month.
+        required: false
+        schema:
+          type: string
+          default: day
+          enum:
+          - day
+          - month
+      responses:
+        '200':
+          description: A summary of usage for the specified time range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformUsageSummary'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - usage
+components:
+  schemas:
+    PlatformUsageSummaryValue:
+      title: CloudQuery Usage Summary Value
+      description: A usage summary value.
+      type: object
+      required:
+      - timestamp
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: The timestamp marking the start of a period.
+        paid_rows:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The paid rows that were synced in this period, one per group.
+        cloud_vcpu_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vCPU/seconds consumed in this period, one per group.
+        cloud_vram_byte_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vRAM/byte-seconds consumed in this period, one per group.
+        cloud_egress_bytes:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: Egress bytes consumed in this period, one per group.
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformUsageSummary:
+      title: CloudQuery Usage Summary
+      description: 'A usage summary for a team, summarizing the paid rows synced and/or cloud resource usage over a given time range.
+
+        Note that empty or all-zero values are not included in the response.
+
+        '
+      type: object
+      additionalProperties: false
+      required:
+      - groups
+      - values
+      - metadata
+      properties:
+        groups:
+          type: array
+          description: The groups of the usage summary. Every group will have a corresponding value at the same index in the values array.
+          items:
+            $ref: '#/components/schemas/PlatformUsageSummaryGroup'
+          example:
+          - name: plugin
+            value: cloudquery/source/aws
+          - name: plugin
+            value: cloudquery/source/gcp
+        values:
+          items:
+            $ref: '#/components/schemas/PlatformUsageSummaryValue'
+          type: array
+          example:
+          - timestamp: '2021-01-01T00:00:00Z'
+            paid_rows:
+            - 100
+            - 200
+          - timestamp: '2021-01-02T00:00:00Z'
+            paid_rows:
+            - 150
+            - 300
+        metadata:
+          type: object
+          description: Additional metadata about the usage summary. This may include information about the time range, the aggregation period, or other details.
+          required:
+          - start
+          - end
+          - aggregation_period
+          - metrics
+          additionalProperties: false
+          properties:
+            start:
+              type: string
+              format: date-time
+              description: The inclusive start of the query time range.
+            end:
+              type: string
+              format: date-time
+              description: The exclusive end of the query time range.
+            aggregation_period:
+              type: string
+              description: The aggregation period to sum data over. In other words, data will be returned at this granularity.
+              enum:
+              - day
+              - month
+            metrics:
+              type: array
+              description: List of metrics included in the response.
+              items:
+                type: string
+                enum:
+                - paid_rows
+                - cloud_egress_bytes
+                - cloud_vcpu_seconds
+                - cloud_vram_byte_seconds
+              default:
+              - paid_rows
+    PlatformUsageSummaryGroup:
+      title: CloudQuery Usage Summary Group
+      description: A usage summary group.
+      type: object
+      required:
+      - name
+      - value
+      properties:
+        name:
+          type: string
+          description: The name of the group.
+          example: plugin
+        value:
+          type: string
+          description: The value of the group at this index.
+          example: cloudquery/source/aws
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

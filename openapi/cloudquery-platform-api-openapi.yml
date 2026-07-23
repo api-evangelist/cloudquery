@@ -1,0 +1,187 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery OpenAPI Spec admin platform API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: platform
+paths:
+  /platform-info:
+    get:
+      description: Information about the platform
+      operationId: PlatformGetPlatformInfo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - public_ips
+                - version
+                - tenant_id
+                - aws_account_id
+                properties:
+                  aws_account_id:
+                    type: string
+                    description: AWS Account ID for the platform
+                    x-go-name: AWSAccountID
+                  public_ips:
+                    type: array
+                    description: List of public IPs for the platform
+                    items:
+                      type: string
+                    x-go-name: PublicIPs
+                  version:
+                    type: string
+                    description: Version of the platform
+                  tenant_id:
+                    type: string
+                    format: uuid
+                    description: The tenant ID of the current user
+                    x-go-name: TenantID
+          description: Response
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - platform
+  /platform-versions:
+    get:
+      description: List platform versions
+      operationId: PlatformListPlatformVersions
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformVersion'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+          description: Response
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - platform
+components:
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

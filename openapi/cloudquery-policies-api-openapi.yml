@@ -1,0 +1,1315 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin policies API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: policies
+paths:
+  /policies:
+    get:
+      description: List all policies for a team
+      operationId: PlatformListPolicies
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_policy_status'
+      - in: query
+        name: severities
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicySeverity'
+        style: form
+        explode: true
+        description: Filter by severities (policy matches any)
+      - in: query
+        name: domain
+        required: false
+        schema:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        description: Filter by domain
+      - in: query
+        name: policy_group_ids
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicyGroupID'
+        style: form
+        explode: true
+        description: Filter by policy groups (policy matches any)
+      - in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        description: Search in policy name and description
+      - in: query
+        name: sort_by
+        required: false
+        schema:
+          type: string
+          enum:
+          - name
+          - domain
+          - severity
+          - violation_count
+          - last_run_at
+          - created_at
+          default: created_at
+        description: Field to sort by
+      - in: query
+        name: sort_dir
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort direction
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicy'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    post:
+      description: Create a new policy
+      operationId: PlatformCreatePolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPolicyCreate'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicy'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/{policy_id}:
+    get:
+      description: Get a policy by ID
+      operationId: PlatformGetPolicy
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicy'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    put:
+      description: Update a policy
+      operationId: PlatformUpdatePolicy
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPolicyUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicy'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    delete:
+      description: Delete a policy
+      operationId: PlatformDeletePolicy
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      responses:
+        '204':
+          description: Success
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/{policy_id}/toggle:
+    post:
+      description: Toggle a policy's status (active/paused)
+      operationId: PlatformTogglePolicy
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicy'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/{policy_id}/violations:
+    get:
+      description: Get violations for a policy
+      operationId: PlatformGetPolicyViolations
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - name: search
+        in: query
+        description: Text search term to filter violations by resource_type_label, name, account_name, cloud, or region
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicyViolation'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/{policy_id}/violations-history:
+    get:
+      description: Get violation history for a policy
+      operationId: PlatformGetPolicyViolationsHistory
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_id'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - in: query
+        name: start_time
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end_time
+        required: false
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicyEvaluationLog'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/metrics:
+    get:
+      description: Get policy metrics summary
+      operationId: PlatformGetPolicyMetrics
+      parameters:
+      - in: query
+        name: severities
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicySeverity'
+        style: form
+        explode: true
+        description: Filter by severities (policy matches any)
+      - in: query
+        name: domain
+        required: false
+        schema:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        description: Filter by domain
+      - in: query
+        name: policy_group_ids
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicyGroupID'
+        style: form
+        explode: true
+        description: Filter by policy groups (policy matches any)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicyMetrics'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/violations-by-domain:
+    get:
+      description: Get violations grouped by domain
+      operationId: PlatformGetViolationsByDomain
+      parameters:
+      - in: query
+        name: severities
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicySeverity'
+        style: form
+        explode: true
+        description: Filter by severities (policy matches any)
+      - in: query
+        name: domain
+        required: false
+        schema:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        description: Filter by domain
+      - in: query
+        name: policy_group_ids
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicyGroupID'
+        style: form
+        explode: true
+        description: Filter by policy groups (policy matches any)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformViolationsByDomain'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policies/violations-history:
+    get:
+      description: Get violations history over time
+      operationId: PlatformGetViolationsHistory
+      parameters:
+      - in: query
+        name: start_date
+        required: false
+        schema:
+          type: string
+          format: date
+        description: Start date for the query range (YYYY-MM-DD)
+      - in: query
+        name: end_date
+        required: false
+        schema:
+          type: string
+          format: date
+        description: End date for the query range (YYYY-MM-DD)
+      - in: query
+        name: severities
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicySeverity'
+        style: form
+        explode: true
+        description: Filter by severities (policy matches any)
+      - in: query
+        name: domain
+        required: false
+        schema:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        description: Filter by domain
+      - in: query
+        name: policy_group_ids
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicyGroupID'
+        style: form
+        explode: true
+        description: Filter by policy groups (policy matches any)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformViolationsHistory'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policy-groups:
+    get:
+      description: List all policy groups
+      operationId: PlatformListPolicyGroups
+      parameters:
+      - in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        description: Search in policy group name and description
+      - in: query
+        name: severities
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicySeverity'
+        style: form
+        explode: true
+        description: Filter to policy groups that contain at least one policy with any of these severities
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicyGroupWithCounts'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    post:
+      description: Create a new policy group
+      operationId: PlatformCreatePolicyGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPolicyGroupCreate'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicyGroup'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+  /policy-groups/{policy_group_id}:
+    get:
+      description: List policies in a policy group
+      operationId: PlatformListPoliciesInGroup
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_group_id'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - in: query
+        name: sort_by
+        required: false
+        schema:
+          type: string
+          enum:
+          - name
+          - policy_count
+          default: name
+        description: Field to sort by
+      - in: query
+        name: sort_dir
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Sort direction
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicy'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    put:
+      description: Update a policy group
+      operationId: PlatformUpdatePolicyGroup
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_group_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPolicyGroupUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPolicyGroup'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+    delete:
+      description: Delete a policy group
+      operationId: PlatformDeletePolicyGroup
+      parameters:
+      - $ref: '#/components/parameters/platform_policy_group_id'
+      responses:
+        '204':
+          description: Success
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - policies
+components:
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformPolicyDomain:
+      description: Policy domain
+      type: string
+      enum:
+      - finops
+      - security
+      - compliance
+      - governance
+      - operations
+      x-go-name: PolicyDomain
+    PlatformPolicyID:
+      description: The unique ID for the policy.
+      type: string
+      format: uuid
+      x-go-name: PolicyID
+    PlatformViolationsByDomainItem:
+      title: Violations By Domain Item
+      type: object
+      description: Violation count for a specific domain
+      additionalProperties: false
+      required:
+      - domain
+      - violation_count
+      properties:
+        domain:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        violation_count:
+          type: integer
+          description: Number of violations for this domain
+          example: 15
+    PlatformPolicyUpdate:
+      title: Policy Update
+      type: object
+      description: Update a policy
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        domain:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        severity:
+          $ref: '#/components/schemas/PlatformPolicySeverity'
+        description:
+          type: string
+        query:
+          type: string
+          example: SELECT account_id, bucket_name, region FROM aws_s3_buckets WHERE encryption_status IS NULL
+        notification_destination_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Notification destination IDs to send alerts to
+        policy_group_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Policy group IDs to set for this policy
+    PlatformPolicyViolation:
+      title: Policy Violation
+      type: object
+      description: Policy violation resource information
+      additionalProperties: false
+      required:
+      - cloud
+      - resource_type_label
+      - _cq_account_name
+      - name
+      - region
+      - _cq_platform_id
+      properties:
+        cloud:
+          type: string
+          example: aws
+        resource_type_label:
+          type: string
+          example: EC2 Instance
+        _cq_account_name:
+          type: string
+          example: my-account
+        name:
+          type: string
+          example: my-resource
+        region:
+          type: string
+          example: us-east-1
+        _cq_platform_id:
+          type: string
+          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource (e.g. for insights)
+        additional_properties:
+          type: object
+          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
+          additionalProperties: true
+    PlatformPolicyGroup:
+      title: Policy Group
+      type: object
+      description: Policy Group
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - description
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Security Policies
+        description:
+          type: string
+          example: Group containing all security-related policies
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformQueryID:
+      description: The unique ID for the query.
+      type: string
+      format: uuid
+      x-go-name: QueryID
+    PlatformPolicyGroupCreate:
+      title: Policy Group Create
+      type: object
+      description: Create a policy group
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: Security Policies
+        description:
+          type: string
+          default: ''
+          example: Group containing all security-related policies
+        policy_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Optional array of policy IDs to add to this group
+    PlatformPolicyGroupUpdate:
+      title: Policy Group Update
+      type: object
+      description: Update a policy group
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        policy_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Policy IDs to set for this group
+    PlatformPolicyGroupID:
+      title: Policy Group ID
+      type: string
+      format: uuid
+      x-go-name: PolicyGroupID
+    PlatformViolationsHistoryMetadata:
+      title: Violations History Metadata
+      type: object
+      description: Metadata for violations history query
+      additionalProperties: false
+      required:
+      - interval
+      - start_date
+      - end_date
+      properties:
+        interval:
+          type: string
+          description: Interval in days used for grouping
+          example: '30'
+        start_date:
+          type: string
+          format: date
+          description: Start date of the query range
+          example: '2025-05-01'
+        end_date:
+          type: string
+          format: date
+          description: End date of the query range
+          example: '2026-12-01'
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformPolicyStatus:
+      description: Policy status
+      type: string
+      enum:
+      - paused
+      - active
+      x-go-name: PolicyStatus
+    PlatformPolicy:
+      title: Policy
+      type: object
+      description: Policy
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - domain
+      - severity
+      - description
+      - status
+      - team_name
+      - query_id
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformPolicyID'
+        name:
+          type: string
+          example: Unencrypted S3 buckets
+        domain:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        severity:
+          $ref: '#/components/schemas/PlatformPolicySeverity'
+        description:
+          type: string
+          example: Policy to detect unencrypted S3 buckets
+        status:
+          $ref: '#/components/schemas/PlatformPolicyStatus'
+        team_name:
+          type: string
+          example: my-team
+        query_id:
+          $ref: '#/components/schemas/PlatformQueryID'
+        query:
+          type: string
+          description: The SQL query string for the policy
+          example: SELECT * FROM aws_s3_buckets WHERE server_side_encryption_configuration IS NULL
+        created_by:
+          type: string
+          format: uuid
+          x-go-name: CreatedByUserID
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+          x-go-name: UpdatedByUserID
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        violation_count:
+          type: integer
+          nullable: true
+          description: Number of violations from the last evaluation
+          example: 5
+        run_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last evaluation run
+          example: '2017-07-14T16:53:42Z'
+        notification_destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
+          description: List of notification destinations configured for the policy's alert
+          example: []
+        policy_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformPolicyGroup'
+          description: List of policy groups this policy belongs to
+          example: []
+    PlatformPolicyCreate:
+      title: Policy Create
+      type: object
+      description: Create a policy (implicitly creates a query and an enabled alert)
+      additionalProperties: false
+      required:
+      - name
+      - domain
+      - severity
+      - query
+      properties:
+        name:
+          type: string
+          example: Unencrypted S3 buckets
+        domain:
+          $ref: '#/components/schemas/PlatformPolicyDomain'
+        severity:
+          $ref: '#/components/schemas/PlatformPolicySeverity'
+        description:
+          type: string
+          default: ''
+          example: Policy to detect unencrypted S3 buckets
+        query:
+          type: string
+          example: SELECT account_id, bucket_name, region FROM aws_s3_buckets WHERE encryption_status IS NULL
+        notification_destination_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Notification destination IDs to send alerts to
+        policy_group_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Policy group IDs to add this policy to
+    PlatformViolationsByDomain:
+      title: Violations By Domain
+      type: object
+      description: Violations grouped by domain
+      additionalProperties: false
+      required:
+      - items
+      - total_violations
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformViolationsByDomainItem'
+        total_violations:
+          type: integer
+          description: Total violations across all domains
+          example: 28
+    PlatformViolationsHistory:
+      title: Violations History
+      type: object
+      description: Violations history over time
+      additionalProperties: false
+      required:
+      - items
+      - metadata
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformViolationsHistoryItem'
+        metadata:
+          $ref: '#/components/schemas/PlatformViolationsHistoryMetadata'
+    PlatformPolicyGroupWithCounts:
+      title: Policy Group With Counts
+      type: object
+      description: Policy Group with policy count and violation counts by severity
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - description
+      - policy_count
+      - violation_count_low
+      - violation_count_medium
+      - violation_count_high
+      - violation_count_critical
+      - created_at
+      - updated_at
+      allOf:
+      - $ref: '#/components/schemas/PlatformPolicyGroup'
+      - type: object
+        properties:
+          policy_count:
+            type: integer
+            description: Number of policies in this group
+            example: 5
+            default: 0
+          violation_count_low:
+            type: integer
+            description: Total violations from low severity policies in this group
+            example: 10
+            default: 0
+          violation_count_medium:
+            type: integer
+            description: Total violations from medium severity policies in this group
+            example: 25
+            default: 0
+          violation_count_high:
+            type: integer
+            description: Total violations from high severity policies in this group
+            example: 15
+            default: 0
+          violation_count_critical:
+            type: integer
+            description: Total violations from critical severity policies in this group
+            example: 3
+            default: 0
+    PlatformNotificationDestinationListItem:
+      title: Notification Destination List Item
+      type: object
+      description: Notification Destination List Item
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel names (only for slack type)
+          x-go-name: SlackChannels
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformPolicyEvaluationLog:
+      title: Policy Evaluation Log
+      type: object
+      description: Policy evaluation log entry
+      additionalProperties: false
+      required:
+      - id
+      - policy_id
+      - violation_count
+      - run_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        policy_id:
+          $ref: '#/components/schemas/PlatformPolicyID'
+        violation_count:
+          type: integer
+          example: 5
+        run_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformPolicyMetrics:
+      title: Policy Metrics
+      type: object
+      description: Policy metrics summary
+      additionalProperties: false
+      required:
+      - total_active_violations
+      - high_severity_violations
+      - violations_this_week
+      properties:
+        total_active_violations:
+          type: integer
+          description: Total violations from active policies
+          example: 28
+        high_severity_violations:
+          type: integer
+          description: Total violations from high or critical severity policies
+          example: 10
+        violations_this_week:
+          type: integer
+          description: Total violations from evaluations in the last 7 days
+          example: 7
+    PlatformPolicySeverity:
+      description: Policy severity
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+      x-go-name: PolicySeverity
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformViolationsHistoryItem:
+      title: Violations History Item
+      type: object
+      description: Violation count for a specific date
+      additionalProperties: false
+      required:
+      - date
+      - violation_count
+      properties:
+        date:
+          type: string
+          format: date
+          description: Date of the violations
+          example: '2026-01-06'
+        violation_count:
+          type: integer
+          description: Number of violations on this date
+          example: 3
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_policy_id:
+      in: path
+      name: policy_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformPolicyID'
+      x-go-name: PolicyID
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_policy_group_id:
+      in: path
+      name: policy_group_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformPolicyGroupID'
+      x-go-name: PolicyGroupID
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_policy_status:
+      in: query
+      name: status
+      required: false
+      schema:
+        $ref: '#/components/schemas/PlatformPolicyStatus'
+      x-go-name: PolicyStatus
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

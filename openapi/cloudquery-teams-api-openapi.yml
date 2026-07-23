@@ -1,0 +1,180 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin teams API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: teams
+paths:
+  /teams:
+    get:
+      description: List all teams
+      operationId: PlatformListTeams
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformTeam'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - teams
+components:
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+  schemas:
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformTeam:
+      additionalProperties: false
+      description: CloudQuery Team
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformTeamName'
+      required:
+      - name
+      title: Team
+      type: object
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

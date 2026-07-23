@@ -1,0 +1,1104 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin alerts API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: alerts
+paths:
+  /alerts:
+    get:
+      description: List all alerts
+      operationId: PlatformListAllAlerts
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_alert_states'
+      - $ref: '#/components/parameters/platform_enabled'
+      - $ref: '#/components/parameters/platform_query_tags'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformAlertDetail'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /alerts/test:
+    post:
+      description: Test an unsaved alert
+      operationId: PlatformTestUnsavedAlert
+      parameters:
+      - in: query
+        name: query_id
+        required: false
+        description: ID of the query to fill in the alert
+        schema:
+          $ref: '#/components/schemas/PlatformQueryID'
+        x-go-name: QueryID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformAlertCreate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    description: Notification results for the test alert
+                    items:
+                      $ref: '#/components/schemas/PlatformAlertTestResponse'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /notifications/destinations:
+    get:
+      description: List all notification destinations
+      operationId: PlatformListAllNotificationDestinations
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+    post:
+      description: Create notification destination
+      operationId: PlatformCreateNotificationDestination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformNotificationDestinationCreate'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationDestination'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /notifications/destinations/test:
+    post:
+      description: Test an unsaved notification destination
+      operationId: PlatformTestUnsavedNotificationDestination
+      parameters:
+      - name: notification_destination_id
+        in: query
+        required: false
+        description: Optional ID of an existing notification destination. When provided, secret headers with empty values are resolved from the existing destination's stored encrypted values. This supports the editing flow where the frontend receives masked (empty) secret header values.
+        schema:
+          type: string
+          format: uuid
+        x-go-name: NotificationDestinationID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformNotificationDestinationData'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationDestinationTestResponse'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /notifications/destination/{notification_destination_id}:
+    get:
+      description: Get notification destination
+      operationId: PlatformGetNotificationDestination
+      parameters:
+      - $ref: '#/components/parameters/platform_notification_destination_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationDestination'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+    patch:
+      description: Update a notification destination
+      operationId: PlatformUpdateNotificationDestination
+      parameters:
+      - $ref: '#/components/parameters/platform_notification_destination_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformNotificationDestinationUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationDestination'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+    delete:
+      description: Delete a notification destination
+      operationId: PlatformDeleteNotificationDestination
+      parameters:
+      - $ref: '#/components/parameters/platform_notification_destination_id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /notifications/destination/{notification_destination_id}/alerts:
+    get:
+      description: Get notification destination alerts
+      operationId: PlatformGetNotificationDestinationAlerts
+      parameters:
+      - $ref: '#/components/parameters/platform_notification_destination_id'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformAlertDetail'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /notifications/destination/{notification_destination_id}/test:
+    post:
+      description: Test a notification destination
+      operationId: PlatformTestNotificationDestination
+      parameters:
+      - $ref: '#/components/parameters/platform_notification_destination_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationDestinationTestResponse'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /slack:
+    post:
+      description: Create Slack connection
+      operationId: PlatformCreateSlackConnection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSlackConnectionCreate'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSlackConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /slack/{id}/channels:
+    get:
+      description: List Slack channels for a connection
+      operationId: PlatformListSlackChannels
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Slack connection ID
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter channels by name (case-insensitive partial match)
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformSlackChannel'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+  /queries/{query_id}/alert:
+    delete:
+      description: Delete an alert associated with a saved query
+      operationId: PlatformDeleteAlert
+      parameters:
+      - $ref: '#/components/parameters/platform_query_id'
+      responses:
+        '204':
+          description: Success
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - alerts
+components:
+  schemas:
+    PlatformSlackConnectionCreate:
+      title: Create Slack Connection
+      type: object
+      description: Create Slack Connection
+      additionalProperties: false
+      required:
+      - code
+      properties:
+        code:
+          type: string
+          description: OAuth code from Slack authorization
+        redirect_uri:
+          type: string
+          description: Redirect URI that was used when obtaining the OAuth code (required by Slack when exchanging the code)
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformSlackConnection:
+      title: Slack Connection
+      type: object
+      description: Slack Connection
+      additionalProperties: false
+      required:
+      - id
+      - slack_workspace_id
+      - team_name
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Slack connection ID
+        slack_workspace_id:
+          type: string
+          description: Slack workspace (team) ID
+          x-go-name: SlackWorkspaceID
+        team_name:
+          type: string
+          description: Slack workspace (team) name
+          x-go-name: TeamName
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformSlackChannel:
+      title: Slack Channel
+      type: object
+      description: Slack Channel
+      additionalProperties: false
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: Channel ID
+        name:
+          type: string
+          description: Channel name
+        is_private:
+          type: boolean
+          description: Whether the channel is private
+          x-go-name: IsPrivate
+        is_archived:
+          type: boolean
+          description: Whether the channel is archived
+          x-go-name: IsArchived
+    PlatformNotificationDestinationCreate:
+      title: Create Notification Destination
+      type: object
+      description: Create Notification Destination
+      allOf:
+      - $ref: '#/components/schemas/PlatformNotificationDestinationData'
+      - type: object
+        required:
+        - name
+        - enabled
+        properties:
+          name:
+            type: string
+            example: Send to Slack
+          enabled:
+            type: boolean
+    PlatformNotificationDestinationData:
+      title: Notification Destination Data
+      type: object
+      description: Notification Destination Data
+      properties:
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          default: webhook
+          description: Type of notification destination
+        slack_connection_id:
+          type: string
+          format: uuid
+          description: Slack connection ID (required for slack type)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs to send notifications to (required for slack type)
+          x-go-name: SlackChannels
+        custom_message:
+          type: string
+          description: Optional custom message prepended to the alert when sending to Slack (only for slack type, must not be set for webhook)
+          x-go-name: CustomMessage
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          description: Webhook URL (required for webhook type, must not be set for slack type)
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP headers (required for webhook type, must not be set for slack type)
+          x-go-name: HTTPHeaders
+          x-go-type-skip-optional-pointer: true
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers with encrypted values. Values are encrypted at rest and returned as empty strings in responses. For updates, send empty string to keep existing value, or new value to replace. Must not be set for slack type.
+          x-go-name: HTTPSecretHeaders
+          x-go-type-skip-optional-pointer: true
+        http_body:
+          type: string
+          example: '{"text": "Alert: {{alert_message}}"}'
+          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
+          x-go-name: HTTPBody
+    PlatformNotificationDestinationUpdate:
+      title: Update Notification Destination
+      type: object
+      description: Update Notification Destination
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          x-go-name: HTTPHeaders
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers. Send empty string value to keep existing encrypted value, or new value to replace. Must not be set for slack type.
+          x-go-name: HTTPSecretHeaders
+        http_body:
+          type: string
+          example: '{"text": "Alert: {{alert_message}}"}'
+          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
+          x-go-name: HTTPBody
+        custom_message:
+          type: string
+          description: Optional custom message prepended to the alert when sending to Slack (only for slack type, must not be set for webhook)
+          x-go-name: CustomMessage
+        slack_connection_id:
+          type: string
+          format: uuid
+          description: Slack connection ID (only for slack type, must not be set for webhook)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs to send notifications to (only for slack type, must not be set for webhook)
+          x-go-name: SlackChannels
+    PlatformNotificationDestinationTestResponse:
+      title: Notification Destination Test Response
+      type: object
+      description: Notification Destination Test Response
+      additionalProperties: false
+      required:
+      - is_success
+      - http_status
+      - http_status_code
+      - http_body
+      - http_headers
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the test was successful
+        http_status_code:
+          type: integer
+          description: HTTP status code returned by the notification destination
+          x-go-name: HTTPStatusCode
+        http_status:
+          type: string
+          description: HTTP status message returned by the notification destination
+          x-go-name: HTTPStatus
+        http_body:
+          type: string
+          description: Body of the HTTP response from the notification destination
+          x-go-name: HTTPBody
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Headers returned by the notification destination
+          x-go-name: HTTPHeaders
+    PlatformAlertTestResponse:
+      title: Alert Test Response
+      type: object
+      description: Alert Test Response
+      additionalProperties: false
+      required:
+      - destination_id
+      - response
+      properties:
+        destination_id:
+          type: string
+          description: The ID of the notification destination.
+          x-go-name: DestinationID
+        error:
+          type: string
+          description: An error message if the test failed, otherwise null.
+        response:
+          $ref: '#/components/schemas/PlatformNotificationDestinationTestResponse'
+    PlatformAlertSeverity:
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+    PlatformQueryTag:
+      description: A saved query tag.
+      type: string
+    PlatformQueryID:
+      description: The unique ID for the query.
+      type: string
+      format: uuid
+      x-go-name: QueryID
+    PlatformNotificationDestination:
+      title: Notification Destination
+      type: object
+      description: Notification Destination
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          x-go-name: HTTPHeaders
+          x-go-type-skip-optional-pointer: true
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers. Keys are visible but values are always returned as empty strings. The actual values are encrypted at rest.
+          x-go-name: HTTPSecretHeaders
+          x-go-type-skip-optional-pointer: true
+        http_body:
+          type: string
+          example: '{"text": "Alert: {{alert_message}}"}'
+          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
+          x-go-name: HTTPBody
+        slack_connection_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Slack connection ID (only for slack type)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs (only for slack type)
+          x-go-name: SlackChannels
+        custom_message:
+          type: string
+          nullable: true
+          description: Optional custom message prepended to the alert when sending to Slack (only for slack type)
+          x-go-name: CustomMessage
+        last_notification_error_timestamp:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last notification error
+          x-go-name: LastNotificationErrorTimestamp
+        last_notification_error_code:
+          type: string
+          nullable: true
+          description: Error code of the last notification error
+          x-go-name: LastNotificationErrorCode
+        last_notification_error_message:
+          type: string
+          nullable: true
+          description: Error message of the last notification error
+          x-go-name: LastNotificationErrorMessage
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformAlertDetail:
+      title: Alert Detail
+      type: object
+      description: An alert instance that can be triggered by a query including notification destinations for the alert
+      additionalProperties: false
+      required:
+      - id
+      - query_id
+      - enabled
+      - message
+      - severity
+      - state
+      - total_violations
+      - created_at
+      - updated_at
+      - notification_destinations
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the alert
+          x-go-name: ID
+        query_id:
+          type: string
+          format: uuid
+          description: Reference to the associated query
+          x-go-name: QueryID
+        enabled:
+          type: boolean
+          description: Indicates if the alert is enabled
+        message:
+          type: string
+          description: Alert message content
+        severity:
+          $ref: '#/components/schemas/PlatformAlertSeverity'
+        state:
+          $ref: '#/components/schemas/PlatformAlertState'
+        total_violations:
+          type: integer
+          format: int64
+          description: Number of violations that triggered the alert
+        last_evaluated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the alert was last evaluated
+        triggered_at:
+          type: string
+          format: date-time
+          description: Timestamp when the alert was triggered
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the alert was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the alert was last updated
+        notification_destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
+          description: List of notification destinations this alert is configured to send to
+          x-go-type-skip-optional-pointer: true
+          allowEmptyValue: true
+          explode: true
+    PlatformNotificationDestinationListItem:
+      title: Notification Destination List Item
+      type: object
+      description: Notification Destination List Item
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel names (only for slack type)
+          x-go-name: SlackChannels
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformAlertCreate:
+      title: Alert Create
+      type: object
+      description: Create an alert
+      additionalProperties: false
+      required:
+      - message
+      - severity
+      - enabled
+      properties:
+        message:
+          type: string
+          example: All resources need to be tagged
+        severity:
+          $ref: '#/components/schemas/PlatformAlertSeverity'
+        enabled:
+          type: boolean
+          description: Indicates if the alert is enabled
+        notification_destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformNotificationDestinationID'
+          description: List of notification destinations to send alerts to
+          x-go-type-skip-optional-pointer: true
+          allowEmptyValue: true
+          explode: true
+    PlatformAlertState:
+      type: string
+      enum:
+      - unknown
+      - pending
+      - inactive
+      - triggered
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_enabled:
+      name: enabled
+      in: query
+      description: Enabled
+      schema:
+        type: boolean
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_query_tags:
+      name: tag
+      in: query
+      description: Query tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformQueryTag'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: QueryTags
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_notification_destination_id:
+      in: path
+      name: notification_destination_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformNotificationDestinationID'
+    platform_query_id:
+      in: path
+      name: query_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformQueryID'
+      x-go-name: QueryID
+    platform_alert_states:
+      name: state
+      in: query
+      description: Alert states
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformAlertState'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: AlertStates
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

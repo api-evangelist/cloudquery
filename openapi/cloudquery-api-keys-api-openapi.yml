@@ -1,0 +1,433 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin api-keys API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: api-keys
+paths:
+  /apikeys:
+    get:
+      description: List all API Keys
+      operationId: PlatformListAPIKeys
+      tags:
+      - api-keys
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                - allowed_roles
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformAPIKey'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+                  allowed_roles:
+                    description: List of allowed roles when creating a new API key
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformRole'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Create new API Key.
+      operationId: PlatformCreateAPIKey
+      tags:
+      - api-keys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - expires_at
+              - name
+              properties:
+                name:
+                  $ref: '#/components/schemas/PlatformAPIKeyName'
+                expires_at:
+                  type: string
+                  format: date-time
+                roles:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PlatformRoleID'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAPIKey'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /apikeys/{apikey_id}:
+    delete:
+      description: Delete API Key. This will remove any future access by this API Key.
+      operationId: PlatformDeleteAPIKey
+      tags:
+      - api-keys
+      parameters:
+      - $ref: '#/components/parameters/platform_apikey_id'
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+components:
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformRoleID:
+      description: The unique ID for the role.
+      type: string
+      format: uuid
+      x-go-name: RoleID
+    PlatformRole:
+      type: object
+      description: Role
+      required:
+      - id
+      - name
+      - description
+      - permissions
+      - created_by
+      - created_at
+      - updated_at
+      - type
+      properties:
+        id:
+          description: The unique ID for the role.
+          type: string
+          format: uuid
+          x-go-name: ID
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermission'
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        type:
+          $ref: '#/components/schemas/PlatformRoleType'
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
+    PlatformAPIKeyID:
+      description: ID of the API key
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: APIKeyID
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+    PlatformRBACPermission:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      - number_of_affected_roles
+      - number_of_affected_users
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformRBACPermissionID'
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        number_of_affected_roles:
+          type: integer
+        number_of_affected_users:
+          type: integer
+    PlatformAPIKey:
+      description: API Key to interact with CloudQuery Platform
+      type: object
+      required:
+      - id
+      - name
+      - expires_at
+      - expired
+      - roles
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformAPIKeyName'
+        created_by:
+          type: string
+          example: user@example.com
+          description: email of the user that created the API key
+        id:
+          $ref: '#/components/schemas/PlatformAPIKeyID'
+        key:
+          type: string
+          description: API key. Will be shown only in the response when creating the key.
+          example: 1234567890abcdef1234567890abcdef
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+        expires_at:
+          type: string
+          description: Timestamp at which API key will stop working
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+        last_access_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+          description: Timestamp at which API key was last used - accurate to the day only.
+        expired:
+          type: boolean
+          description: Whether the API key has expired or not
+          example: false
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRole'
+    PlatformRoleType:
+      type: string
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+    PlatformAPIKeyName:
+      description: Name of the API key
+      type: string
+      example: cli-api-key
+      maxLength: 255
+      minLength: 1
+      pattern: ^(?:[a-zA-Z0-9][a-zA-Z0-9- ]*)?[a-zA-Z0-9]$
+      x-pattern-message: can contain only letters, numbers, spaces, and hyphens, starting and ending with a letter or number
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_apikey_id:
+      name: apikey_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformAPIKeyID'
+      x-go-name: APIKeyID
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

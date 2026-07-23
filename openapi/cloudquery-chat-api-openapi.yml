@@ -1,0 +1,809 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin chat API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: chat
+paths:
+  /agent-chat:
+    post:
+      operationId: PlatformAgentChat
+      summary: Send a message to the AI agent orchestrator
+      description: Sends a user message to the multi-agent orchestrator for processing. The orchestrator plans and executes actions across domain-specific agents (exploration, summary, remediation, policy, integration) and returns a summarized response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformAgentChatRequest'
+      responses:
+        '200':
+          description: Agent response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentChatResponse'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /agent-chat/{session_id}:
+    get:
+      operationId: PlatformGetAgentChatSession
+      summary: Get the persisted history of an agent conversation session
+      description: Returns the conversation turns persisted on the backend for the given session_id, in ascending order. Used by the frontend to recover the response when the original POST /agent-chat call was cancelled (e.g. an HTTP timeout) before the agent service finished producing its answer. The agent service keeps running in the background and persists the turn even after the original caller disconnects, so a subsequent GET surfaces that result. Unknown session ids return 200 with an empty `turns` list rather than 404, so callers can poll uniformly while the response is still in flight. A 404 response is returned only when the AI assistant feature is disabled for the tenant (matching POST /agent-chat); it never indicates an unknown session.
+      parameters:
+      - in: path
+        name: session_id
+        required: true
+        description: The conversation session identifier.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Session history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentChatSessionHistory'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /agent/custom-contexts:
+    get:
+      description: List custom contexts for the current tenant
+      operationId: PlatformListAgentCustomContexts
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformAgentCustomContext'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+    post:
+      description: Create a new custom context for the agent
+      operationId: PlatformCreateAgentCustomContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformAgentCustomContextCreate'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentCustomContext'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '409':
+          $ref: '#/components/responses/PlatformConflict'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /agent/custom-contexts/{agent_custom_context_id}:
+    get:
+      description: Get a custom context by ID
+      operationId: PlatformGetAgentCustomContext
+      parameters:
+      - $ref: '#/components/parameters/platform_agent_custom_context_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentCustomContext'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+    put:
+      description: Update a custom context
+      operationId: PlatformUpdateAgentCustomContext
+      parameters:
+      - $ref: '#/components/parameters/platform_agent_custom_context_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformAgentCustomContextUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentCustomContext'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '409':
+          $ref: '#/components/responses/PlatformConflict'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+    delete:
+      description: Delete a custom context
+      operationId: PlatformDeleteAgentCustomContext
+      parameters:
+      - $ref: '#/components/parameters/platform_agent_custom_context_id'
+      responses:
+        '204':
+          description: Success
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /agent/custom-contexts/{agent_custom_context_id}/toggle-auto-include:
+    patch:
+      description: Toggle a custom context's auto_include flag
+      operationId: PlatformToggleAgentCustomContextAutoInclude
+      parameters:
+      - $ref: '#/components/parameters/platform_agent_custom_context_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAgentCustomContext'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /conversations:
+    post:
+      operationId: PlatformCreateConversation
+      summary: Start a new chat conversation
+      description: Create a new AI chat conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformConversationCreate'
+      responses:
+        '201':
+          description: Conversation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformConversation'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+  /conversations/{conversation_id}:
+    get:
+      operationId: PlatformGetConversation
+      summary: Retrieve a chat conversation
+      description: Get details of an existing AI chat conversation. Useful for polling for updates.
+      parameters:
+      - $ref: '#/components/parameters/platform_conversation_id'
+      responses:
+        '200':
+          description: Conversation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformConversation'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+    post:
+      operationId: PlatformSendMessage
+      summary: Add a message to an existing conversation
+      description: Send a new message to an existing AI chat conversation
+      parameters:
+      - $ref: '#/components/parameters/platform_conversation_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformConversationSendMessage'
+      responses:
+        '201':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformConversationMessage'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - chat
+components:
+  schemas:
+    PlatformAgentCustomContextCreate:
+      type: object
+      required:
+      - title
+      - body
+      properties:
+        title:
+          type: string
+          description: Short human-readable name for this custom context.
+        body:
+          type: string
+          description: The context text that is injected into the agent planner's system prompt.
+        auto_include:
+          type: boolean
+          default: false
+          description: When true, this context is always included in agent requests regardless of the caller's per-session selection.
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformAgentCustomContext:
+      type: object
+      required:
+      - id
+      - title
+      - body
+      - auto_include
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformAgentCustomContextID'
+        title:
+          type: string
+          description: Short human-readable name for this custom context.
+        body:
+          type: string
+          description: The context text that is injected into the agent planner's system prompt.
+        auto_include:
+          type: boolean
+          description: When true, this context is always included in agent requests regardless of the caller's per-session selection.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PlatformAgentChatSessionHistory:
+      description: The persisted history of an agent conversation session.
+      type: object
+      required:
+      - session_id
+      - turns
+      properties:
+        session_id:
+          type: string
+        turns:
+          type: array
+          description: All turns persisted for this session, ordered by sequence ascending. Empty when the session has no turns (or does not exist).
+          items:
+            $ref: '#/components/schemas/PlatformAgentChatSessionTurn'
+    PlatformAgentChatSessionTurn:
+      description: A single persisted turn in an agent conversation session.
+      type: object
+      required:
+      - role
+      - content
+      - created_at
+      properties:
+        role:
+          type: string
+          description: Either "user" or "assistant".
+        content:
+          type: string
+          description: For user turns, the user's message. For assistant turns, the final summary text (or canned refusal message when refused is true).
+        created_at:
+          type: string
+          format: date-time
+        plan:
+          $ref: '#/components/schemas/PlatformAgentChatExecutionPlan'
+        step_results:
+          type: array
+          description: Step outcomes from the execution plan. Absent on user turns and refused turns.
+          items:
+            $ref: '#/components/schemas/PlatformAgentChatStepResult'
+        total_tokens:
+          type: integer
+          description: Tokens consumed when producing this assistant turn. Zero on user turns and refused turns.
+        total_latency_ms:
+          type: integer
+          format: int64
+          description: Wall-clock latency of the original request that produced this assistant turn.
+        warning:
+          type: string
+          description: Token-budget warning that was surfaced on this assistant turn, if any.
+        refused:
+          type: boolean
+          description: True when this assistant turn is the canned refusal from the scope-check guardrail.
+        refusal_reason:
+          type: string
+          description: Machine-friendly refusal reason; populated when refused is true.
+        latest:
+          type: boolean
+          description: True on the most recently persisted turn in the session (regardless of role). At most one turn per response has this set.
+    PlatformConversationSendMessage:
+      title: Conversation Send Message
+      type: object
+      description: Send a message in a conversation
+      additionalProperties: false
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          example: Help me find all EC2 instances with open ports
+          description: The message content to be sent
+        query_context:
+          type: string
+          example: SELECT * FROM ec2_instances WHERE open_ports IS NOT NULL
+          default: ''
+          description: Optional context for the message, such as the current SQL query being edited
+        mode:
+          type: string
+          description: The mode of the conversation, which can influence the behavior of the AI.
+          default: sql
+          enum:
+          - ask
+          - sql
+    PlatformAgentCustomContextUpdate:
+      type: object
+      required:
+      - title
+      - body
+      - auto_include
+      properties:
+        title:
+          type: string
+          description: Short human-readable name for this custom context.
+        body:
+          type: string
+          description: The context text that is injected into the agent planner's system prompt.
+        auto_include:
+          type: boolean
+          description: When true, this context is always included in agent requests regardless of the caller's per-session selection.
+    PlatformConversationMessage:
+      type: object
+      required:
+      - id
+      - role
+      - content
+      - created_at
+      - message_type
+      - end_turn
+      - mode
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the message
+          x-go-name: ID
+        role:
+          type: string
+          enum:
+          - user
+          - assistant
+          - system
+          description: Role of the message sender
+        content:
+          type: string
+          description: Content of the message. In the case of tool use or tool result, this will contain JSON data.
+        query_context:
+          type: string
+          description: The current query context when the message was sent, if applicable
+        message_type:
+          type: string
+          enum:
+          - error
+          - message
+          - tool_use
+          - tool_result
+          description: Type of the message content
+        created_at:
+          type: string
+          format: date-time
+        end_turn:
+          type: boolean
+          description: Whether this message ends the conversation turn
+          default: false
+        mode:
+          type: string
+          description: The mode of the conversation when this message was sent, which can influence the behavior of the AI.
+          default: sql
+          enum:
+          - ask
+          - sql
+    PlatformAgentChatStepResult:
+      description: Outcome of executing a single plan step.
+      type: object
+      properties:
+        step:
+          $ref: '#/components/schemas/PlatformAgentChatPlanStep'
+        output:
+          $ref: '#/components/schemas/PlatformAgentChatOutput'
+        error:
+          type: string
+        duration_ms:
+          type: integer
+          format: int64
+        tokens_used:
+          type: integer
+    PlatformAgentChatOutputType:
+      description: 'The data type of an agent chat output. Determines which payload field is
+
+        populated on `AgentChatOutput` and how the frontend should render the value.
+
+
+        - `query`  — SQL string in `data_str`
+
+        - `table`  — `{cols, rows, total_rows?, query?}` in `data_obj`
+
+        - `string` — plain text / markdown in `data_str`
+
+        - `object` — freeform structured record in `data_obj`
+
+        '
+      type: string
+      example: table
+      enum:
+      - query
+      - table
+      - string
+      - object
+    PlatformAgentChatOutput:
+      description: "A single structured output returned by an agent step. The `type` field\ndetermines which of `data_str` / `data_obj` is populated and how the\nfrontend should render the payload.\n\nPer-type payload conventions:\n\n- `query`   — `data_str` contains a SQL query string (ClickHouse dialect).\n              Returned when an action produced SQL but did not execute it\n              (e.g. exploration.execute_query with data access disabled,\n              or any flow where the user asked for \"just the query\").\n- `table`   — `data_obj` is `{cols: string[], rows: any[][], total_rows?: number, query?: string}`.\n              Returned for tabular data. `query` optionally carries the SQL\n              that produced the rows.\n- `string`  — `data_str` contains plain text or markdown. Used for prose\n              output like diagnose_sync narratives and simple confirmations.\n- `object`  — `data_obj` is a freeform structured record. The exact shape\n              depends on the action and usually mirrors an existing domain\n              schema. The per-action payloads currently produced are:\n\n\n    | Agent | Action | `data_obj` shape |\n    |-------|--------|------------------|\n    | exploration | `check_syntax` | `{valid: bool, error?: string}` |\n    | exploration | `explain_table` | `{table_name, found, plugin?, title?, docs_url?, description?}` |\n    | exploration | `search_tables` | `{keywords, plugin?, total_matches, returned, tables: [{table_name, plugin, title?, description?}]}` |\n    | summary | `policy_metrics` | `PolicyMetrics` |\n    | summary | `environment_overview` | `{synced_table_count, sync_count, syncs_by_status, policy_metrics?}` |\n    | remediation | `get_violations` | `{policy_id, policy_name, domain, severity, query_sql, total_violations, columns, rows}` |\n    | remediation | `get_policy_context` | `{policy_id, policy_name, description, domain, severity, query_sql, last_evaluated_at?, violation_count, sample_violations}` |\n    | policy | `get_policy` | `{id, name, domain, severity, description, query_id, team_name, created_at, updated_at}` |\n    | policy | `create_policy` | `{policy_id}` |\n    | policy | `update_policy` | `{id, name, domain, severity, description, updated_at}` |\n    | policy | `create_policy_group` | `{group_id}` |\n    | integration | `get_sync` | `ExpandedSync` (sync metadata + source/destinations/transformers) |\n    | integration | `get_sync_run` | `{id, status, status_reason?, total_rows, warnings, errors, created_at, completed_at?}` |\n    | integration | `create_sync` | `{sync_name}` |\n    | integration | `diagnose_sync` | `{sync_name, source_plugin, failed_run_count, total_run_count, failure_patterns}` |\n\n\nTransport / execution failures (agent unreachable, action returned a Go error, etc.) are surfaced via `step_results[].error` rather than as an `AgentChatOutput`.\n"
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/PlatformAgentChatOutputType'
+        data_str:
+          type: string
+          description: Populated for type=query, string.
+        data_obj:
+          type: object
+          description: Populated for type=table, object. Shape is documented per-action.
+    PlatformAgentCustomContextID:
+      description: The unique ID for the agent custom context.
+      type: string
+      format: uuid
+      x-go-name: AgentCustomContextID
+    PlatformAgentChatExecutionPlan:
+      description: The agent orchestrator's execution plan, assembled from the tool-use trajectory.
+      type: object
+      properties:
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformAgentChatPlanStep'
+    PlatformAgentChatRequest:
+      type: object
+      required:
+      - message
+      properties:
+        session_id:
+          type: string
+          description: Optional session ID to continue an existing session. If omitted, a new session is created.
+        message:
+          type: string
+          description: The user message to send to the agent orchestrator.
+        custom_context_ids:
+          type: array
+          description: Optional list of custom context IDs to inject into the agent planner's system prompt for this request. Contexts marked auto_include are always included regardless of this list. Unknown IDs are silently skipped.
+          items:
+            type: string
+            format: uuid
+        app_id:
+          type: string
+          format: uuid
+          description: Optional app ID to scope the agent's queries to. When set, the agent restricts resource-table queries to resources tagged for this app (via a WHERE clause against the app_memberships table). See docs/apps-topology-principle.md for the architectural framing.
+    PlatformConversation:
+      type: object
+      required:
+      - id
+      - messages
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the conversation
+          x-go-name: ID
+        title:
+          type: string
+          description: Optional title of the conversation
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformConversationMessage'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformAgentChatResponse:
+      type: object
+      required:
+      - session_id
+      - summary
+      - total_latency_ms
+      - total_tokens
+      properties:
+        session_id:
+          type: string
+          description: The session ID for this conversation. Use this to continue the session in subsequent requests.
+        plan:
+          $ref: '#/components/schemas/PlatformAgentChatExecutionPlan'
+        step_results:
+          type: array
+          description: Results from each executed step.
+          items:
+            $ref: '#/components/schemas/PlatformAgentChatStepResult'
+        summary:
+          type: string
+          description: LLM-generated summary of the agent results.
+        total_latency_ms:
+          type: integer
+          format: int64
+          description: Total request latency in milliseconds.
+        total_tokens:
+          type: integer
+          description: Total tokens consumed across all LLM calls.
+        warning:
+          type: string
+          description: Optional warning message indicating token budget or daily limit exceeded. Present only when a limit was exceeded.
+        refused:
+          type: boolean
+          description: True when the agent's scope-check guardrail rejected the request as out of scope (off-topic or mixed off-topic) or when the guardrail itself errored and the request was failed-closed. When true, plan and step_results are absent and summary is the canned refusal message.
+        refusal_reason:
+          type: string
+          description: Short machine-friendly reason populated when refused is true. Either the classifier's reason (e.g. "mixed_off_topic") or "scope_check_error" when the guardrail itself failed.
+    PlatformConversationCreate:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: The initial message to start the conversation.
+        current_query:
+          type: string
+          description: An optional current query to provide context for the conversation.
+        mode:
+          type: string
+          description: The mode of the conversation, which can influence the behavior of the AI.
+          default: sql
+          enum:
+          - ask
+          - sql
+    PlatformAgentChatPlanStep:
+      description: A single step in the agent orchestrator's execution plan.
+      type: object
+      properties:
+        step:
+          type: integer
+          description: 1-based step number.
+        agent_name:
+          type: string
+        action:
+          type: string
+        input:
+          type: string
+          description: Raw JSON-encoded input the planner produced for this step (e.g. {"table_name":"aws_ec2_instances"} or {"sql":"SELECT ..."}). Surfaced for traceability when a step fails — lets operators see exactly what the LLM asked an agent to do.
+        reasoning:
+          type: string
+        depends_on:
+          type: array
+          description: Step numbers this step depends on. Populated on plan.steps[]; absent on step_results[].step (where the same shape is reused for traceability).
+          items:
+            type: integer
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformConflict:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Conflict
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_agent_custom_context_id:
+      in: path
+      name: agent_custom_context_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformAgentCustomContextID'
+      x-go-name: AgentCustomContextID
+    platform_conversation_id:
+      name: conversation_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: ID of the chat conversation
+      x-go-name: ConversationID
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

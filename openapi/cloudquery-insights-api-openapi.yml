@@ -1,0 +1,1457 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin insights API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: insights
+paths:
+  /insights:
+    get:
+      description: List insights with optional filtering
+      operationId: PlatformListPlatformInsights
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in title, evidence (description), mitigation, or related fields
+      - name: severities
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        style: form
+        explode: true
+        description: Filter by severities (any match)
+      - name: cloud
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by cloud
+      - name: account
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account (repeat for multiple values, OR)
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region
+      - name: insight_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by insight category (repeat for multiple values, OR)
+      - name: source_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source category (repeat for multiple values, OR)
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source (repeat for multiple values, OR)
+      - name: resource_types
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource types
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (any match)
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - title
+          - severity
+          - insight_category
+          - source_category
+          - account
+          - source
+          - resource_types
+          - resources_count
+          - accounts_count
+          - created_at
+          - detected_at
+          default: detected_at
+        description: Field to sort by
+      - name: sort_dir
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort direction
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInsight'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformInsightsListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/columns/{column_name}/distinct-values:
+    get:
+      description: 'Get the candidate values for the next filter dimension (`column_name`), given the current active filters. The supplied filter parameters represent where the user currently is in the filter matrix; only values for `column_name` that would yield at least one insight when added to that current position are returned. Values that would produce zero results are omitted, preventing the user from navigating to an empty state.
+
+        The filter parameter corresponding to `column_name` is always ignored when computing candidates — asking "which severities exist where severity=X" is self-referential and nonsensical. For example, if `column_name=severity` then any `severities` filter in the request is not applied; if `column_name=source` then any `source` filter is not applied; and so on. This ensures the full set of viable values for that dimension is always returned given the other active filters.
+
+        When `owner_tag` is specified (e.g., "team", "department"), this endpoint returns distinct values for that specific ownership tag key, ignoring the `column_name` parameter. The corresponding tags filter for this owner key is ignored to prevent self-referential queries.
+
+        When querying for `column_name=tag` without `owner_tag`, ownership tags configured in platform settings are automatically excluded from results.'
+      operationId: PlatformGetPlatformInsightColumnDistinctValues
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_insight_column_name'
+      - name: owner_tag
+        in: query
+        required: false
+        schema:
+          type: string
+        description: When specified, returns distinct values for this ownership tag key (e.g., "team", "department"). The column_name parameter is ignored when owner_tag is provided.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in title, evidence (description), mitigation, or related fields
+      - name: severities
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        style: form
+        explode: true
+        description: Filter by severities (any match)
+      - name: cloud
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by cloud
+      - name: account
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account (repeat for multiple values, OR)
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region
+      - name: insight_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by insight category (repeat for multiple values, OR)
+      - name: source_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source category (repeat for multiple values, OR)
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source (repeat for multiple values, OR)
+      - name: resource_types
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource types
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (any match)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - values
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/saved-filters:
+    get:
+      description: List saved insight filters
+      operationId: PlatformListInsightFilters
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - name: search_term
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in filter name or description
+      - name: insight_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by insight category
+      - name: severities
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        style: form
+        explode: true
+        description: Filter by severities (any match)
+      - name: resource_types
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource types
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source
+      - name: source_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source category
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (any match)
+      - name: group_by
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by group by fields
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInsightFilter'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+    post:
+      description: Create a new saved insight filter
+      operationId: PlatformCreateInsightFilter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformInsightFilterCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsightFilter'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/saved-filters/{insight_filter_id}:
+    get:
+      description: Get a saved insight filter by ID
+      operationId: PlatformGetInsightFilterByID
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_filter_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsightFilter'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+    patch:
+      description: Update a saved insight filter
+      operationId: PlatformUpdateInsightFilter
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_filter_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformInsightFilterUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsightFilter'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+    delete:
+      description: Delete a saved insight filter
+      operationId: PlatformDeleteInsightFilter
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_filter_id'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/{insight_id}:
+    get:
+      description: Get insight by ID
+      operationId: PlatformGetPlatformInsight
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_id'
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in asset name, account, region, etc.
+      - name: accounts
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account IDs
+      - name: clouds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)
+      - name: regions
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by regions
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource type
+      - name: instance_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (key:value strings; all pairs must match)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsight'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/{insight_id}/assets:
+    get:
+      description: List assets affected by an insight
+      operationId: PlatformGetPlatformInsightAssets
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_id'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in asset name, account, region, etc.
+      - name: accounts
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account IDs
+      - name: clouds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)
+      - name: regions
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by regions
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource type
+      - name: instance_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (key:value strings; all pairs must match)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformPolicyViolation'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/assets/columns/{column_name}/distinct-values:
+    get:
+      description: 'Get candidate values for the next filter dimension (`column_name`) for assets listed under an insight, given the current active filters. The supplied filter parameters represent where the user is in the filter matrix; only values for `column_name` that would yield at least one matching asset row when added to that position are returned.
+
+        The filter parameter corresponding to `column_name` is always ignored when computing candidates (no self-filtering).
+
+        When querying for `column_name=tag`, ownership tag keys configured in platform settings are excluded from results, matching the insights list filter behavior.
+
+        `instance-type` values are read from `additional_properties.instance_type` on each row.'
+      operationId: PlatformGetPlatformInsightAssetColumnDistinctValues
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_insight_asset_column_name'
+      - name: insight_id
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/PlatformInsightID'
+        description: Insight whose affected assets are being filtered.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in title, description, or mitigation (same as asset list).
+      - name: accounts
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account IDs
+      - name: clouds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by cloud providers
+      - name: regions
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by regions
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource type
+      - name: instance_type
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by instance type (from additional_properties.instance_type)
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (any match)
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - values
+                properties:
+                  values:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+  /insights/assets/{asset_id}:
+    get:
+      description: List insights for a specific asset (by _cq_platform_id)
+      operationId: PlatformGetPlatformAssetInsights
+      parameters:
+      - $ref: '#/components/parameters/platform_asset_id'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in asset name, account, region, etc.
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - title
+          - severity
+          - insight_category
+          - source_category
+          - account
+          - source
+          - resource_types
+          - resources_count
+          - accounts_count
+          - created_at
+          - detected_at
+          default: detected_at
+        description: Field to sort by
+      - name: sort_dir
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Sort direction
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInsight'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - insights
+components:
+  schemas:
+    PlatformInsightFilterCreate:
+      title: Insight Filter Create
+      type: object
+      description: Definition for creating a new saved insight filter
+      additionalProperties: false
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: My Saved Security Filter
+        description:
+          type: string
+          example: Filters for critical security insights in AWS
+        search:
+          type: string
+          example: s3 bucket
+        insight_category:
+          type: array
+          items:
+            type: string
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        resource_types:
+          type: array
+          items:
+            type: string
+        source:
+          type: array
+          items:
+            type: string
+        source_category:
+          type: array
+          items:
+            type: string
+        clouds:
+          type: array
+          items:
+            type: string
+        accounts:
+          type: array
+          items:
+            type: string
+        regions:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ownership_tags:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Ownership tag filters keyed by tag name
+          example:
+            team:
+            - engineering
+            - platform
+            org:
+            - cloud
+        group_by:
+          type: array
+          items:
+            type: string
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformInsight:
+      title: Insight
+      type: object
+      description: Security or compliance insight summary
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - severity
+      - insight_category
+      - source
+      - source_category
+      - resource_types
+      - resources_count
+      - accounts_count
+      - created_at
+      - detected_at
+      - last_synced_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformInsightID'
+        title:
+          type: string
+          description: Title of the insight
+        evidence:
+          type: string
+          description: Detailed evidence (description) of the insight (Markdown)
+        mitigation:
+          type: string
+          description: Mitigation steps for the insight (Markdown)
+        severity:
+          $ref: '#/components/schemas/PlatformInsightSeverity'
+        insight_category:
+          type: string
+          description: Category (e.g. Security, FinOps)
+        source:
+          type: string
+          description: Source (e.g. Platform, Wiz, Lacework)
+        source_category:
+          type: string
+          description: Source category (e.g. Platform, Third Party, Custom)
+        subcategory:
+          type: string
+          nullable: true
+        resource_types:
+          type: string
+          description: Resource types affected
+        resources_count:
+          type: integer
+          format: int64
+          description: Number of resources affected
+        accounts_count:
+          type: integer
+          format: int64
+          description: Number of accounts affected
+        additional_properties:
+          type: object
+          description: Insight-specific metadata summed for all affected resources (e.g. cost insight fields).
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the insight
+        created_at:
+          type: string
+          format: date-time
+          description: When the insight record was created
+        detected_at:
+          type: string
+          format: date-time
+          description: When the insight was first detected
+        last_synced_at:
+          type: string
+          format: date-time
+          description: When the insight was last synced
+    PlatformInsightID:
+      description: Unique identifier for the insight
+      type: string
+      x-go-name: InsightID
+    PlatformPolicyViolation:
+      title: Policy Violation
+      type: object
+      description: Policy violation resource information
+      additionalProperties: false
+      required:
+      - cloud
+      - resource_type_label
+      - _cq_account_name
+      - name
+      - region
+      - _cq_platform_id
+      properties:
+        cloud:
+          type: string
+          example: aws
+        resource_type_label:
+          type: string
+          example: EC2 Instance
+        _cq_account_name:
+          type: string
+          example: my-account
+        name:
+          type: string
+          example: my-resource
+        region:
+          type: string
+          example: us-east-1
+        _cq_platform_id:
+          type: string
+          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource (e.g. for insights)
+        additional_properties:
+          type: object
+          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
+          additionalProperties: true
+    PlatformInsightSeverity:
+      description: Insight severity level
+      type: string
+      enum:
+      - Low
+      - Medium
+      - High
+      - Critical
+      x-go-name: InsightSeverity
+    PlatformTableRowID:
+      description: ID of the Resource
+      type: string
+      example: table_12345678-1234-1234-1234-1234567890ab
+    PlatformInsightsListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        resource_count:
+          type: integer
+        resource_types:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformInsightFilterUpdate:
+      title: Insight Filter Update
+      type: object
+      description: Definition for updating an existing saved insight filter
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        search:
+          type: string
+        insight_category:
+          type: array
+          items:
+            type: string
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        resource_types:
+          type: array
+          items:
+            type: string
+        source:
+          type: array
+          items:
+            type: string
+        source_category:
+          type: array
+          items:
+            type: string
+        clouds:
+          type: array
+          items:
+            type: string
+        accounts:
+          type: array
+          items:
+            type: string
+        regions:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ownership_tags:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Ownership tag filters keyed by tag name
+          example:
+            team:
+            - engineering
+            - platform
+            org:
+            - cloud
+        group_by:
+          type: array
+          items:
+            type: string
+    PlatformInsightFilter:
+      title: Insight Filter
+      type: object
+      description: Saved insight filter details
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+        name:
+          type: string
+          example: My Saved Security Filter
+        description:
+          type: string
+          example: Filters for critical security insights in AWS
+        search:
+          type: string
+          example: s3 bucket
+        insight_category:
+          type: array
+          items:
+            type: string
+          example:
+          - Security
+          - Compliance
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+          example:
+          - Critical
+          - High
+        resource_types:
+          type: array
+          items:
+            type: string
+          example:
+          - aws_s3_bucket
+          - aws_ec2_instance
+        source:
+          type: array
+          items:
+            type: string
+          example:
+          - Platform
+          - Wiz
+        source_category:
+          type: array
+          items:
+            type: string
+          example:
+          - Platform
+          - Third Party
+        clouds:
+          type: array
+          items:
+            type: string
+          example:
+          - aws
+          - azure
+        accounts:
+          type: array
+          items:
+            type: string
+          example:
+          - prod-account
+          - staging-account
+        regions:
+          type: array
+          items:
+            type: string
+          example:
+          - us-east-1
+          - eu-west-1
+        tags:
+          type: array
+          items:
+            type: string
+          example:
+          - production
+          - critical
+        ownership_tags:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Ownership tag filters keyed by tag name
+          example:
+            team:
+            - engineering
+            - platform
+            org:
+            - cloud
+        group_by:
+          type: array
+          items:
+            type: string
+          example:
+          - severity
+        user_id:
+          $ref: '#/components/schemas/PlatformUserID'
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformInsightFilterID:
+      description: The unique ID for the insight filter
+      type: string
+      format: uuid
+      x-go-name: InsightFilterID
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_insight_filter_id:
+      in: path
+      name: insight_filter_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightFilterID'
+      x-go-name: InsightFilterID
+    platform_insight_asset_column_name:
+      in: path
+      name: column_name
+      required: true
+      description: 'Filter dimension for distinct asset values. Allowed values: cloud, region, account, resource-type, instance-type, tag.'
+      schema:
+        type: string
+        enum:
+        - cloud
+        - region
+        - account
+        - resource-type
+        - instance-type
+        - tag
+      x-go-name: InsightAssetColumnName
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_insight_id:
+      in: path
+      name: insight_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightID'
+      x-go-name: InsightID
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_asset_id:
+      in: path
+      name: asset_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableRowID'
+      x-go-name: AssetID
+    platform_insight_column_name:
+      in: path
+      name: column_name
+      required: true
+      description: Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true.
+      schema:
+        type: string
+      x-go-name: InsightColumnName
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

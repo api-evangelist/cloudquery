@@ -1,0 +1,3872 @@
+openapi: 3.1.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
+
+    '
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec admin syncs API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: syncs
+paths:
+  /sync-destination-test-connections:
+    post:
+      description: Create a test destination connection.
+      operationId: PlatformCreateSyncDestinationTestConnection
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncDestinationTestConnectionCreate'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destination-test-connections/{sync_destination_test_connection_id}:
+    get:
+      description: Get a sync destination test connection.
+      operationId: PlatformGetSyncDestinationTestConnection
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationTestConnection'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a sync destination test connection.
+      operationId: PlatformUpdateSyncTestConnectionForSyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_test_connection_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+                failure_reason:
+                  type: string
+                  description: Reason for failure
+                  example: password authentication failed for user "exampleuser"
+                failure_code:
+                  example: INVALID_CREDENTIALS
+                  type: string
+                  description: Code for failure
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destination-test-connections/{sync_destination_test_connection_id}/logs/query:
+    get:
+      description: Get logs for a sync destination test connection.
+      operationId: PlatformGetSyncDestinationTestConnectionLogsQuery
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_destination_test_connection_id'
+      - $ref: '#/components/parameters/platform_table_filters'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_download_file'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - data
+                - metadata
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PlatformTableData'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+            text/plain:
+              schema:
+                type: string
+                description: Download file.
+        '204':
+          description: No logs available for a test connection that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destination-test-connections/{sync_destination_test_connection_id}/logs/live:
+    get:
+      description: Get live logs for a sync destination test connection.
+      operationId: PlatformGetSyncDestinationTestConnectionLogsLive
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_destination_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Chunked response logs for a test connection that is in progress.
+        '204':
+          description: No logs available for a test connection that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destination-test-connections/{sync_destination_test_connection_id}/promote:
+    post:
+      description: Promote a sync destination test connection to a sync destination.
+      operationId: PlatformPromoteSyncDestinationTestConnection
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_test_connection_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPromoteSyncDestinationTestConnection'
+      responses:
+        '200':
+          description: Successful response indicating that an existing sync destination was replaced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestination'
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestination'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destinations:
+    get:
+      description: List all sync destination definitions.
+      operationId: PlatformListSyncDestinations
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_sync_generic_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncDestination'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destinations/{sync_destination_name}:
+    get:
+      description: Get a single sync destination definition.
+      operationId: PlatformGetSyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestination'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a Sync Destination definition.
+      operationId: PlatformUpdateSyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncDestinationUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestination'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first.
+      operationId: PlatformDeleteSyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destinations/{sync_destination_name}/syncs:
+    get:
+      description: List all Syncs for a given sync destination.
+      operationId: PlatformListSyncDestinationSyncs
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_migration_filter'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformListSync'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-destinations/{sync_destination_name}/test-connections/{sync_test_connection_id}:
+    get:
+      description: Get test connection details for sync destination.
+      operationId: PlatformGetTestConnectionForSyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      - $ref: '#/components/parameters/platform_sync_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-source-test-connections:
+    post:
+      description: Create a test source connection.
+      operationId: PlatformCreateSyncSourceTestConnection
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncSourceTestConnectionCreate'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSourceTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-source-test-connections/{sync_source_test_connection_id}:
+    get:
+      description: Get a sync source test connection.
+      operationId: PlatformGetSyncSourceTestConnection
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSourceTestConnection'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a sync source test connection.
+      operationId: PlatformUpdateSyncTestConnectionForSyncSource
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_test_connection_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+                failure_reason:
+                  type: string
+                  description: Reason for failure
+                  example: password authentication failed for user "exampleuser"
+                failure_code:
+                  example: INVALID_CREDENTIALS
+                  type: string
+                  description: Code for failure
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSourceTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-source-test-connections/{sync_source_test_connection_id}/logs/query:
+    get:
+      description: Get logs for a sync source test connection.
+      operationId: PlatformGetSyncSourceTestConnectionLogsQuery
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_source_test_connection_id'
+      - $ref: '#/components/parameters/platform_table_filters'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_download_file'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - data
+                - metadata
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PlatformTableData'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+            text/plain:
+              schema:
+                type: string
+                description: Download file.
+        '204':
+          description: No logs available for a test connection that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-source-test-connections/{sync_source_test_connection_id}/logs/live:
+    get:
+      description: Get live logs for a sync source test connection.
+      operationId: PlatformGetSyncSourceTestConnectionLogsLive
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_source_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Chunked response logs for a test connection that is in progress.
+        '204':
+          description: No logs available for a test connection that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-source-test-connections/{sync_source_test_connection_id}/promote:
+    post:
+      description: Promote a sync source test connection to a sync source.
+      operationId: PlatformPromoteSyncSourceTestConnection
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_test_connection_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPromoteSyncSourceTestConnection'
+      responses:
+        '200':
+          description: Successful response indicating that an existing sync source was replaced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSource'
+        '201':
+          description: Successful response indicating that a new sync source was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSource'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-integration-test-connections:
+    post:
+      description: Create an integration test connection.
+      operationId: PlatformCreateV2SyncIntegrationTestConnection
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncIntegrationTestConnectionCreateV2'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncIntegrationTestConnectionV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-integrations:
+    get:
+      description: List sync integrations
+      operationId: PlatformListV2SyncIntegrations
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncIntegrationExpandedV2'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Create a new integration associated with a completed test connection
+      operationId: PlatformCreateV2SyncIntegration
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncIntegrationCreateV2'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncIntegrationV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-integrations/{sync_name}:
+    get:
+      description: Get a sync integration by name
+      operationId: PlatformGetV2SyncIntegration
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncIntegrationExpandedV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update attributes of an integration
+      operationId: PlatformUpdateV2SyncIntegration
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncIntegrationUpdateV2'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncIntegrationV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete an integration
+      operationId: PlatformDeleteV2SyncIntegration
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - name: delete_data
+        description: If true, also delete data associated with this integration from the relevant destinations.
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-sources:
+    get:
+      description: List all sync source definitions.
+      operationId: PlatformListSyncSources
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_sync_generic_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncSource'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-sources/{sync_source_name}:
+    get:
+      description: Get a single sync source definition.
+      operationId: PlatformGetSyncSource
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSource'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a Sync Source definition.
+      operationId: PlatformUpdateSyncSource
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_name'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncSourceUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncSource'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete a Sync Source definition. Any syncs relying on this source must be deleted first.
+      operationId: PlatformDeleteSyncSource
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_name'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-sources/{sync_source_name}/syncs:
+    get:
+      description: List all Syncs for a given sync source.
+      operationId: PlatformListSyncSourceSyncs
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_name'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_migration_filter'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformListSync'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-sources/{sync_source_name}/test-connections/{sync_test_connection_id}:
+    get:
+      description: Get test connection details for sync source.
+      operationId: PlatformGetTestConnectionForSyncSource
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_source_name'
+      - $ref: '#/components/parameters/platform_sync_test_connection_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncTestConnection'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-transformers:
+    get:
+      description: List all sync transformer definitions.
+      operationId: PlatformListSyncTransformers
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_sync_generic_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncTransformer'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-transformers/{sync_transformer_name}:
+    get:
+      description: Get a single sync transformer definition.
+      operationId: PlatformGetSyncTransformer
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_transformer_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncTransformer'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a Sync Transformer definition.
+      operationId: PlatformUpdateSyncTransformer
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_transformer_name'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncTransformerUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncTransformer'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete a Sync Transformer definition. Any syncs relying on this transformer must be deleted first.
+      operationId: PlatformDeleteSyncTransformer
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_transformer_name'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-transformers/{sync_transformer_name}/syncs:
+    get:
+      description: List all Syncs for a given sync transformer.
+      operationId: PlatformListSyncTransformerSyncs
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_transformer_name'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSync'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-transformers/{sync_transformer_name}/sync-destinations:
+    get:
+      description: List all Sync Destinations for a given sync transformer.
+      operationId: PlatformListSyncTransformerSyncDestinations
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_transformer_name'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncDestination'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /sync-upgrades:
+    get:
+      description: List all version upgrades for syncs
+      operationId: PlatformListSyncUpgrades
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_upgrades_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      - $ref: '#/components/parameters/platform_sync_upgrades_path_filter'
+      - $ref: '#/components/parameters/platform_sync_upgrades_kind_filter'
+      - $ref: '#/components/parameters/platform_sync_upgrades_platform_version_filter'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncUpgrade'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs:
+    get:
+      description: List all Syncs.
+      operationId: PlatformListSyncs
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_migration_filter'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformListSync'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Create new Sync definition. Sync runs can be scheduled automatically, or triggered manually after sync is created.
+      operationId: PlatformCreateSync
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncCreate'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSync'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}:
+    get:
+      description: Get a Sync
+      operationId: PlatformGetSync
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSync'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a Sync
+      operationId: PlatformUpdateSync
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSync'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete Sync. This will delete Sync configuration and all associated sync runs, but will not delete the associated source and destination(s). These will need to be deleted separately.
+      operationId: PlatformDeleteSync
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs:
+    get:
+      description: List all Sync Runs.
+      operationId: PlatformListSyncRuns
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_migration_filter'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncRun'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Create new SyncRun. This will trigger a manual job run.
+      operationId: PlatformCreateSyncRun
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncRun'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs/{sync_run_id}:
+    get:
+      description: Get a Sync Run.
+      operationId: PlatformGetSyncRun
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncRunDetails'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a SyncRun
+      operationId: PlatformUpdateSyncRun
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/PlatformSyncRunStatus'
+                status_reason:
+                  $ref: '#/components/schemas/PlatformSyncRunStatusReason'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncRun'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs/{sync_run_id}/logs/query:
+    get:
+      description: Get logs for a sync run.
+      operationId: PlatformGetSyncRunLogsQuery
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      - $ref: '#/components/parameters/platform_table_filters'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_download_file'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - data
+                - metadata
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PlatformTableData'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+            text/plain:
+              schema:
+                type: string
+                description: Download file.
+        '204':
+          description: No logs available for a test connection that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs/{sync_run_id}/logs/live:
+    get:
+      description: Get live logs for a sync run.
+      operationId: PlatformGetSyncRunLogsLive
+      tags:
+      - syncs
+      parameters:
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      - in: query
+        name: table
+        required: false
+        schema:
+          type: string
+          description: Table name to filter logs by. Use a single dash ("-") as input to exclude all table-specific log lines.
+      responses:
+        '200':
+          description: Response
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Chunked response logs for a sync run that is in progress.
+        '204':
+          description: No logs available for a sync run that has not started.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs/{sync_run_id}/stats:
+    get:
+      description: Get statistics on a Sync Run
+      operationId: PlatformGetSyncRunStats
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncRunStats'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /syncs/{sync_name}/runs/{sync_run_id}/tables:
+    get:
+      description: Get table details on a Sync Run
+      operationId: PlatformGetSyncRunTables
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_name'
+      - $ref: '#/components/parameters/platform_sync_run_id'
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_run_table_sort_bys'
+      - $ref: '#/components/parameters/platform_table_sort_dirs'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncRunTableStat'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-destination-test-connections:
+    post:
+      description: Create a test destination connection.
+      operationId: PlatformCreateV2SyncDestinationTestConnection
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformCreateSyncDestinationTestConnectionV2'
+      responses:
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationTestConnectionV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-destinations:
+    post:
+      description: Create sync destination based on test connection.
+      operationId: PlatformCreateV2SyncDestination
+      tags:
+      - syncs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformCreateSyncDestinationV2'
+      responses:
+        '200':
+          description: Successful response indicating that an existing sync destination was replaced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationV2'
+        '201':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationV2'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    get:
+      description: List all sync destination definitions.
+      operationId: PlatformGetV2SyncDestinations
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_sync_name_filter'
+      - $ref: '#/components/parameters/platform_sync_generic_sort_bys'
+      - $ref: '#/components/parameters/platform_sync_sort_dirs'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformSyncDestinationV2'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /v2/sync-destinations/{sync_destination_name}:
+    get:
+      description: Get a single sync destination definition.
+      operationId: PlatformGetV2SyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestinationV2'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    patch:
+      description: Update a Sync Destination definition.
+      operationId: PlatformPatchV2SyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSyncDestinationUpdateV2'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSyncDestination'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    delete:
+      description: Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first.
+      operationId: PlatformDeleteV2SyncDestination
+      tags:
+      - syncs
+      parameters:
+      - $ref: '#/components/parameters/platform_sync_destination_name'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+components:
+  schemas:
+    PlatformPluginKind:
+      description: The kind of plugin, ie. source or destination.
+      type: string
+      example: source
+      enum:
+      - source
+      - destination
+      - transformer
+    PlatformSyncDestination:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncDestinationCreate'
+      - type: object
+        required:
+        - name
+        - display_name
+        - path
+        - version
+        - write_mode
+        - migrate_mode
+        - spec
+        - env
+        - created_at
+        - updated_at
+        - last_update_source
+        - draft
+        - transformers
+        properties:
+          created_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was created
+          updated_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was last updated
+          env:
+            description: Environment variables for the plugin.
+            type: array
+            items:
+              $ref: '#/components/schemas/PlatformSyncEnv'
+          draft:
+            type: boolean
+            description: If a sync destination is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
+          previous_version:
+            type: string
+            description: Previous version of the plugin during a version upgrade
+            example: v1.2.2
+    PlatformSyncIntegrationSourceUpdateV2:
+      description: Integration Definition
+      type: object
+      properties:
+        test_connection_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the test connection
+          x-go-name: TestConnectionID
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+    PlatformSyncEnv:
+      type: object
+      description: Environment variable. Environment variables are assumed to be secret.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the environment variable
+    PlatformPluginTier:
+      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
+      type: string
+      deprecated: true
+      enum:
+      - free
+      - paid
+      - open-core
+    PlatformSyncSortDirection:
+      title: SyncSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformOnboardingID:
+      description: ID of the cloud provider onboarding session
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: OnboardingID
+    PlatformSyncDestinationName:
+      type: string
+      example: my-destination-definition
+      description: Descriptive, unique name for the destination
+      pattern: ^[a-zA-Z0-9_-]+$
+      x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+      x-go-name: SyncDestinationNameField
+    PlatformSyncTestConnectionID:
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      description: unique ID of the test connection
+      x-go-name: ID
+    PlatformSyncRunTableStat:
+      type: object
+      required:
+      - service_name
+      - name
+      - started_at
+      properties:
+        service_name:
+          type: string
+          description: Name of the service
+          example: aws
+        name:
+          type: string
+          description: Name of the table
+          example: aws_ec2_instances
+        started_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the table sync was started
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the table sync was completed
+        resources:
+          type: integer
+          format: uint64
+          description: Number of resources fetched
+        errors:
+          type: integer
+          format: uint64
+          description: Number of errors encountered
+        panics:
+          type: integer
+          format: uint64
+          description: Number of panics encountered
+        runtime_seconds:
+          type: integer
+          format: int64
+          description: Number of seconds it took to sync a table
+    PlatformSyncSourceUpdate:
+      title: Sync Source definition for updating a source
+      description: Sync Source Update Definition
+      type: object
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        destination_names:
+          type: array
+          description: List of sync destination names associated with this source
+          items:
+            $ref: '#/components/schemas/PlatformSyncDestinationName'
+          minItems: 0
+          default:
+          - cloudquery
+    PlatformSyncDestinationCreate:
+      title: Sync Destination definition for creating a new destination
+      description: Sync Destination Definition
+      type: object
+      required:
+      - name
+      - path
+      - version
+      properties:
+        name:
+          type: string
+          example: my-destination-definition
+          description: Descriptive, unique name for the destination
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+        send_sync_summary:
+          type: boolean
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        transformers:
+          type: array
+          items:
+            type: string
+            description: Unique name of the transformer
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    PlatformPluginPriceCategory:
+      description: Supported price categories for billing
+      type: string
+      enum:
+      - api
+      - database
+      - free
+    PlatformSyncRunWorkerStatus:
+      description: The worker information for a sync run
+      type: object
+      required:
+      - phase
+      properties:
+        phase:
+          $ref: '#/components/schemas/PlatformSyncRunWorkerPhase'
+          description: Phase that the worker is in
+        reason:
+          type: string
+          description: The reason for the status of the worker
+    PlatformSyncTransformerCreate:
+      title: Sync Transformer definition for creating a new transformer
+      description: Sync Transformer Definition
+      type: object
+      required:
+      - name
+      - path
+      - version
+      - tables
+      properties:
+        name:
+          type: string
+          example: my-transformer-definition
+          description: Descriptive, unique name for the transformer
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/basic
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+    PlatformSyncGenericSortBy:
+      title: SyncGenericSortBy
+      type: string
+      enum:
+      - name
+      - display_name
+      - path
+      - version
+      - created_at
+      - updated_at
+      - draft
+    PlatformSyncTestConnection:
+      type: object
+      required:
+      - id
+      - created_at
+      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+          description: Status of the sync test connection
+        failure_reason:
+          type: string
+          description: Reason for failure
+          example: password authentication failed for user "exampleuser"
+        failure_code:
+          example: INVALID_CREDENTIALS
+          type: string
+          description: Code for failure
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was completed
+        plugin_path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        plugin_version:
+          $ref: '#/components/schemas/PlatformVersionName'
+          description: Version of the plugin
+        plugin_kind:
+          $ref: '#/components/schemas/PlatformPluginKind'
+    PlatformSyncDestinationWriteModeUpdate:
+      type: string
+      description: Write mode for the destination, for updating
+      enum:
+      - append
+      - overwrite
+      - overwrite-delete-stale
+    PlatformSyncDestinationUpdate:
+      title: Sync Destination definition for updating a destination
+      description: Sync Destination Update Definition
+      type: object
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteModeUpdate'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateModeUpdate'
+        send_sync_summary:
+          type: boolean
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        transformers:
+          type: array
+          items:
+            type: string
+            description: Unique name of the transformer
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    PlatformSyncSourceTestConnectionCreate:
+      title: Sync Source Test Connection creation definition
+      type: object
+      required:
+      - path
+      - version
+      properties:
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        source_name:
+          type: string
+          description: Name of an existing source
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+    PlatformListSync:
+      description: Managed Sync List Entry
+      allOf:
+      - $ref: '#/components/schemas/PlatformSync'
+      - type: object
+        properties:
+          last_run:
+            $ref: '#/components/schemas/PlatformListSyncLastRun'
+    PlatformSyncSourceTestConnection:
+      type: object
+      required:
+      - id
+      - created_at
+      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+          description: Status of the sync test connection
+        failure_reason:
+          type: string
+          description: Reason for failure
+          example: password authentication failed for user "exampleuser"
+        failure_code:
+          example: INVALID_CREDENTIALS
+          type: string
+          description: Code for failure
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was completed
+        plugin_path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        plugin_version:
+          $ref: '#/components/schemas/PlatformVersionName'
+          description: Version of the plugin
+    PlatformSyncIntegrationSourceCreateV2:
+      description: Integration Source Definition
+      type: object
+      required:
+      - test_connection_id
+      - tables
+      properties:
+        test_connection_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the test connection
+          x-go-name: TestConnectionID
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+    PlatformSyncRun:
+      description: Managed Sync Run definition
+      type: object
+      required:
+      - created_at
+      - sync_name
+      - id
+      - status
+      - total_rows
+      - warnings
+      - errors
+      - migrate
+      - ingested
+      properties:
+        sync_name:
+          type: string
+          description: Name of the sync
+        id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the run
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncRunStatus'
+          description: Status of the sync run
+        status_reason:
+          $ref: '#/components/schemas/PlatformSyncRunStatusReason'
+          description: Reason for the status of the sync run
+        workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncRunWorkerStatus'
+          description: Information about the workers used in the sync run
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was completed
+        total_rows:
+          type: integer
+          format: int64
+          description: Total number of rows in the sync
+        warnings:
+          type: integer
+          format: int64
+          description: Number of warnings encountered during the sync
+        errors:
+          type: integer
+          format: int64
+          description: Number of errors encountered during the sync
+        migration:
+          type: boolean
+          description: Whether the sync run is a migration
+        ingested:
+          type: boolean
+          description: Whether the sync run's data has been ingested
+    PlatformSyncIntegrationSourceV2:
+      description: Integration Source Definition
+      type: object
+      required:
+      - path
+      - version
+      - tables
+      - env
+      - spec
+      properties:
+        test_connection_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the test connection
+          x-go-name: TestConnectionID
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnv'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+        unified_sync_kind:
+          type: string
+          description: The kind of unified sync this source belongs to. Null for standalone integrations.
+          readOnly: true
+          enum:
+          - asset_inventory
+          - asset_inventory_cloudtrail
+          - asset_inventory_metadata
+          - cost_and_usage
+    PlatformPlugin:
+      additionalProperties: false
+      description: CloudQuery Plugin
+      properties:
+        team_name:
+          $ref: '#/components/schemas/PlatformTeamName'
+        name:
+          $ref: '#/components/schemas/PlatformPluginName'
+        kind:
+          $ref: '#/components/schemas/PlatformPluginKind'
+        category:
+          $ref: '#/components/schemas/PlatformPluginCategory'
+        price_category:
+          $ref: '#/components/schemas/PlatformPluginPriceCategory'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        homepage:
+          type: string
+          example: https://cloudquery.io
+        logo:
+          type: string
+          example: https://storage.googleapis.com/cq-cloud-images/9ac4cb31-e971-4879-8619-87dc22b0f98e
+        display_name:
+          description: The plugin's display name
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: AWS Source Plugin
+        official:
+          description: True if the plugin is maintained by CloudQuery, false otherwise
+          type: boolean
+        release_stage:
+          $ref: '#/components/schemas/PlatformPluginReleaseStage'
+        repository:
+          type: string
+          example: https://github.com/cloudquery/cloudquery
+        short_description:
+          type: string
+          minLength: 1
+          maxLength: 512
+          example: Sync data from AWS to any destination
+        tier:
+          $ref: '#/components/schemas/PlatformPluginTier'
+        public:
+          description: Whether the plugin is listed in the CloudQuery Hub. If false, the plugin will not be shown in the CloudQuery Hub and will only be visible to members of the plugin's team.
+          type: boolean
+        usd_per_row:
+          deprecated: true
+          type: string
+          pattern: ^\d+(?:\.\d{1,10})?$
+          description: Deprecated. Refer to `price_category` instead.
+          example: '0.0001'
+          x-go-name: USDPerRow
+          x-pattern-message: must be a valid decimal number with up to 10 decimal places.
+        free_rows_per_month:
+          deprecated: true
+          type: integer
+          format: int64
+          description: Deprecated. Refer to `price_category` instead.
+          example: 1000
+      required:
+      - team_name
+      - name
+      - kind
+      - category
+      - release_stage
+      - created_at
+      - updated_at
+      - logo
+      - display_name
+      - official
+      - short_description
+      - tier
+      - usd_per_row
+      - free_rows_per_month
+      title: CloudQuery Plugin
+      type: object
+    PlatformPluginName:
+      description: The unique name for the plugin.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: aws-source
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformSyncDestinationTestConnection:
+      type: object
+      required:
+      - id
+      - created_at
+      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+          description: Status of the sync test connection
+        failure_reason:
+          type: string
+          description: Reason for failure
+          example: password authentication failed for user "exampleuser"
+        failure_code:
+          example: INVALID_CREDENTIALS
+          type: string
+          description: Code for failure
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was completed
+        plugin_path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        plugin_version:
+          $ref: '#/components/schemas/PlatformVersionName'
+          description: Version of the plugin
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+    PlatformTableSortDirection:
+      title: TableSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformSyncIntegrationUpdateV2:
+      type: object
+      description: Update an existing integration
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          $ref: '#/components/schemas/PlatformSyncIntegrationSourceUpdateV2'
+        schedule:
+          type: string
+          description: Cron schedule for the integration
+        disabled:
+          type: boolean
+          description: Whether the integration is disabled
+        destination_names:
+          type: array
+          description: List of sync destinations associated with this integration
+          items:
+            $ref: '#/components/schemas/PlatformSyncDestinationName'
+    PlatformPluginCategory:
+      description: Supported categories for plugins
+      type: string
+      enum:
+      - cloud-infrastructure
+      - databases
+      - sales-marketing
+      - engineering-analytics
+      - marketing-analytics
+      - shipment-tracking
+      - product-analytics
+      - cloud-finops
+      - project-management
+      - fleet-management
+      - security
+      - data-warehouses
+      - human-resources
+      - finance
+      - customer-support
+      - other
+    PlatformSyncDestinationTestConnectionCreate:
+      title: Sync Destination Test Connection creation definition
+      type: object
+      required:
+      - path
+      - version
+      properties:
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        destination_name:
+          type: string
+          description: Name of an existing destination
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+    PlatformSyncSortBy:
+      title: SyncSortBy
+      type: string
+      enum:
+      - cpu
+      - created_at
+      - created_by
+      - destinations
+      - disabled
+      - display_name
+      - memory
+      - name
+      - schedule
+      - source
+      - updated_at
+      - last_run_created_at
+      - last_run_updated_at
+      - last_run_completed_at
+      - last_run_errors
+      - last_run_warnings
+      - last_run_total_rows
+      - last_run_status
+      - last_run_migration
+    PlatformPluginReleaseStage:
+      description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
+
+        The Coming Soon stage is for plugins that are not yet ready for Preview, but users can subscribe to be notified when they are ready.
+
+        Both Preview and GA plugins follow semantic versioning. The main differences between the two stages are:
+
+        Preview plugins are still experimental and may have frequent breaking changes. Preview plugins might get deprecated due to lack of usage. Long Term Support with community Discord and bug fixes is only guaranteed for GA plugins. Premium plugins are often discounted or free during the Preview stage.'
+      type: string
+      enum:
+      - coming-soon
+      - preview
+      - ga
+      - deprecated
+    PlatformSyncDestinationV2:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncDestinationCreate'
+      - type: object
+        required:
+        - name
+        - display_name
+        - path
+        - version
+        - write_mode
+        - migrate_mode
+        - spec
+        - env
+        - created_at
+        - updated_at
+        - last_update_source
+        - draft
+        - transformers
+        - disabled
+        properties:
+          created_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was created
+          updated_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was last updated
+          env:
+            description: Environment variables for the plugin.
+            type: array
+            items:
+              $ref: '#/components/schemas/PlatformSyncEnv'
+          draft:
+            type: boolean
+            description: If a sync destination is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
+          previous_version:
+            type: string
+            description: Previous version of the plugin during a version upgrade
+            example: v1.2.2
+          disabled:
+            type: boolean
+            description: If true, the sync destination is disabled and cannot be used in syncs.
+          last_run:
+            $ref: '#/components/schemas/PlatformSyncRun'
+          plugin:
+            $ref: '#/components/schemas/PlatformPlugin'
+    PlatformCreateSyncDestinationTestConnectionV2:
+      title: Sync Destination Test Connection creation definition
+      type: object
+      required:
+      - path
+      properties:
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        destination_name:
+          type: string
+          description: Name of an existing destination
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+    PlatformSyncRunStatusReason:
+      description: The reason for the status
+      type: string
+      enum:
+      - error
+      - oom_killed
+      - partial_success
+      - ingestion_failed
+    PlatformPromoteSyncSourceTestConnection:
+      title: Sync Source definition for creating a new source
+      description: Sync Source Definition
+      type: object
+      required:
+      - name
+      - tables
+      properties:
+        name:
+          type: string
+          example: my-source-definition
+          description: Descriptive, unique name for the source
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        overwrite_source:
+          type: boolean
+          description: Set this to allow overwriting an existing sync source. Defaults to true to preserve compatibility.
+        destination_names:
+          type: array
+          description: List of sync destination names associated with this source
+          items:
+            $ref: '#/components/schemas/PlatformSyncDestinationName'
+          minItems: 0
+          default:
+          - cloudquery
+    PlatformPromoteSyncDestinationTestConnection:
+      title: Sync Destination definition for creating a new source
+      description: Sync Destination Definition
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: my-destination-definition
+          description: Descriptive, unique name for the destination
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        send_sync_summary:
+          type: boolean
+        overwrite_destination:
+          type: boolean
+          description: Set this to allow overwriting an existing sync destination. Defaults to true to preserve compatibility.
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformSyncRunStatus:
+      description: The status of the sync run
+      type: string
+      enum:
+      - completed
+      - failed
+      - started
+      - cancelled
+      - created
+      - pending
+    PlatformSyncCreate:
+      type: object
+      description: Managed Sync definition
+      required:
+      - name
+      - source
+      - destinations
+      properties:
+        name:
+          type: string
+          description: Descriptive, unique name for the sync
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          type: string
+          description: Unique name of the source
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        destinations:
+          type: array
+          items:
+            type: string
+            description: Unique name of the destination
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+          minItems: 1
+        schedule:
+          type: string
+          description: Cron schedule for the sync
+        disabled:
+          type: boolean
+          description: Whether the sync is disabled
+          default: false
+        cpu:
+          type: string
+          description: CPU quota for the sync
+          default: '1'
+          x-go-name: CPU
+        memory:
+          type: string
+          description: Memory quota for the sync
+          default: 2Gi
+    PlatformSync:
+      description: Managed Sync definition
+      type: object
+      required:
+      - name
+      - display_name
+      - source
+      - destinations
+      - disabled
+      - schedule
+      - cpu
+      - memory
+      - created_at
+      - updated_at
+      properties:
+        name:
+          type: string
+          description: Descriptive, unique name for the sync
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          type: string
+          description: Unique name of the source
+        destinations:
+          type: array
+          description: List of destinations for the sync
+          items:
+            type: string
+            description: Unique name of the destination
+        disabled:
+          type: boolean
+          description: Whether the sync is disabled
+        schedule:
+          type: string
+          description: Cron schedule for the sync
+        cpu:
+          type: string
+          description: CPU quota for the sync
+          example: '1'
+          x-go-name: CPU
+        memory:
+          type: string
+          description: Memory quota for the sync
+          example: 2Gi
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the sync was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Time when the sync was updated
+        created_by:
+          type: string
+    PlatformSyncDestinationMigrateMode:
+      type: string
+      description: Migrate mode for the destination
+      enum:
+      - safe
+      - forced
+      default: safe
+    PlatformSyncSourceTestConnectionID:
+      description: ID of the Sync Source Test Connection
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: SyncSourceTestConnectionID
+    PlatformTableData:
+      additionalProperties: false
+      properties:
+        query:
+          $ref: '#/components/schemas/PlatformQueryExpression'
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+            required:
+            - name
+            - type
+        rows:
+          type: array
+          items:
+            type: array
+            items: {}
+      required:
+      - columns
+      - rows
+      title: TableData
+      type: object
+    PlatformSyncRunID:
+      description: ID of the SyncRun
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: SyncRunID
+    PlatformListSyncLastRun:
+      description: Managed Sync List Entry Last Run Info
+      required:
+      - id
+      - status
+      - migration
+      - created_at
+      - total_rows
+      - warnings
+      - errors
+      - ingested
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the run
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncRunStatus'
+          description: Status of the sync run
+        status_reason:
+          $ref: '#/components/schemas/PlatformSyncRunStatusReason'
+          description: Reason for the status of the sync run
+        migration:
+          type: boolean
+          description: Whether the sync run was a migration
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was completed
+        total_rows:
+          type: integer
+          format: int64
+          description: Total number of rows in the sync
+        warnings:
+          type: integer
+          format: int64
+          description: Number of warnings encountered during the sync
+        errors:
+          type: integer
+          format: int64
+          description: Number of errors encountered during the sync
+        ingested:
+          type: boolean
+          description: Whether the sync run's data has been ingested
+    PlatformSyncDestinationTestConnectionID:
+      description: ID of the Sync Destination Test Connection
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: SyncDestinationTestConnectionID
+    PlatformDisplayName:
+      description: A human-readable display name
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}\p{N}_][a-zA-Z\p{L}\p{N}_ \-'\(\)\[\]]*$
+      x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
+      type: string
+      example: Human Readable Name
+    PlatformSyncDestinationMigrateModeUpdate:
+      type: string
+      description: Migrate mode for the destination, for updating
+      enum:
+      - safe
+      - forced
+    PlatformSyncRunTableSortBy:
+      title: TableSortBy
+      type: string
+      enum:
+      - name
+      - started_at
+      - completed_at
+      - runtime_seconds
+      - resources
+      - errors
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformVersionName:
+      type: string
+      description: The version in semantic version format.
+      pattern: ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
+      x-pattern-message: should be in semantic version format
+    PlatformSyncDestinationTestConnectionV2:
+      type: object
+      required:
+      - id
+      - created_at
+      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+          description: Status of the sync test connection
+        failure_reason:
+          type: string
+          description: Reason for failure
+          example: password authentication failed for user "exampleuser"
+        failure_code:
+          example: INVALID_CREDENTIALS
+          type: string
+          description: Code for failure
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was completed
+        plugin_path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        plugin_version:
+          $ref: '#/components/schemas/PlatformVersionName'
+          description: Version of the plugin
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+    PlatformSyncPluginPath:
+      type: string
+      description: Plugin path in CloudQuery registry
+      pattern: ^cloudquery/[^/]+
+      x-pattern-message: should be in the format cloudquery/<name>
+    PlatformSyncRunDetails:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncRun'
+      - type: object
+        required:
+        - created_at
+        - sync_name
+        - id
+        - status
+        - total_rows
+        - warnings
+        - errors
+        - ingested
+        properties:
+          cpu_seconds:
+            type: number
+            format: double
+            description: Total CPU seconds utilized during this sync run
+            x-go-name: CPUSeconds
+          memory_byte_seconds:
+            type: number
+            format: double
+            description: Total memory byte seconds utilized during this sync run
+          network_egress_bytes:
+            type: number
+            format: double
+            description: Total network egress bytes during this sync run
+    PlatformSyncTransformerUpdate:
+      title: Sync Transformer definition for updating a transformer
+      description: Sync Transformer Update Definition
+      type: object
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+    PlatformSyncIntegrationTestConnectionCreateV2:
+      title: Sync Integration Test Connection creation definition
+      type: object
+      required:
+      - path
+      properties:
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        source_name:
+          type: string
+          description: Name of an existing sync integration. The handler resolves it to the underlying sync source via `syncs.source_name` to inherit env/secret values during update flows. For backward compatibility, when no sync with this name exists the value is treated as a direct sync source name.
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+    PlatformSyncEnvCreate:
+      type: object
+      description: Environment variable. Environment variables are assumed to be secret.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the environment variable
+        value:
+          type: string
+          description: Value of the environment variable
+    PlatformSyncIntegrationV2:
+      type: object
+      description: An integration definition
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Descriptive, unique name for the integration
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          $ref: '#/components/schemas/PlatformSyncIntegrationSourceV2'
+        plugin:
+          $ref: '#/components/schemas/PlatformPlugin'
+        destinations:
+          type: array
+          description: List of sync destinations associated with this integration
+          items:
+            $ref: '#/components/schemas/PlatformSyncDestinationV2'
+        schedule:
+          type: string
+          description: Cron schedule for the integration
+        disabled:
+          type: boolean
+          description: Whether the integration is disabled
+          default: false
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the sync was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Time when the sync was updated
+        created_by:
+          type: string
+    PlatformSyncRunStats:
+      type: object
+      required:
+      - started_at
+      - completed_tables
+      - resources
+      - errors
+      - panics
+      properties:
+        completed_tables:
+          type: integer
+          format: uint64
+          description: Number of tables completed
+        started_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the table sync was started
+        last_completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the last table was completed
+        resources:
+          type: integer
+          format: uint64
+          description: Number of total resources fetched
+        errors:
+          type: integer
+          format: uint64
+          description: Number of total errors encountered
+        panics:
+          type: integer
+          format: uint64
+          description: Number of total panics encountered
+    PlatformSyncUpgrade:
+      title: Sync version upgrade definition
+      description: Sync Version Upgrade Definition
+      type: object
+      required:
+      - path
+      - kind
+      - prev_version
+      - new_version
+      - platform_version
+      - created_at
+      - sync_source_destination_names
+      - sync_source_destination_display_names
+      properties:
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        kind:
+          $ref: '#/components/schemas/PlatformPluginKind'
+        prev_version:
+          type: string
+          description: Previous version of the plugin
+          example: v1.2.3
+        new_version:
+          type: string
+          description: Upgraded version of the plugin
+          example: v1.3.0
+        platform_version:
+          type: string
+          description: Version of the platform that the upgrade was made on
+          example: v1.1.0
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-07-14T16:53:42Z'
+          description: Time when the upgrade record was created
+        sync_source_destination_names:
+          type: array
+          items:
+            type: string
+          description: List of sync sources or sync destinations (depending on kind) that were upgraded
+          x-go-name: Names
+        sync_source_destination_display_names:
+          type: array
+          items:
+            type: string
+          description: List of sync sources or sync destinations (depending on kind) display names that were upgraded
+          x-go-name: DisplayNames
+    PlatformSyncIntegrationExpandedV2:
+      description: Managed Sync List Entry
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncIntegrationV2'
+      - type: object
+        properties:
+          last_run:
+            $ref: '#/components/schemas/PlatformListSyncLastRun'
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformSyncLastUpdateSource:
+      description: How was the source or destination been created or updated last
+      type: string
+      enum:
+      - yaml
+      - ui
+    PlatformSyncSource:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncSourceCreate'
+      - type: object
+        required:
+        - name
+        - display_name
+        - path
+        - version
+        - tables
+        - skip_tables
+        - spec
+        - env
+        - created_at
+        - updated_at
+        - last_update_source
+        - draft
+        properties:
+          created_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was created
+          updated_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was last updated
+          env:
+            description: Environment variables for the plugin.
+            type: array
+            items:
+              $ref: '#/components/schemas/PlatformSyncEnv'
+          draft:
+            type: boolean
+            description: If a sync source is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
+          previous_version:
+            type: string
+            description: Previous version of the plugin during a version upgrade
+            example: v1.2.2
+    PlatformSyncTestConnectionStatus:
+      description: The status of the sync run
+      type: string
+      enum:
+      - completed
+      - failed
+      - started
+      - created
+    PlatformSyncIntegrationCreateV2:
+      type: object
+      description: Create a new sync integration
+      required:
+      - name
+      - source
+      - destination_names
+      properties:
+        name:
+          type: string
+          description: Descriptive, unique name for the integration
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          $ref: '#/components/schemas/PlatformSyncIntegrationSourceCreateV2'
+        schedule:
+          type: string
+          description: Cron schedule for the integration
+        disabled:
+          type: boolean
+          description: Whether the integration is disabled
+          default: false
+        destination_names:
+          type: array
+          description: List of sync destination names associated with this integration
+          items:
+            $ref: '#/components/schemas/PlatformSyncDestinationName'
+          minItems: 0
+          default:
+          - cloudquery
+    PlatformSyncDestinationUpdateV2:
+      title: Sync Destination definition for updating a destination
+      description: Sync Destination Update Definition
+      type: object
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteModeUpdate'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateModeUpdate'
+        send_sync_summary:
+          type: boolean
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        disabled:
+          type: boolean
+          description: Whether the sync destination is disabled
+        transformers:
+          type: array
+          items:
+            type: string
+            description: Unique name of the transformer
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    PlatformSyncTransformer:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncTransformerCreate'
+      - type: object
+        required:
+        - name
+        - display_name
+        - path
+        - version
+        - spec
+        - env
+        - created_at
+        - updated_at
+        - last_update_source
+        - draft
+        properties:
+          created_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the transformer was created
+          updated_at:
+            type: string
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the transformer was last updated
+          env:
+            description: Environment variables for the plugin.
+            type: array
+            items:
+              $ref: '#/components/schemas/PlatformSyncEnv'
+          draft:
+            type: boolean
+            description: If a sync transformer is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
+    PlatformSyncRunWorkerPhase:
+      description: Phase of the worker in the sync run
+      type: string
+      enum:
+      - Pending
+      - Running
+      - Succeeded
+      - Failed
+      - Unknown
+    PlatformQueryExpression:
+      title: QueryExpression
+      type: string
+      description: Query expression
+      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
+    PlatformSyncUpdate:
+      type: object
+      description: Managed Sync definition
+      properties:
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        source:
+          type: string
+          description: Unique name of the source
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        destinations:
+          type: array
+          items:
+            type: string
+            description: Unique name of the destination
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+          minItems: 1
+        schedule:
+          type: string
+          description: Cron schedule for the sync
+        disabled:
+          type: boolean
+          description: Whether the sync is disabled
+          default: false
+        env:
+          type: array
+          description: Environment variables for the sync
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnv'
+        cpu:
+          type: string
+          description: CPU quota for the sync
+          default: '1'
+          x-go-name: CPU
+        memory:
+          type: string
+          description: Memory quota for the sync
+          default: 2Gi
+    PlatformSyncSourceCreate:
+      title: Sync Source definition for creating a new source
+      description: Sync Source Definition
+      type: object
+      required:
+      - name
+      - path
+      - version
+      - tables
+      properties:
+        name:
+          type: string
+          example: my-source-definition
+          description: Descriptive, unique name for the source
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformSyncDestinationWriteMode:
+      type: string
+      description: Write mode for the destination
+      enum:
+      - append
+      - overwrite
+      - overwrite-delete-stale
+      default: overwrite-delete-stale
+    PlatformSyncIntegrationTestConnectionV2:
+      type: object
+      required:
+      - id
+      - created_at
+      - status
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncTestConnectionStatus'
+          description: Status of the sync test connection
+        failure_reason:
+          type: string
+          description: Reason for failure
+          example: password authentication failed for user "exampleuser"
+        failure_code:
+          example: INVALID_CREDENTIALS
+          type: string
+          description: Code for failure
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the test connection was completed
+        plugin_path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        plugin_version:
+          $ref: '#/components/schemas/PlatformVersionName'
+          description: Version of the plugin
+    PlatformCreateSyncDestinationV2:
+      title: Sync Destination definition for creating a new source
+      description: Sync Destination Definition
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: my-destination-definition
+          description: Descriptive, unique name for the destination
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        send_sync_summary:
+          type: boolean
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        overwrite_destination:
+          type: boolean
+          description: Set this to allow overwriting an existing sync destination. Defaults to true to preserve compatibility.
+        sync_destination_test_connection_id:
+          $ref: '#/components/schemas/PlatformSyncDestinationTestConnectionID'
+  parameters:
+    platform_download_file:
+      description: Whether to generate a downloadable file for the response.
+      in: query
+      name: download
+      required: false
+      schema:
+        type: boolean
+    platform_sync_transformer_name:
+      name: sync_transformer_name
+      in: path
+      required: true
+      schema:
+        description: Unique name of the sync transformer
+        type: string
+        pattern: ^[a-zA-Z0-9_-]+$
+        x-go-name: SyncTransformerName
+        x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    platform_sync_upgrades_path_filter:
+      name: path
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/PlatformSyncPluginPath'
+        example: cloudquery/aws
+        description: Filter by plugin path
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_sync_name_filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        description: Filter by name or display name
+        type: string
+        pattern: ^[a-zA-Z\p{L}\p{N}_ \-']*$
+        x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, and apostrophes
+    platform_sync_upgrades_sort_bys:
+      name: sort_by
+      in: query
+      description: Sort by options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - kind
+          - path
+          - prev_version
+          - new_version
+          - created_at
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SyncUpgradesSortBys
+    platform_sync_upgrades_kind_filter:
+      name: kind
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/PlatformPluginKind'
+        description: Filter by plugin kind
+    platform_sync_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Sync sort direction options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformSyncSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SyncSortDirections
+    platform_sync_run_table_sort_bys:
+      name: sort_by
+      in: query
+      description: Sync run table sort by options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformSyncRunTableSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SyncRunTableSortBys
+    platform_sync_generic_sort_bys:
+      name: sort_by
+      in: query
+      description: Sort by options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformSyncGenericSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SyncGenericSortBys
+    platform_sync_source_name:
+      name: sync_source_name
+      in: path
+      required: true
+      schema:
+        description: Unique name of the sync source
+        type: string
+        pattern: ^[a-zA-Z0-9_-]+$
+        x-go-name: SyncSourceName
+        x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    platform_migration_filter:
+      name: migration_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by migration
+        type: boolean
+    platform_sync_source_test_connection_id:
+      name: sync_source_test_connection_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformSyncSourceTestConnectionID'
+      x-go-name: SyncSourceTestConnectionID
+    platform_table_filters:
+      name: filter
+      in: query
+      description: Table filters. This filters the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Filters
+    platform_table_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Table sort direction options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortDirections
+    platform_sync_run_id:
+      name: sync_run_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformSyncRunID'
+    platform_sync_name:
+      name: sync_name
+      in: path
+      required: true
+      schema:
+        description: Unique name of the sync
+        type: string
+        pattern: ^[a-zA-Z0-9_-]+$
+        x-go-name: SyncName
+        x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    platform_sync_sort_bys:
+      name: sort_by
+      in: query
+      description: Sort by options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformSyncSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SyncSortBys
+    platform_sync_destination_test_connection_id:
+      name: sync_destination_test_connection_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformSyncDestinationTestConnectionID'
+      x-go-name: SyncDestinationTestConnectionID
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_sync_destination_name:
+      name: sync_destination_name
+      in: path
+      required: true
+      schema:
+        description: Unique name of the sync destination
+        type: string
+        pattern: ^[a-zA-Z0-9_-]+$
+        x-go-name: SyncDestinationName
+        x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    platform_sync_upgrades_platform_version_filter:
+      name: platform_version
+      in: query
+      required: false
+      schema:
+        type: string
+        example: v1.1.0
+        description: Filter by platform version
+    platform_sync_test_connection_id:
+      name: sync_test_connection_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformSyncTestConnectionID'
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformMethodNotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Method not allowed
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http
