@@ -1,0 +1,623 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin insights API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "insights",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPlatformInsights",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, evidence (description), mitigation, or related fields"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud"
+              },
+              {
+                "name": "account",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account (repeat for multiple values, OR)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query",
+                "description": "Filter by region"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source (repeat for multiple values, OR)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List insights with optional filtering"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightColumnDistinctValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/columns/:column_name/distinct-values",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path",
+                "description": "Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true."
+              },
+              {
+                "name": "owner_tag",
+                "value": "",
+                "type": "query",
+                "description": "When specified, returns distinct values for this ownership tag key (e.g., \"team\", \"department\"). The column_name parameter is ignored when owner_tag is provided."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, evidence (description), mitigation, or related fields"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud"
+              },
+              {
+                "name": "account",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account (repeat for multiple values, OR)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query",
+                "description": "Filter by region"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category (repeat for multiple values, OR)"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source (repeat for multiple values, OR)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              }
+            ]
+          },
+          "docs": "Get the candidate values for the next filter dimension (`column_name`), given the current active filters. The supplied filter parameters represent where the user currently is in the filter matrix; only values for `column_name` that would yield at least one insight when added to that current position are returned. Values that would produce zero results are omitted, preventing the user from navigating to an empty state.\nThe filter parameter corresponding to `column_name` is always ignored when com"
+        },
+        {
+          "info": {
+            "name": "PlatformListInsightFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/saved-filters",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Search in filter name or description"
+              },
+              {
+                "name": "insight_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by insight category"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (any match)"
+              },
+              {
+                "name": "resource_types",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource types"
+              },
+              {
+                "name": "source",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source"
+              },
+              {
+                "name": "source_category",
+                "value": "",
+                "type": "query",
+                "description": "Filter by source category"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Filter by group by fields"
+              }
+            ]
+          },
+          "docs": "List saved insight filters"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/insights/saved-filters",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformGetInsightFilterByID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a saved insight filter by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteInsightFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/insights/saved-filters/:insight_filter_id",
+            "params": [
+              {
+                "name": "insight_filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a saved insight filter"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsight",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/:insight_id",
+            "params": [
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (key:value strings; all pairs must match)"
+              }
+            ]
+          },
+          "docs": "Get insight by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightAssets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/:insight_id/assets",
+            "params": [
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers (e.g. aws, azure, gcp, github, backstage, digitalocean, wiz)"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type, e.g. EC2 instance class)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (key:value strings; all pairs must match)"
+              }
+            ]
+          },
+          "docs": "List assets affected by an insight"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformInsightAssetColumnDistinctValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/assets/columns/:column_name/distinct-values",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path",
+                "description": "Filter dimension for distinct asset values. Allowed values: cloud, region, account, resource-type, instance-type, tag."
+              },
+              {
+                "name": "insight_id",
+                "value": "",
+                "type": "query",
+                "description": "Insight whose affected assets are being filtered."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in title, description, or mitigation (same as asset list)."
+              },
+              {
+                "name": "accounts",
+                "value": "",
+                "type": "query",
+                "description": "Filter by account IDs"
+              },
+              {
+                "name": "clouds",
+                "value": "",
+                "type": "query",
+                "description": "Filter by cloud providers"
+              },
+              {
+                "name": "regions",
+                "value": "",
+                "type": "query",
+                "description": "Filter by regions"
+              },
+              {
+                "name": "resource_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by resource type"
+              },
+              {
+                "name": "instance_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by instance type (from additional_properties.instance_type)"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tags (any match)"
+              }
+            ]
+          },
+          "docs": "Get candidate values for the next filter dimension (`column_name`) for assets listed under an insight, given the current active filters. The supplied filter parameters represent where the user is in the filter matrix; only values for `column_name` that would yield at least one matching asset row when added to that position are returned.\nThe filter parameter corresponding to `column_name` is always ignored when computing candidates (no self-filtering).\nWhen querying for `column_name=tag`, ownersh"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlatformAssetInsights",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/insights/assets/:asset_id",
+            "params": [
+              {
+                "name": "asset_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in asset name, account, region, etc."
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List insights for a specific asset (by _cq_platform_id)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

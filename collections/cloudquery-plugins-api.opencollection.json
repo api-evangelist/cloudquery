@@ -1,0 +1,373 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin plugins API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "plugins",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPlugins",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins",
+            "params": [
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "The field to sort by"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "include_release_stages",
+                "value": "",
+                "type": "query",
+                "description": "Include these release stages in the response"
+              },
+              {
+                "name": "exclude_release_stages",
+                "value": "",
+                "type": "query",
+                "description": "Exclude these release stages from the response"
+              }
+            ]
+          },
+          "docs": "List all plugins"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPlugin",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details about a given plugin."
+        },
+        {
+          "info": {
+            "name": "PlatformListPluginVersions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "The field to sort by"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "include_drafts",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include draft versions"
+              },
+              {
+                "name": "include_fips",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include fips versions"
+              },
+              {
+                "name": "include_prereleases",
+                "value": "",
+                "type": "query",
+                "description": "Whether to include prerelease versions"
+              },
+              {
+                "name": "version_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all versions for a given plugin"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPluginVersion",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details about a given plugin version."
+        },
+        {
+          "info": {
+            "name": "PlatformDownloadPluginAsset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/assets/:target_name",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "target_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Download an asset for a given plugin version and target"
+        },
+        {
+          "info": {
+            "name": "PlatformListPluginVersionTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/tables",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "List tables for a given plugin version. This only applies to source plugins."
+        },
+        {
+          "info": {
+            "name": "PlatformGetPluginVersionTable",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plugins/:team_name/:plugin_kind/:plugin_name/versions/:version_name/tables/:table_name",
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get schema for a given table and plugin version. This only applies to source plugins."
+        },
+        {
+          "info": {
+            "name": "PlatformDownloadPluginAssetByTeam",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams/:team_name/plugins/:plugin_team/:plugin_kind/:plugin_name/versions/:version_name/assets/:target_name",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "team_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_team",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_kind",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "plugin_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "version_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "target_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Download an asset for a given plugin version as the current team."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

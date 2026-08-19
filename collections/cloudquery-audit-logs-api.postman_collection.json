@@ -1,0 +1,755 @@
+{
+  "item": [
+    {
+      "id": "1b911735-d893-47f2-8927-438ac58adb26",
+      "name": "audit-logs",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ac04a772-79a4-4c03-af22-f288b7e0f14a",
+          "name": "Platform List Audit Logs",
+          "request": {
+            "name": "Platform List Audit Logs",
+            "description": {
+              "content": "List audit log events with pagination and filtering",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "audit-logs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "per_page",
+                  "value": "100",
+                  "description": "The number of results per page (max 1000)."
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number of the results to fetch"
+                },
+                {
+                  "disabled": false,
+                  "key": "user_id",
+                  "value": "<uuid>",
+                  "description": "Filter by user ID"
+                },
+                {
+                  "disabled": false,
+                  "key": "event_type",
+                  "value": "<string>",
+                  "description": "Filter by event type"
+                },
+                {
+                  "disabled": false,
+                  "key": "entity_display_name",
+                  "value": "<string>",
+                  "description": "Filter by entity display name"
+                },
+                {
+                  "disabled": false,
+                  "key": "user_ip_address",
+                  "value": "<string>",
+                  "description": "Filter by user IP address"
+                },
+                {
+                  "disabled": false,
+                  "key": "start_time",
+                  "value": "<dateTime>",
+                  "description": "Filter by start time (inclusive)"
+                },
+                {
+                  "disabled": false,
+                  "key": "end_time",
+                  "value": "<dateTime>",
+                  "description": "Filter by end time (inclusive)"
+                },
+                {
+                  "disabled": false,
+                  "key": "search",
+                  "value": "<string>",
+                  "description": "Search across user name, event type, entity display name, and user IP address"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d4ea20f8-c92c-4283-b4ad-456c2163d306",
+              "name": "Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "user_id",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "event_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entity_display_name",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "user_ip_address",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "start_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "end_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"76368a11-6e8c-f6e4-0836-de8ccfe3f9bd\",\n      \"user\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"email\": \"user@example.com\",\n        \"enabled\": true,\n        \"provider\": \"local\",\n        \"mfa_configured\": true,\n        \"roles\": [\n          {\n            \"id\": \"aa0ddec8-79aa-81b5-83df-542d8d4d65e3\",\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"permissions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"id\": \"7714b54b-6e9c-374f-5032-5af601108e43\",\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"permissions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"name\": \"Sarah O'Connor\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"profile_image_url\": \"string\",\n        \"last_login_at\": \"1958-11-11T22:03:41.229Z\",\n        \"tracking_opted_in\": false\n      },\n      \"event_type\": \"string\",\n      \"created_at\": \"1957-12-16T17:34:19.815Z\",\n      \"user_ip_address\": \"string\",\n      \"entity_display_name\": \"string\",\n      \"event_details\": {\n        \"key_0\": true\n      },\n      \"is_success\": true\n    },\n    {\n      \"id\": \"49c755f3-a527-72ce-9818-e536edb306b5\",\n      \"user\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"email\": \"user@example.com\",\n        \"enabled\": true,\n        \"provider\": \"local\",\n        \"mfa_configured\": true,\n        \"roles\": [\n          {\n            \"id\": \"6c803f89-b2c2-9fd2-1dab-125d920bbe11\",\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"permissions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"id\": \"4bf47f1e-1bd8-dbdf-8c77-52470fdd8f8d\",\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"permissions\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"type\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ],\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"name\": \"Sarah O'Connor\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"profile_image_url\": \"string\",\n        \"last_login_at\": \"1995-08-02T17:22:07.501Z\",\n        \"tracking_opted_in\": false\n      },\n      \"event_type\": \"string\",\n      \"created_at\": \"1974-07-16T10:14:22.257Z\",\n      \"user_ip_address\": \"string\",\n      \"entity_display_name\": \"string\",\n      \"event_details\": {\n        \"key_0\": false,\n        \"key_1\": \"string\"\n      },\n      \"is_success\": true\n    }\n  ],\n  \"metadata\": {\n    \"page_size\": 5111,\n    \"total_count\": 4773,\n    \"last_page\": 9870,\n    \"time_ms\": 8712\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "18c19ae8-8fc0-4a39-9f76-d56d6002c0fb",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "user_id",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "event_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entity_display_name",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "user_ip_address",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "start_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "end_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9673\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "130fca10-beec-4243-b8a6-bf38684971fc",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "user_id",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "event_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entity_display_name",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "user_ip_address",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "start_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "end_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8478,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9da903cf-fe20-473d-bc19-91ead55cc41a",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "user_id",
+                      "value": "<uuid>"
+                    },
+                    {
+                      "key": "event_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "entity_display_name",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "user_ip_address",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "start_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "end_time",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9673\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "efb96640-bdd9-42c9-b980-a3da020d0458",
+          "name": "Platform Get Audit Log",
+          "request": {
+            "name": "Platform Get Audit Log",
+            "description": {
+              "content": "Get a specific audit log event by ID",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "audit-logs",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "fd20e476-3a8e-45b5-89cd-324aa28a95a1",
+              "name": "Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"5fd217fd-d9bd-8478-a867-d9934112d2ef\",\n  \"user\": {\n    \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n    \"email\": \"user@example.com\",\n    \"enabled\": false,\n    \"provider\": \"local\",\n    \"mfa_configured\": true,\n    \"roles\": [\n      {\n        \"id\": \"c260589d-ee69-0fbd-f32a-b27ba7f5689e\",\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"permissions\": [\n          {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"query\": \"string\",\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"number_of_affected_roles\": 7536,\n            \"number_of_affected_users\": 4465\n          },\n          {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"query\": \"string\",\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"number_of_affected_roles\": 7724,\n            \"number_of_affected_users\": 8991\n          }\n        ],\n        \"created_by\": {\n          \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n          \"name\": \"Sarah O'Connor\",\n          \"email\": \"string\"\n        },\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"type\": \"admin:write\"\n      },\n      {\n        \"id\": \"86ecfefd-e8ba-80b9-e4ab-ffd3eea1a945\",\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"permissions\": [\n          {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"query\": \"string\",\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"number_of_affected_roles\": 9099,\n            \"number_of_affected_users\": 9500\n          },\n          {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": \"string\",\n            \"description\": \"string\",\n            \"query\": \"string\",\n            \"created_by\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"number_of_affected_roles\": 843,\n            \"number_of_affected_users\": 9672\n          }\n        ],\n        \"created_by\": {\n          \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n          \"name\": \"Sarah O'Connor\",\n          \"email\": \"string\"\n        },\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"type\": \"admin:read\"\n      }\n    ],\n    \"created_at\": \"2017-07-14T16:53:42Z\",\n    \"name\": \"Sarah O'Connor\",\n    \"updated_at\": \"2017-07-14T16:53:42Z\",\n    \"profile_image_url\": \"string\",\n    \"last_login_at\": \"1990-06-08T08:12:12.791Z\",\n    \"tracking_opted_in\": false\n  },\n  \"event_type\": \"string\",\n  \"created_at\": \"1946-10-24T00:50:58.737Z\",\n  \"user_ip_address\": \"string\",\n  \"entity_display_name\": \"string\",\n  \"event_details\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  },\n  \"is_success\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b0c786d3-8b0f-4976-ba83-93ee16758762",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9673\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "88e2f618-54f9-453b-90f5-6943640adab0",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 1779,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8556d589-3dd2-4c58-8c07-d3e6b6952829",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9673\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "006a833a-32c5-46a6-9dad-03aca5984aeb",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit-logs",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9673\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "2f157e75-b42f-4a33-963f-9b077fed5ebc",
+    "name": "CloudQuery Platform OpenAPI Spec admin audit-logs API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.\n### Authentication\nThe API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.\nThe base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.\n### Example Request\nTo test your connection to the API, we can use the `/plugins` endpoint. For example:\n`curl -v -H \"Authorization: Bearer $CLOUDQUERY_API_KEY\" \\ https://cloudquery.mycompany.com/api/plugins`\n\n\nContact Support:\n Name: CloudQuery Support Team\n Email: support@cloudquery.io",
+      "type": "text/plain"
+    }
+  }
+}

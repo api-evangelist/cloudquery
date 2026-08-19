@@ -1,0 +1,82 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin api-keys API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "api-keys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAPIKeys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/apikeys",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all API Keys"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAPIKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/apikeys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create new API Key."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAPIKey",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/apikeys/:apikey_id",
+            "params": [
+              {
+                "name": "apikey_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete API Key. This will remove any future access by this API Key."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

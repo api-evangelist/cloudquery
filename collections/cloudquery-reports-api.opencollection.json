@@ -1,0 +1,267 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin reports API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "reports",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListReports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports",
+            "params": [
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter reports by title or description."
+              },
+              {
+                "name": "visibility",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Report sort direction options"
+              }
+            ]
+          },
+          "docs": "List reports"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/reports",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Report"
+        },
+        {
+          "info": {
+            "name": "PlatformGetReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ]
+          },
+          "docs": "Get Report"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update Report"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteReport",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/reports/:report_id",
+            "params": [
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report."
+              }
+            ]
+          },
+          "docs": "Delete Report"
+        },
+        {
+          "info": {
+            "name": "PlatformListReportTemplates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/templates",
+            "params": [
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter report templates by name."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Report template sort direction options"
+              }
+            ]
+          },
+          "docs": "List report templates"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/reports/templates",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformGetReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ]
+          },
+          "docs": "Get Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update Report Template"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteReportTemplate",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/reports/templates/:template_id",
+            "params": [
+              {
+                "name": "template_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the report template."
+              }
+            ]
+          },
+          "docs": "Delete Report Template"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

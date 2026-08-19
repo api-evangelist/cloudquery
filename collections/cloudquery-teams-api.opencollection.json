@@ -1,0 +1,49 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin teams API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "teams",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListTeams",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all teams"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

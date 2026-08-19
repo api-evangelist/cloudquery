@@ -1,0 +1,216 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "admin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformAddUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add new user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get user details"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update user"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSAML",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/saml"
+          },
+          "docs": "Get SAML integration information"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSAML",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/auth/saml",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update SAML integration information"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/auth/saml/rollover"
+          },
+          "docs": "Create new SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/auth/saml/rollover",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Delete current SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSAMLRolloverCertificate",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/auth/saml/rollover/promote",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote SAML rollover certificate"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings"
+          },
+          "docs": "Show current platform settings"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/settings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update platform settings"
+        },
+        {
+          "info": {
+            "name": "PlatformGetDataSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settings/data"
+          },
+          "docs": "Show current platform data settings"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateDataSettings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/settings/data",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update platform data settings"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

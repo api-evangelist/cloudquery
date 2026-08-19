@@ -1,0 +1,324 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin filters API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "filters",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              },
+              {
+                "name": "name_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "expression_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters/tags",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags"
+        },
+        {
+          "info": {
+            "name": "PlatformGetFilterByID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a table filter by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a table filter"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/filters/:filter_id",
+            "params": [
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a table filter"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Query Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformQuerySaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Query Filter"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters/tags",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Saved Query"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Table Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformTableSaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Table Filter"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters/tags",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Table"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

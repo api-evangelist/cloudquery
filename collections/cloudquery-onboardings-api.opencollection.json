@@ -1,0 +1,422 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin onboardings API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "onboardings",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformCreateAWSOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an interactive onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query an interactive onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update onboarding state"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSAccountsInRoot",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under organization root"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSAccountsInParent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts/:aws_orgunit_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "aws_orgunit_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under a specifc Organizational Unit"
+        },
+        {
+          "info": {
+            "name": "PlatformProvisionOnboardingConfiguration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/oidc/:onboarding_id/accounts/provision",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Provision onboarding configuration into the cloud account"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur"
+          },
+          "docs": "Create an interactive onboarding for AWS CUR"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query an interactive onboarding for AWS CUR"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update AWS CUR onboarding state"
+        },
+        {
+          "info": {
+            "name": "PlatformVerifyAWSCUROnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/cur/:onboarding_id/verify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Trigger verification of the AWS CUR onboarding"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a unified composable onboarding for AWS"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query a unified AWS onboarding"
+        },
+        {
+          "info": {
+            "name": "PlatformNotifyAWSUnifiedOnboarding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/notify",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update unified AWS onboarding state via CloudFormation callback"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedAccountsInRoot",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under the organization root (requires asset_inventory feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAWSUnifiedAccountsInParent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts/:aws_orgunit_id",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "aws_orgunit_id",
+                "value": "",
+                "type": "path",
+                "description": "Organizational Unit ID"
+              }
+            ]
+          },
+          "docs": "Query AWS accounts under a specific Organizational Unit"
+        },
+        {
+          "info": {
+            "name": "PlatformProvisionUnifiedOnboardingConfiguration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/accounts/provision",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Provision sync roles into selected AWS accounts (requires asset_inventory feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformVerifyAWSUnifiedCUR",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/verify-cur",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Verify CUR S3 access for the unified onboarding (requires cost_and_usage feature)"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedTestConnections",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/test-connections",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create test connections for all enabled features in one call"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedIntegrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/onboardings/aws/unified/:onboarding_id/integrations",
+            "params": [
+              {
+                "name": "onboarding_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create integrations for all enabled features using completed test connections"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedTestConnectionsStandalone",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/aws/unified/test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create test connections for AWS unified features without an onboarding. Frontend is expected to provide a per-feature plugin spec (with ${ENV_VAR} placeholders for sensitive values like external_id) plus an env list containing the corresponding values."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAWSUnifiedIntegrationsStandalone",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/aws/unified/integrations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create AWS unified integrations from previously created standalone test connections (no onboarding). Like the onboarding-bound counterpart, this endpoint may create multiple syncs from a single request: asset_inventory creates a main sync plus a CloudTrail companion sync, additional_metadata creates a metadata sync, and cost_and_usage creates a CUR sync."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

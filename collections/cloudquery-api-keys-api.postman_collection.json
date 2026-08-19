@@ -1,0 +1,1003 @@
+{
+  "item": [
+    {
+      "id": "c7750c43-2b14-4348-b684-f2a19ed80ad1",
+      "name": "api-keys",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "be5ca049-ab31-419f-9d44-cd087f161434",
+          "name": "Platform List API Keys",
+          "request": {
+            "name": "Platform List API Keys",
+            "description": {
+              "content": "List all API Keys",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "apikeys"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "per_page",
+                  "value": "100",
+                  "description": "The number of results per page (max 1000)."
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number of the results to fetch"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9e8b06fa-ea01-4e4c-bf03-0736522ea20f",
+              "name": "Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n      \"name\": \"cli-api-key\",\n      \"expires_at\": \"2017-07-14T16:53:42Z\",\n      \"expired\": false,\n      \"roles\": [\n        {\n          \"id\": \"1a7dd4a4-026a-d960-a47e-79e7e573c669\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"permissions\": [\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"type\": \"ci\"\n        },\n        {\n          \"id\": \"94906deb-ad2d-5128-41be-39d61cb05fec\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"permissions\": [\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"type\": \"admin:write\"\n        }\n      ],\n      \"created_by\": \"user@example.com\",\n      \"key\": \"1234567890abcdef1234567890abcdef\",\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"last_access_at\": \"2017-07-14T16:53:42Z\"\n    },\n    {\n      \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n      \"name\": \"cli-api-key\",\n      \"expires_at\": \"2017-07-14T16:53:42Z\",\n      \"expired\": false,\n      \"roles\": [\n        {\n          \"id\": \"70f81813-feae-339d-6698-9057f0d5372c\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"permissions\": [\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"type\": \"general:write\"\n        },\n        {\n          \"id\": \"4c241248-158c-951d-64c8-c06ed75fa6fc\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"permissions\": [\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"id\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"name\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"description\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"query\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_by\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"created_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"updated_at\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_roles\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"number_of_affected_users\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ],\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"type\": \"custom\"\n        }\n      ],\n      \"created_by\": \"user@example.com\",\n      \"key\": \"1234567890abcdef1234567890abcdef\",\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"last_access_at\": \"2017-07-14T16:53:42Z\"\n    }\n  ],\n  \"metadata\": {\n    \"page_size\": 6289,\n    \"total_count\": 7062,\n    \"last_page\": 6103,\n    \"time_ms\": 6606\n  },\n  \"allowed_roles\": [\n    {\n      \"id\": \"721d3fe2-2756-98c4-87f8-821b58498c59\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"permissions\": [\n        {\n          \"id\": \"4f739459-8423-3455-68c9-bf27af7063d3\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 9499,\n          \"number_of_affected_users\": 6784\n        },\n        {\n          \"id\": \"3f222546-a563-45ba-c2ce-eaab4c321165\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 3224,\n          \"number_of_affected_users\": 2260\n        }\n      ],\n      \"created_by\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"name\": \"Sarah O'Connor\",\n        \"email\": \"string\"\n      },\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"updated_at\": \"2017-07-14T16:53:42Z\",\n      \"type\": \"schema-only\"\n    },\n    {\n      \"id\": \"992552c9-42ab-a6d1-e873-ea0ea5f46ca0\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"permissions\": [\n        {\n          \"id\": \"6c9bf13c-35a4-ebbf-8be1-7c2e3566d845\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 8521,\n          \"number_of_affected_users\": 9440\n        },\n        {\n          \"id\": \"1f651910-aaf2-e8f6-9553-22acdbe66c5a\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 5572,\n          \"number_of_affected_users\": 8532\n        }\n      ],\n      \"created_by\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"name\": \"Sarah O'Connor\",\n        \"email\": \"string\"\n      },\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"updated_at\": \"2017-07-14T16:53:42Z\",\n      \"type\": \"schema-only\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ec38dbda-965d-4b2a-8072-46d9de0b0c44",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68315675-650d-4afc-84f7-957d720a55de",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "17197798-d0ed-45e5-b63b-1bc7aa8b60bb",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "27ec0366-d1ad-44d5-85c0-e2f841b240b1",
+          "name": "Platform Create API Key",
+          "request": {
+            "name": "Platform Create API Key",
+            "description": {
+              "content": "Create new API Key.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "apikeys"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"<string>\",\n  \"roles\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "8a8ce3ae-bdef-4255-9fd7-a5fad99e4b59",
+              "name": "Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n  \"name\": \"cli-api-key\",\n  \"expires_at\": \"2017-07-14T16:53:42Z\",\n  \"expired\": false,\n  \"roles\": [\n    {\n      \"id\": \"e1c20779-0b89-8545-50ec-69737d6969d6\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"permissions\": [\n        {\n          \"id\": \"f3c5633d-c458-13da-c398-cf62d58237cb\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 195,\n          \"number_of_affected_users\": 9764\n        },\n        {\n          \"id\": \"558ff70b-0ac0-647c-3b45-676d224c53af\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 598,\n          \"number_of_affected_users\": 859\n        }\n      ],\n      \"created_by\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"name\": \"Sarah O'Connor\",\n        \"email\": \"string\"\n      },\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"updated_at\": \"2017-07-14T16:53:42Z\",\n      \"type\": \"admin:write\"\n    },\n    {\n      \"id\": \"243f942a-ac1c-ff44-19bd-ba59e4fd14f0\",\n      \"name\": \"string\",\n      \"description\": \"string\",\n      \"permissions\": [\n        {\n          \"id\": \"8ddd11b0-0548-f88a-f074-8e153d4796fe\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 7209,\n          \"number_of_affected_users\": 6205\n        },\n        {\n          \"id\": \"78ee7651-c1c7-d512-2414-0992621bb140\",\n          \"name\": \"string\",\n          \"description\": \"string\",\n          \"query\": \"string\",\n          \"created_by\": {\n            \"id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"email\": \"string\"\n          },\n          \"created_at\": \"2017-07-14T16:53:42Z\",\n          \"updated_at\": \"2017-07-14T16:53:42Z\",\n          \"number_of_affected_roles\": 7880,\n          \"number_of_affected_users\": 3950\n        }\n      ],\n      \"created_by\": {\n        \"id\": \"12345678-1234-1234-1234-1234567890ab\",\n        \"name\": \"Sarah O'Connor\",\n        \"email\": \"string\"\n      },\n      \"created_at\": \"2017-07-14T16:53:42Z\",\n      \"updated_at\": \"2017-07-14T16:53:42Z\",\n      \"type\": \"general:write\"\n    }\n  ],\n  \"created_by\": \"user@example.com\",\n  \"key\": \"1234567890abcdef1234567890abcdef\",\n  \"created_at\": \"2017-07-14T16:53:42Z\",\n  \"last_access_at\": \"2017-07-14T16:53:42Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c0423bf9-bb59-48e1-9c73-fda97789e551",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8130,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4f85f9b4-96da-45bf-9545-6bbdbebdf4eb",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f7d27915-9e3c-4935-9425-cd02b45ae588",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8130,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e81b46c0-248a-426b-abe2-374dac08ca72",
+              "name": "UnprocessableEntity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8130,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7dd8142b-2f95-4888-9758-010c14b70bb1",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expires_at\": \"<dateTime>\",\n  \"name\": \"cli-api-key\",\n  \"roles\": [\n    \"a690b939-6682-902b-5c47-c4451bdcc8c2\",\n    \"66f43d9c-34aa-97ed-2249-2274d7f06f34\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4d7f0e95-e06f-4da4-a47b-121d25c9a493",
+          "name": "Platform Delete API Key",
+          "request": {
+            "name": "Platform Delete API Key",
+            "description": {
+              "content": "Delete API Key. This will remove any future access by this API Key.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "apikeys",
+                ":apikey_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "apikey_id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ef44572a-bef6-4c88-bb69-b1c8770f08c9",
+              "name": "Deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2381b2f3-a680-4ce3-bc48-c98fbe82bcfe",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 2010,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "35064f2a-99df-4b31-9deb-6fa72619c88a",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "de33e420-cee3-45a1-97f7-2370572503b2",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "005f68c8-1e80-4708-ab6c-ac79134fc5b1",
+              "name": "UnprocessableEntity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 2010,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "16566b76-bb5e-4209-86b2-d4eeae4ead1e",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "apikeys",
+                    ":apikey_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "apikey_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 9153\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "bde46e1e-e035-4eab-90eb-f9c73f2f2472",
+    "name": "CloudQuery Platform OpenAPI Spec admin api-keys API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.\n### Authentication\nThe API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.\nThe base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.\n### Example Request\nTo test your connection to the API, we can use the `/plugins` endpoint. For example:\n`curl -v -H \"Authorization: Bearer $CLOUDQUERY_API_KEY\" \\ https://cloudquery.mycompany.com/api/plugins`\n\n\nContact Support:\n Name: CloudQuery Support Team\n Email: support@cloudquery.io",
+      "type": "text/plain"
+    }
+  }
+}

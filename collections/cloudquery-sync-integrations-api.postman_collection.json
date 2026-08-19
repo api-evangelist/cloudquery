@@ -1,0 +1,209 @@
+{
+  "item": [
+    {
+      "id": "3a4dc94e-e68f-4607-82b3-b286b963bcdd",
+      "name": "sync-integrations",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "2814b4bf-1de5-468a-b25a-7715cdc33c22",
+          "name": "Platform List Sync Integration Groups",
+          "request": {
+            "name": "Platform List Sync Integration Groups",
+            "description": {
+              "content": "List integrations grouped by onboarding ID",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "sync-integration-groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "198f8ebf-bce3-4f35-9fab-7ba3cdeb057f",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "sync-integration-groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"items\": [\n    {\n      \"integrations\": [\n        {\n          \"name\": \"DBaU\",\n          \"display_name\": \"Human Readable Name\",\n          \"source\": {\n            \"path\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"version\": \"v1.2.3\",\n            \"tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"env\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"spec\": {\n              \"key_0\": \"string\"\n            },\n            \"test_connection_id\": \"12345678-1234-1234-1234-1234567890ab\",\n            \"skip_tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"last_update_source\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"onboarding_id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"unified_sync_kind\": \"asset_inventory_metadata\"\n          },\n          \"plugin\": {\n            \"team_name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"kind\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"release_stage\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"logo\": \"https://storage.googleapis.com/cq-cloud-images/9ac4cb31-e971-4879-8619-87dc22b0f98e\",\n            \"display_name\": \"AWS Source Plugin\",\n            \"official\": false,\n            \"short_description\": \"Sync data from AWS to any destination\",\n            \"tier\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"usd_per_row\": \"0.0001\",\n            \"free_rows_per_month\": 1000,\n            \"price_category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"homepage\": \"https://cloudquery.io\",\n            \"repository\": \"https://github.com/cloudquery/cloudquery\",\n            \"public\": false\n          },\n          \"destinations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"schedule\": \"string\",\n          \"disabled\": false,\n          \"created_at\": \"1967-07-01T12:57:16.119Z\",\n          \"updated_at\": \"1953-05-12T21:26:57.509Z\",\n          \"created_by\": \"string\"\n        },\n        {\n          \"name\": \"gqBcXCxYB9\",\n          \"display_name\": \"Human Readable Name\",\n          \"source\": {\n            \"path\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"version\": \"v1.2.3\",\n            \"tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"env\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"spec\": {\n              \"key_0\": 241,\n              \"key_1\": \"string\"\n            },\n            \"test_connection_id\": \"12345678-1234-1234-1234-1234567890ab\",\n            \"skip_tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"last_update_source\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"onboarding_id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"unified_sync_kind\": \"asset_inventory\"\n          },\n          \"plugin\": {\n            \"team_name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"kind\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"release_stage\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"logo\": \"https://storage.googleapis.com/cq-cloud-images/9ac4cb31-e971-4879-8619-87dc22b0f98e\",\n            \"display_name\": \"AWS Source Plugin\",\n            \"official\": false,\n            \"short_description\": \"Sync data from AWS to any destination\",\n            \"tier\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"usd_per_row\": \"0.0001\",\n            \"free_rows_per_month\": 1000,\n            \"price_category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"homepage\": \"https://cloudquery.io\",\n            \"repository\": \"https://github.com/cloudquery/cloudquery\",\n            \"public\": true\n          },\n          \"destinations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"schedule\": \"string\",\n          \"disabled\": false,\n          \"created_at\": \"1973-03-17T05:34:44.596Z\",\n          \"updated_at\": \"1978-02-12T05:26:26.239Z\",\n          \"created_by\": \"string\"\n        }\n      ],\n      \"onboarding_id\": \"bc893b91-610f-87e2-9ca0-3023b217a088\"\n    },\n    {\n      \"integrations\": [\n        {\n          \"name\": \"I\",\n          \"display_name\": \"Human Readable Name\",\n          \"source\": {\n            \"path\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"version\": \"v1.2.3\",\n            \"tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"env\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"spec\": {\n              \"key_0\": false,\n              \"key_1\": 3262\n            },\n            \"test_connection_id\": \"12345678-1234-1234-1234-1234567890ab\",\n            \"skip_tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"last_update_source\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"onboarding_id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"unified_sync_kind\": \"cost_and_usage\"\n          },\n          \"plugin\": {\n            \"team_name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"kind\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"release_stage\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"logo\": \"https://storage.googleapis.com/cq-cloud-images/9ac4cb31-e971-4879-8619-87dc22b0f98e\",\n            \"display_name\": \"AWS Source Plugin\",\n            \"official\": true,\n            \"short_description\": \"Sync data from AWS to any destination\",\n            \"tier\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"usd_per_row\": \"0.0001\",\n            \"free_rows_per_month\": 1000,\n            \"price_category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"homepage\": \"https://cloudquery.io\",\n            \"repository\": \"https://github.com/cloudquery/cloudquery\",\n            \"public\": true\n          },\n          \"destinations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"schedule\": \"string\",\n          \"disabled\": false,\n          \"created_at\": \"2005-06-10T18:16:11.292Z\",\n          \"updated_at\": \"1961-10-30T18:05:46.493Z\",\n          \"created_by\": \"string\"\n        },\n        {\n          \"name\": \"lFjiUVSzFw\",\n          \"display_name\": \"Human Readable Name\",\n          \"source\": {\n            \"path\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"version\": \"v1.2.3\",\n            \"tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"env\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"spec\": {\n              \"key_0\": 8424.82390369502\n            },\n            \"test_connection_id\": \"12345678-1234-1234-1234-1234567890ab\",\n            \"skip_tables\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ],\n            \"last_update_source\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"onboarding_id\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"unified_sync_kind\": \"asset_inventory_metadata\"\n          },\n          \"plugin\": {\n            \"team_name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"name\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"kind\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"release_stage\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"created_at\": \"2017-07-14T16:53:42Z\",\n            \"updated_at\": \"2017-07-14T16:53:42Z\",\n            \"logo\": \"https://storage.googleapis.com/cq-cloud-images/9ac4cb31-e971-4879-8619-87dc22b0f98e\",\n            \"display_name\": \"AWS Source Plugin\",\n            \"official\": false,\n            \"short_description\": \"Sync data from AWS to any destination\",\n            \"tier\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"usd_per_row\": \"0.0001\",\n            \"free_rows_per_month\": 1000,\n            \"price_category\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"homepage\": \"https://cloudquery.io\",\n            \"repository\": \"https://github.com/cloudquery/cloudquery\",\n            \"public\": true\n          },\n          \"destinations\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"schedule\": \"string\",\n          \"disabled\": false,\n          \"created_at\": \"2019-12-20T18:11:04.059Z\",\n          \"updated_at\": \"1960-05-14T22:41:28.029Z\",\n          \"created_by\": \"string\"\n        }\n      ],\n      \"onboarding_id\": \"4b181ca9-fadc-6d89-8278-2265d072acce\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0e5e2bb5-2d27-4050-9ff5-8b10158fb2b6",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "sync-integration-groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8093\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a94f1202-5b21-47bc-ad1a-fb6712ad5f5a",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "sync-integration-groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8093\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "eee552b7-bb88-4044-9f09-cacf6ddbe058",
+    "name": "CloudQuery Platform OpenAPI Spec admin sync-integrations API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.\n### Authentication\nThe API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.\nThe base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.\n### Example Request\nTo test your connection to the API, we can use the `/plugins` endpoint. For example:\n`curl -v -H \"Authorization: Bearer $CLOUDQUERY_API_KEY\" \\ https://cloudquery.mycompany.com/api/plugins`\n\n\nContact Support:\n Name: CloudQuery Support Team\n Email: support@cloudquery.io",
+      "type": "text/plain"
+    }
+  }
+}

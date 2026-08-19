@@ -1,0 +1,1530 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin syncs API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "syncs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformCreateSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-destination-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test destination connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTestConnectionForSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnectionLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestinationTestConnectionLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync destination test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-destination-test-connections/:sync_destination_test_connection_id/promote",
+            "params": [
+              {
+                "name": "sync_destination_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote a sync destination test connection to a sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync destination definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncDestinationSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name/syncs",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTestConnectionForSyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-destinations/:sync_destination_name/test-connections/:sync_test_connection_id",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get test connection details for sync destination."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-source-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test source connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTestConnectionForSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnectionLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSourceTestConnectionLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync source test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformPromoteSyncSourceTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/sync-source-test-connections/:sync_source_test_connection_id/promote",
+            "params": [
+              {
+                "name": "sync_source_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Promote a sync source test connection to a sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncIntegrationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-integration-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an integration test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformListV2SyncIntegrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-integrations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List sync integrations"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-integrations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new integration associated with a completed test connection"
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a sync integration by name"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update attributes of an integration"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteV2SyncIntegration",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/v2/sync-integrations/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "delete_data",
+                "value": "",
+                "type": "query",
+                "description": "If true, also delete data associated with this integration from the relevant destinations."
+              }
+            ]
+          },
+          "docs": "Delete an integration"
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncSources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync source definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync source definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Source definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Source definition. Any syncs relying on this source must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncSourceSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name/syncs",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTestConnectionForSyncSource",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-sources/:sync_source_name/test-connections/:sync_test_connection_id",
+            "params": [
+              {
+                "name": "sync_source_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_test_connection_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get test connection details for sync source."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync transformer definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync transformer definition."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Transformer definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSyncTransformer",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Transformer definition. Any syncs relying on this transformer must be deleted first."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformerSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name/syncs",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Syncs for a given sync transformer."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncTransformerSyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-transformers/:sync_transformer_name/sync-destinations",
+            "params": [
+              {
+                "name": "sync_transformer_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Sync Destinations for a given sync transformer."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncUpgrades",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/sync-upgrades",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "path",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "platform_version",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all version upgrades for syncs"
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List all Syncs."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/syncs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create new Sync definition. Sync runs can be scheduled automatically, or triggered manually after sync is created."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a Sync"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSync",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/syncs/:sync_name",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete Sync. This will delete Sync configuration and all associated sync runs, but will not delete the associated source and destination(s). These will need to be deleted separately."
+        },
+        {
+          "info": {
+            "name": "PlatformListSyncRuns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "migration_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all Sync Runs."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Create new SyncRun. This will trigger a manual job run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a Sync Run."
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateSyncRun",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a SyncRun"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunLogsQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/logs/query",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "download",
+                "value": "",
+                "type": "query",
+                "description": "Whether to generate a downloadable file for the response."
+              }
+            ]
+          },
+          "docs": "Get logs for a sync run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunLogsLive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/logs/live",
+            "headers": [
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Get live logs for a sync run."
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunStats",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/stats",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get statistics on a Sync Run"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSyncRunTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/syncs/:sync_name/runs/:sync_run_id/tables",
+            "params": [
+              {
+                "name": "sync_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "sync_run_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sync run table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              }
+            ]
+          },
+          "docs": "Get table details on a Sync Run"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncDestinationTestConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-destination-test-connections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a test destination connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sync sort direction options"
+              }
+            ]
+          },
+          "docs": "List all sync destination definitions."
+        },
+        {
+          "info": {
+            "name": "PlatformCreateV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v2/sync-destinations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create sync destination based on test connection."
+        },
+        {
+          "info": {
+            "name": "PlatformGetV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a single sync destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformPatchV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a Sync Destination definition."
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteV2SyncDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/v2/sync-destinations/:sync_destination_name",
+            "params": [
+              {
+                "name": "sync_destination_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a Sync Destination definition. Any syncs relying on this destination must be deleted first."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,297 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin users API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListUsers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "user_search",
+                "value": "",
+                "type": "query",
+                "description": "Search by user name or email"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "query",
+                "description": "Search by user role ID"
+              }
+            ]
+          },
+          "docs": "List all users"
+        },
+        {
+          "info": {
+            "name": "PlatformAddUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add new user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get user details"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update user"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:user_id",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete user"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteUserTOTP",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:user_id/totp",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Disable/Reset MFA for a specific user"
+        },
+        {
+          "info": {
+            "name": "PlatformGetCurrentUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/user"
+          },
+          "docs": "Get the current authenticated user from the OAuth token\n"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateCurrentUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/user",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update attributes for the current authenticated user from the OAuth token"
+        },
+        {
+          "info": {
+            "name": "PlatformAuthenticateUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/authenticate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Authenticate a user with password"
+        },
+        {
+          "info": {
+            "name": "PlatformCheckUserAuthStatus",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/user/authenticated-status"
+          },
+          "docs": "Return the authentication state of the current request along with the MFA\nand SAML configuration the frontend needs to render the login UI. Missing\nor invalid credentials still produce a 200 response rather than 401/205,\nso clients can probe auth state without handling unauthorized responses.\nServer-side failures (e.g. database unavailable) may still surface as 5xx.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformChangeUserPassword",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/change-password",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change user password"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPVerify",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/totp/verify",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Verify a one time password for MFA"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPSetup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/totp"
+          },
+          "docs": "Set up MFA for the current user"
+        },
+        {
+          "info": {
+            "name": "PlatformUserTOTPDelete",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/user/totp"
+          },
+          "docs": "Disable MFA for the current user"
+        },
+        {
+          "info": {
+            "name": "PlatformLoginUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start a session using ID token"
+        },
+        {
+          "info": {
+            "name": "PlatformLogoutUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/user/login"
+          },
+          "docs": "Logout a session"
+        },
+        {
+          "info": {
+            "name": "PlatformMagicLoginUser",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/user/magic-login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Exchange a one-shot magic-link token (minted by CloudQuery cloud) for a platform ID token. The handler validates the token by calling cloud's consume endpoint and, on success, looks up the local user by email and mints an ID token. The frontend then exchanges the ID token for a session cookie via the existing `POST /user/login` endpoint.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

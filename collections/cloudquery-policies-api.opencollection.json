@@ -1,0 +1,484 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin policies API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "policies",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListPolicies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in policy name and description"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List all policies for a team"
+        },
+        {
+          "info": {
+            "name": "PlatformCreatePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policies",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a policy by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdatePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformDeletePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformTogglePolicy",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policies/:policy_id/toggle",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Toggle a policy's status (active/paused)"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyViolations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id/violations",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Text search term to filter violations by resource_type_label, name, account_name, cloud, or region"
+              }
+            ]
+          },
+          "docs": "Get violations for a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyViolationsHistory",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/:policy_id/violations-history",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "start_time",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end_time",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Get violation history for a policy"
+        },
+        {
+          "info": {
+            "name": "PlatformGetPolicyMetrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/metrics",
+            "params": [
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get policy metrics summary"
+        },
+        {
+          "info": {
+            "name": "PlatformGetViolationsByDomain",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/violations-by-domain",
+            "params": [
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get violations grouped by domain"
+        },
+        {
+          "info": {
+            "name": "PlatformGetViolationsHistory",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policies/violations-history",
+            "params": [
+              {
+                "name": "start_date",
+                "value": "",
+                "type": "query",
+                "description": "Start date for the query range (YYYY-MM-DD)"
+              },
+              {
+                "name": "end_date",
+                "value": "",
+                "type": "query",
+                "description": "End date for the query range (YYYY-MM-DD)"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by severities (policy matches any)"
+              },
+              {
+                "name": "domain",
+                "value": "",
+                "type": "query",
+                "description": "Filter by domain"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "Get violations history over time"
+        },
+        {
+          "info": {
+            "name": "PlatformListPolicyGroups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policy-groups",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search in policy group name and description"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter to policy groups that contain at least one policy with any of these severities"
+              }
+            ]
+          },
+          "docs": "List all policy groups"
+        },
+        {
+          "info": {
+            "name": "PlatformCreatePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/policy-groups",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformListPoliciesInGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction"
+              }
+            ]
+          },
+          "docs": "List policies in a policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdatePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a policy group"
+        },
+        {
+          "info": {
+            "name": "PlatformDeletePolicyGroup",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/policy-groups/:policy_group_id",
+            "params": [
+              {
+                "name": "policy_group_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a policy group"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,61 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin notifications API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "notifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListNotifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "severities",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy severities (policy matches any)"
+              },
+              {
+                "name": "policy_group_ids",
+                "value": "",
+                "type": "query",
+                "description": "Filter by policy groups (policy matches any)"
+              }
+            ]
+          },
+          "docs": "List all notifications for triggered, enabled, policy-bound alerts"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,109 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin audit-logs API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "audit-logs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAuditLogs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/audit-logs",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "query",
+                "description": "Filter by user ID"
+              },
+              {
+                "name": "event_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by event type"
+              },
+              {
+                "name": "entity_display_name",
+                "value": "",
+                "type": "query",
+                "description": "Filter by entity display name"
+              },
+              {
+                "name": "user_ip_address",
+                "value": "",
+                "type": "query",
+                "description": "Filter by user IP address"
+              },
+              {
+                "name": "start_time",
+                "value": "",
+                "type": "query",
+                "description": "Filter by start time (inclusive)"
+              },
+              {
+                "name": "end_time",
+                "value": "",
+                "type": "query",
+                "description": "Filter by end time (inclusive)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search across user name, event type, entity display name, and user IP address"
+              }
+            ]
+          },
+          "docs": "List audit log events with pagination and filtering"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAuditLog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/audit-logs/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a specific audit log event by ID"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

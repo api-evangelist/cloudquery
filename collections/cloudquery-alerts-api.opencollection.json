@@ -1,0 +1,317 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin alerts API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "alerts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllAlerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/alerts",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "state",
+                "value": "",
+                "type": "query",
+                "description": "Alert states"
+              },
+              {
+                "name": "enabled",
+                "value": "",
+                "type": "query",
+                "description": "Enabled"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Query tags"
+              }
+            ]
+          },
+          "docs": "List all alerts"
+        },
+        {
+          "info": {
+            "name": "PlatformTestUnsavedAlert",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/alerts/test",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "query",
+                "description": "ID of the query to fill in the alert"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Test an unsaved alert"
+        },
+        {
+          "info": {
+            "name": "PlatformListAllNotificationDestinations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destinations",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List all notification destinations"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destinations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformTestUnsavedNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destinations/test",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "query",
+                "description": "Optional ID of an existing notification destination. When provided, secret headers with empty values are resolved from the existing destination's stored encrypted values. This supports the editing flow where the frontend receives masked (empty) secret header values."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Test an unsaved notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformGetNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformGetNotificationDestinationAlerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id/alerts",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Get notification destination alerts"
+        },
+        {
+          "info": {
+            "name": "PlatformTestNotificationDestination",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notifications/destination/:notification_destination_id/test",
+            "params": [
+              {
+                "name": "notification_destination_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Test a notification destination"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateSlackConnection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/slack",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create Slack connection"
+        },
+        {
+          "info": {
+            "name": "PlatformListSlackChannels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/slack/:id/channels",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Slack connection ID"
+              },
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Filter channels by name (case-insensitive partial match)"
+              }
+            ]
+          },
+          "docs": "List Slack channels for a connection"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAlert",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/queries/:query_id/alert",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete an alert associated with a saved query"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

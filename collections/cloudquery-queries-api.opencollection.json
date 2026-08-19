@@ -1,0 +1,477 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin queries API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "queries",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllQueries",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Query tags"
+              },
+              {
+                "name": "name_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "query_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "alert_configured",
+                "value": "",
+                "type": "query",
+                "description": "Alert configured"
+              },
+              {
+                "name": "alert_message_filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "alert_enabled",
+                "value": "",
+                "type": "query",
+                "description": "Alert enabled"
+              },
+              {
+                "name": "column_filter",
+                "value": "",
+                "type": "query",
+                "description": "Filter queries that return all specified columns"
+              }
+            ]
+          },
+          "docs": "List all queries"
+        },
+        {
+          "info": {
+            "name": "PlatformCheckQuerySyntax",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/check-syntax",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Validate the syntax of a ClickHouse SQL query without executing it. Returns 200 if the syntax is valid, or 400 with an error message if not.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformGetQueryColumns",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/columns",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Return the list of output column names a SELECT query would produce, without executing it. Columns from `SELECT *` are resolved against the referenced table schemas. Returns 400 if the query cannot be parsed or is not a SELECT.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformExecuteAdHocQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/execute",
+            "params": [
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Run an ad-hoc SQL query against any table.\nFurther filtering can optionally be applied on top of the raw SQL results using the optional parameters. Filtering can be useful in situations where a saved query needs to be further filtered, grouped or paginated, such as in dashboards or reports.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformSaveQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/save",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save a query to execute later"
+        },
+        {
+          "info": {
+            "name": "PlatformListQueryTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/tags",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Query Tags"
+        },
+        {
+          "info": {
+            "name": "PlatformGetSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/queries/:query_id",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformExecuteSavedQuery",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/:query_id/execute",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Execute a saved query"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Query Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformQuerySaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/queries/:query_id/filters",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Query Filter"
+        },
+        {
+          "info": {
+            "name": "PlatformQueryListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/queries/:query_id/filters/tags",
+            "params": [
+              {
+                "name": "query_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Saved Query"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilterTags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters/tags",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Filter Tags For A Table"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

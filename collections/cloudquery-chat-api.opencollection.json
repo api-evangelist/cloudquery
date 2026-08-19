@@ -1,0 +1,217 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin chat API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "chat",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send a message to the AI agent orchestrator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/agent-chat",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends a user message to the multi-agent orchestrator for processing. The orchestrator plans and executes actions across domain-specific agents (exploration, summary, remediation, policy, integration) and returns a summarized response."
+        },
+        {
+          "info": {
+            "name": "Get the persisted history of an agent conversation session",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent-chat/:session_id",
+            "params": [
+              {
+                "name": "session_id",
+                "value": "",
+                "type": "path",
+                "description": "The conversation session identifier."
+              }
+            ]
+          },
+          "docs": "Returns the conversation turns persisted on the backend for the given session_id, in ascending order. Used by the frontend to recover the response when the original POST /agent-chat call was cancelled (e.g. an HTTP timeout) before the agent service finished producing its answer. The agent service keeps running in the background and persists the turn even after the original caller disconnects, so a subsequent GET surfaces that result. Unknown session ids return 200 with an empty `turns` list rath"
+        },
+        {
+          "info": {
+            "name": "PlatformListAgentCustomContexts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent/custom-contexts"
+          },
+          "docs": "List custom contexts for the current tenant"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/agent/custom-contexts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new custom context for the agent"
+        },
+        {
+          "info": {
+            "name": "PlatformGetAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a custom context by ID"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a custom context"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteAgentCustomContext",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a custom context"
+        },
+        {
+          "info": {
+            "name": "PlatformToggleAgentCustomContextAutoInclude",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/agent/custom-contexts/:agent_custom_context_id/toggle-auto-include",
+            "params": [
+              {
+                "name": "agent_custom_context_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Toggle a custom context's auto_include flag"
+        },
+        {
+          "info": {
+            "name": "Start a new chat conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/conversations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new AI chat conversation"
+        },
+        {
+          "info": {
+            "name": "Retrieve a chat conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/conversations/:conversation_id",
+            "params": [
+              {
+                "name": "conversation_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the chat conversation"
+              }
+            ]
+          },
+          "docs": "Get details of an existing AI chat conversation. Useful for polling for updates."
+        },
+        {
+          "info": {
+            "name": "Add a message to an existing conversation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/conversations/:conversation_id",
+            "params": [
+              {
+                "name": "conversation_id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the chat conversation"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Send a new message to an existing AI chat conversation"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

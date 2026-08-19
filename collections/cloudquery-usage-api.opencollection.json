@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin usage API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "usage",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformGetTeamUsageSummary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/usage-summary",
+            "params": [
+              {
+                "name": "metrics",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "aggregation_period",
+                "value": "",
+                "type": "query",
+                "description": "An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month."
+              }
+            ]
+          },
+          "docs": "Get a summary of usage for the specified time range."
+        },
+        {
+          "info": {
+            "name": "PlatformGetGroupedTeamUsageSummary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/usage-summary/:group_by",
+            "params": [
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "metrics",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "aggregation_period",
+                "value": "",
+                "type": "query",
+                "description": "An aggregation period to sum data over. In other words, data will be returned at this granularity. Currently only supports day and month."
+              }
+            ]
+          },
+          "docs": "Get a grouped summary of usage for the specified time range."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

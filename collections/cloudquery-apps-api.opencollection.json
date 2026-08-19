@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin apps API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "apps",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformUpsertAppsByName",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/apps/upsert-by-name",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Idempotently upsert a list of apps by name within the caller's tenant. For each name, returns its existing app id (if the name already exists) or a freshly-generated one (if newly created). Duplicate names in the request are deduplicated server-side. Intended primarily for service-to-service use from accessory writers that materialize app memberships."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

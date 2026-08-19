@@ -1,0 +1,46 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin healthcheck API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "healthcheck",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformIndex",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          },
+          "docs": "Index endpoint, returns 200"
+        },
+        {
+          "info": {
+            "name": "PlatformHealthCheck",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/healthcheck"
+          },
+          "docs": "Health check endpoint, returns 200"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

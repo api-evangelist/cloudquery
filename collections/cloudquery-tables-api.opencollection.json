@@ -1,0 +1,465 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin tables API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "tables",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListTables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Tables"
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesData",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/data",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "Get all sources and their associated tables. Returns data in the format needed for the delete action."
+        },
+        {
+          "info": {
+            "name": "PlatformTablesDataAction",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/data",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Perform an action on table data across multiple sources. Supported actions: delete (drops partitions for specified tenant/source/table combinations)."
+        },
+        {
+          "info": {
+            "name": "PlatformTableListRows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/data",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard."
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Table sort by options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Table sort direction options. This sorts the rows that are returned in the result set."
+              },
+              {
+                "name": "group_by",
+                "value": "",
+                "type": "query",
+                "description": "Table group by options. This groups the rows that are returned in the result set by the given columns."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              }
+            ]
+          },
+          "docs": "List Table Rows"
+        },
+        {
+          "info": {
+            "name": "PlatformTableRowById",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/data/:table_row_id",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "table_row_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              }
+            ]
+          },
+          "docs": "Get Table row"
+        },
+        {
+          "info": {
+            "name": "PlatformTableSchema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/schema",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get Table Schema"
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesRelations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/relations"
+          },
+          "docs": "Get resource relations for all configured tables."
+        },
+        {
+          "info": {
+            "name": "PlatformGetTablesRelatedResources",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/:table_name/related-resources",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path",
+                "description": "Source table name (e.g. `aws_ec2_instances`)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Execute the curated relation queries defined for the given source\ntable against a specific row, returning the related resources grouped\nby relation title. The relation templates live in\n`api/relations/configs/*.yaml` and use `{{field_name}}` placeholders\nthat are substituted from the request's `platform_id`-resolved row or\nexplicit `fields` map before each relation query is executed against\nClickHouse.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformBatchTableSchemas",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/schemas",
+            "params": [
+              {
+                "name": "tables",
+                "value": "",
+                "type": "query",
+                "description": "A list of table names to retrieve schemas for"
+              }
+            ]
+          },
+          "docs": "Get Table Schemas"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListColumns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Get Table Columns"
+        },
+        {
+          "info": {
+            "name": "PlatformTableColumnListValues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns/:column_name/values",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter_mode",
+                "value": "",
+                "type": "query",
+                "description": "Table filter mode.\n\nSmart mode switches between column and search mode based on the filtered table and\n\nSearch mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.\nSearch mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.\nSearch mode may also be used against cloud_assets but it will only return results from resource tables.\n\nColumn mode searches purely using the columns in the table.\nIt will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.\n"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Get Table Column Values"
+        },
+        {
+          "info": {
+            "name": "PlatformTableColumnListGrouped",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/columns/:column_name/grouped",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "column_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Table filters. This filters the rows that are returned in the result set."
+              },
+              {
+                "name": "filter_id",
+                "value": "",
+                "type": "query",
+                "description": "Table filter IDs. These should be valid Saved Filter IDs. These filters\nwill be applied to the query results before returning them.\n"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              }
+            ]
+          },
+          "docs": "Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory's Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.\n"
+        },
+        {
+          "info": {
+            "name": "PlatformTableListFilters",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter tags"
+              }
+            ]
+          },
+          "docs": "List Table Filters"
+        },
+        {
+          "info": {
+            "name": "PlatformTableSaveFilter",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/tables/:table_name/filters",
+            "params": [
+              {
+                "name": "table_name",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Save Table Filter"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,262 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "CloudQuery Platform OpenAPI Spec admin rbac API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "rbac",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "PlatformListAllRBACPermissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/permissions",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction options"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter permissions by name or description."
+              }
+            ]
+          },
+          "docs": "List all permissions"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/rbac/permissions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformGetRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteRBACPermission",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/rbac/permissions/:permission_id",
+            "params": [
+              {
+                "name": "permission_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a permission"
+        },
+        {
+          "info": {
+            "name": "PlatformListAllRBACRoles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/roles",
+            "params": [
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "The number of results per page (max 1000)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number of the results to fetch"
+              },
+              {
+                "name": "sort_by",
+                "value": "",
+                "type": "query",
+                "description": "Sort by options"
+              },
+              {
+                "name": "sort_dir",
+                "value": "",
+                "type": "query",
+                "description": "Sort direction options"
+              },
+              {
+                "name": "search_term",
+                "value": "",
+                "type": "query",
+                "description": "Filter roles by name or description."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "Filter roles by type."
+              }
+            ]
+          },
+          "docs": "List all roles"
+        },
+        {
+          "info": {
+            "name": "PlatformCreateRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/rbac/roles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a role"
+        },
+        {
+          "info": {
+            "name": "PlatformGetRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a role"
+        },
+        {
+          "info": {
+            "name": "PlatformUpdateRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a role (custom roles only)"
+        },
+        {
+          "info": {
+            "name": "PlatformDeleteRBACRole",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/rbac/roles/:role_id",
+            "params": [
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a role"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

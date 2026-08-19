@@ -1,0 +1,521 @@
+{
+  "item": [
+    {
+      "id": "3aa9ecc6-fe17-4a7f-996c-30ab8f2e561f",
+      "name": "notifications",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "34b71d79-ad9b-430b-9ab1-81aa5e38d275",
+          "name": "Platform List Notifications",
+          "request": {
+            "name": "Platform List Notifications",
+            "description": {
+              "content": "List all notifications for triggered, enabled, policy-bound alerts",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "notifications"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "per_page",
+                  "value": "100",
+                  "description": "The number of results per page (max 1000)."
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number of the results to fetch"
+                },
+                {
+                  "disabled": false,
+                  "key": "severities",
+                  "value": "<string>",
+                  "description": "Filter by policy severities (policy matches any)"
+                },
+                {
+                  "disabled": false,
+                  "key": "severities",
+                  "value": "<string>",
+                  "description": "Filter by policy severities (policy matches any)"
+                },
+                {
+                  "disabled": false,
+                  "key": "policy_group_ids",
+                  "value": "<uuid>",
+                  "description": "Filter by policy groups (policy matches any)"
+                },
+                {
+                  "disabled": false,
+                  "key": "policy_group_ids",
+                  "value": "<uuid>",
+                  "description": "Filter by policy groups (policy matches any)"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "71cdc3d1-c410-4ddc-a3c9-85b13b246f5e",
+              "name": "Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"e441e4f6-1275-b772-babe-ab102db48242\",\n      \"query_id\": \"ad51fefc-c18c-9835-4ded-82f69246d5d3\",\n      \"policy_id\": \"4e639c0c-958c-82ec-0df5-7f2518bb9f1b\",\n      \"message\": \"string\",\n      \"severity\": \"critical\",\n      \"state\": \"pending\",\n      \"total_violations\": 6707,\n      \"created_at\": \"1985-10-29T20:46:26.586Z\",\n      \"updated_at\": \"1990-05-14T23:36:43.368Z\",\n      \"last_evaluated_at\": \"1956-12-16T05:21:41.783Z\",\n      \"triggered_at\": \"1966-12-16T11:59:34.242Z\",\n      \"notification_destination\": {\n        \"id\": \"10b53bae-0008-09d4-2c0b-9d0c1cf44913\",\n        \"name\": \"Send to Slack\",\n        \"enabled\": false,\n        \"type\": \"webhook\",\n        \"url\": \"https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED\",\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"slack_channels\": [\n          \"string\",\n          \"string\"\n        ]\n      }\n    },\n    {\n      \"id\": \"ea5f2a61-94bd-3f1f-3463-75fed17330e7\",\n      \"query_id\": \"f222ffb6-7494-4911-cc49-7189b18401fd\",\n      \"policy_id\": \"5114a695-63bb-ffd7-20da-dc9290e3addd\",\n      \"message\": \"string\",\n      \"severity\": \"high\",\n      \"state\": \"unknown\",\n      \"total_violations\": 2268,\n      \"created_at\": \"2007-04-28T09:18:43.536Z\",\n      \"updated_at\": \"1974-07-14T12:18:45.046Z\",\n      \"last_evaluated_at\": \"1997-07-19T08:19:55.816Z\",\n      \"triggered_at\": \"1993-08-08T06:52:49.198Z\",\n      \"notification_destination\": {\n        \"id\": \"18f9911f-6089-9875-eaf0-de226c411060\",\n        \"name\": \"Send to Slack\",\n        \"enabled\": true,\n        \"type\": \"webhook\",\n        \"url\": \"https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED\",\n        \"created_at\": \"2017-07-14T16:53:42Z\",\n        \"updated_at\": \"2017-07-14T16:53:42Z\",\n        \"slack_channels\": [\n          \"string\",\n          \"string\"\n        ]\n      }\n    }\n  ],\n  \"metadata\": {\n    \"page_size\": 7351,\n    \"total_count\": 1950,\n    \"last_page\": 5772,\n    \"time_ms\": 4990\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b36627df-9d57-495f-a081-edefd12c5cb2",
+              "name": "Requires authentication",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8220\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b6886b3d-cf13-480b-b9c9-60f254bf1a2e",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 4506,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a8cc2751-3626-44b7-af89-064f5c832239",
+              "name": "Resource not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8220\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68319b86-8712-424e-bbd0-9c6cebb4a393",
+              "name": "UnprocessableEntity",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 4506,\n  \"errors\": [\n    \"string\",\n    \"string\"\n  ],\n  \"field_errors\": {\n    \"key_0\": \"string\",\n    \"key_1\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4fea3394-c398-4965-8b16-5b7589cb6088",
+              "name": "Internal Error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "per_page",
+                      "value": "100"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "medium"
+                    },
+                    {
+                      "key": "severities",
+                      "value": "critical"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "1d96153b-6852-9a90-5e76-e7c475f09d88"
+                    },
+                    {
+                      "key": "policy_group_ids",
+                      "value": "a93bfd39-b998-14ec-95f0-dfde773c4c93"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"status\": 8220\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "3f4181a0-80c7-4541-bb00-3741ee4ca0fa",
+    "name": "CloudQuery Platform OpenAPI Spec admin notifications API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.\n### Authentication\nThe API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.\nThe base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.\n### Example Request\nTo test your connection to the API, we can use the `/plugins` endpoint. For example:\n`curl -v -H \"Authorization: Bearer $CLOUDQUERY_API_KEY\" \\ https://cloudquery.mycompany.com/api/plugins`\n\n\nContact Support:\n Name: CloudQuery Support Team\n Email: support@cloudquery.io",
+      "type": "text/plain"
+    }
+  }
+}
