@@ -61,6 +61,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Admin
+  tags_raw:
   - admin
   properties:
   - type: OpenAPI
@@ -71,6 +73,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Alerts
+  tags_raw:
   - alerts
   properties:
   - type: OpenAPI
@@ -81,6 +85,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - APIKeys
+  tags_raw:
   - api-keys
   properties:
   - type: OpenAPI
@@ -91,6 +97,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Application
+  tags_raw:
   - apps
   properties:
   - type: OpenAPI
@@ -101,6 +109,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Audit Logs
+  tags_raw:
   - audit-logs
   properties:
   - type: OpenAPI
@@ -111,6 +121,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Chat
+  tags_raw:
   - chat
   properties:
   - type: OpenAPI
@@ -131,6 +143,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Filters
+  tags_raw:
   - filters
   properties:
   - type: OpenAPI
@@ -141,6 +155,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Health Check
+  tags_raw:
   - healthcheck
   properties:
   - type: OpenAPI
@@ -151,6 +167,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Insights
+  tags_raw:
   - insights
   properties:
   - type: OpenAPI
@@ -161,6 +179,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Notification
+  tags_raw:
   - notifications
   properties:
   - type: OpenAPI
@@ -171,6 +191,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Onboardings
+  tags_raw:
   - onboardings
   properties:
   - type: OpenAPI
@@ -191,6 +213,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Platform
+  tags_raw:
   - platform
   properties:
   - type: OpenAPI
@@ -201,6 +225,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Plugins
+  tags_raw:
   - plugins
   properties:
   - type: OpenAPI
@@ -211,6 +237,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Policies
+  tags_raw:
   - policies
   properties:
   - type: OpenAPI
@@ -221,6 +249,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Query
+  tags_raw:
   - queries
   properties:
   - type: OpenAPI
@@ -231,6 +261,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - RBAC
+  tags_raw:
   - rbac
   properties:
   - type: OpenAPI
@@ -241,6 +273,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Reports
+  tags_raw:
   - reports
   properties:
   - type: OpenAPI
@@ -261,6 +295,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Syncs
+  tags_raw:
   - syncs
   properties:
   - type: OpenAPI
@@ -271,6 +307,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Tables
+  tags_raw:
   - tables
   properties:
   - type: OpenAPI
@@ -281,6 +319,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Team
+  tags_raw:
   - teams
   properties:
   - type: OpenAPI
@@ -291,6 +331,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Usage
+  tags_raw:
   - usage
   properties:
   - type: OpenAPI
@@ -301,6 +343,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - User
+  tags_raw:
   - users
   properties:
   - type: OpenAPI
