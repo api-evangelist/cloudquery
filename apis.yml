@@ -121,7 +121,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - audit-logs
+  - Audit Logs
   tags_raw:
   - audit-logs
   properties:
@@ -155,7 +155,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - filters
+  - Filters
   tags_raw:
   - filters
   properties:
@@ -203,7 +203,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - onboardings
+  - Onboardings
   tags_raw:
   - onboardings
   properties:
@@ -261,7 +261,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - queries
+  - Query
   tags_raw:
   - queries
   properties:
@@ -273,7 +273,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - rbac
+  - RBAC
   tags_raw:
   - rbac
   properties:
@@ -307,7 +307,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - syncs
+  - Syncs
   tags_raw:
   - syncs
   properties:
