@@ -162,18 +162,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cloudquery-filters-api-openapi.yml
-- aid: cloudquery:cloudquery-healthcheck-api
-  name: CloudQuery healthcheck API
-  description: The healthcheck API from CloudQuery — 2 operation(s) for healthcheck.
-  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
-  baseURL: https://api.cloudquery.io
-  tags:
-  - Health Check
-  tags_raw:
-  - healthcheck
-  properties:
-  - type: OpenAPI
-    url: openapi/cloudquery-healthcheck-api-openapi.yml
 - aid: cloudquery:cloudquery-insights-api
   name: CloudQuery insights API
   description: The insights API from CloudQuery — 8 operation(s) for insights.
@@ -362,6 +350,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cloudquery-users-api-openapi.yml
+- aid: cloudquery:cloudquery-health-check-api
+  name: CloudQuery Health Check API
+  description: The Health Check API from CloudQuery — 2 operation(s) for health check.
+  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
+  baseURL: https://api.cloudquery.io
+  tags:
+  - Health Check
+  properties:
+  - type: OpenAPI
+    url: openapi/cloudquery-health-check-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/cloudquery-agentic-access.yml
