@@ -296,7 +296,7 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
-  - Syncs
+  - Sync
   tags_raw:
   - syncs
   properties:
