@@ -1,29 +1,15 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   contact:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
-
-    ### Authentication
-
-    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
-
-    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
-
-    ### Example Request
-
-    To test your connection to the API, we can use the `/plugins` endpoint. For example:
-
-    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
-
-    '
+  description: Welcome to the CloudQuery Platform API documentation!
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
   termsOfService: https://www.cloudquery.io/terms
-  title: CloudQuery Platform OpenAPI Spec admin sync-integrations API
+  title: CloudQuery Platform OpenAPI Spec Sync Integrations API
   version: 1.0.0
 security:
 - bearerAuth: []
@@ -56,6 +42,8 @@ paths:
           $ref: '#/components/responses/PlatformRequiresAuthentication'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform list sync integration groups
+      x-summary-source: derived
 components:
   schemas:
     PlatformSyncIntegrationGroup:
@@ -74,14 +62,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformSyncIntegrationV2'
-    PlatformPluginKind:
-      description: The kind of plugin, ie. source or destination.
-      type: string
-      example: source
-      enum:
-      - source
-      - destination
-      - transformer
     PlatformSyncRunStatus:
       description: The status of the sync run
       type: string
@@ -92,12 +72,101 @@ components:
       - cancelled
       - created
       - pending
-    PlatformSyncLastUpdateSource:
-      description: How was the source or destination been created or updated last
+    PlatformPluginCategory:
+      description: Supported categories for plugins
       type: string
       enum:
-      - yaml
-      - ui
+      - cloud-infrastructure
+      - databases
+      - sales-marketing
+      - engineering-analytics
+      - marketing-analytics
+      - shipment-tracking
+      - product-analytics
+      - cloud-finops
+      - project-management
+      - fleet-management
+      - security
+      - data-warehouses
+      - human-resources
+      - finance
+      - customer-support
+      - other
+    PlatformPluginReleaseStage:
+      description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
+
+        The Coming Soon stage is for plugins that are not yet ready for Preview, but users can subscribe to be notified when they are ready.
+
+        Both Preview and GA plugins follow semantic versioning. The main differences between the two stages are:
+
+        Preview plugins are still experimental and may have frequent breaking changes. Preview plugins might get deprecated due to lack of usage. Long Term Support with community Discord and bug fixes is only guaranteed for GA plugins. Premium plugins are often discounted or free during the Preview stage.'
+      type: string
+      enum:
+      - coming-soon
+      - preview
+      - ga
+      - deprecated
+    PlatformPluginName:
+      description: The unique name for the plugin.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: aws-source
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformSyncRunWorkerPhase:
+      description: Phase of the worker in the sync run
+      type: string
+      enum:
+      - Pending
+      - Running
+      - Succeeded
+      - Failed
+      - Unknown
+    PlatformSyncRunStatusReason:
+      description: The reason for the status
+      type: string
+      enum:
+      - error
+      - oom_killed
+      - partial_success
+      - ingestion_failed
+    PlatformPluginKind:
+      description: The kind of plugin, ie. source or destination.
+      type: string
+      example: source
+      enum:
+      - source
+      - destination
+      - transformer
+    PlatformPluginTier:
+      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
+      type: string
+      deprecated: true
+      enum:
+      - free
+      - paid
+      - open-core
+    PlatformSyncDestinationWriteMode:
+      type: string
+      description: Write mode for the destination
+      enum:
+      - append
+      - overwrite
+      - overwrite-delete-stale
+      default: overwrite-delete-stale
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
     PlatformSyncEnv:
       type: object
       description: Environment variable. Environment variables are assumed to be secret.
@@ -107,6 +176,39 @@ components:
         name:
           type: string
           description: Name of the environment variable
+    PlatformDisplayName:
+      description: A human-readable display name
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}\p{N}_][a-zA-Z\p{L}\p{N}_ \-'\(\)\[\]]*$
+      x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
+      type: string
+      example: Human Readable Name
+    PlatformOnboardingID:
+      description: ID of the cloud provider onboarding session
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: OnboardingID
+    PlatformSyncDestinationMigrateMode:
+      type: string
+      description: Migrate mode for the destination
+      enum:
+      - safe
+      - forced
+      default: safe
+    PlatformSyncRunWorkerStatus:
+      description: The worker information for a sync run
+      type: object
+      required:
+      - phase
+      properties:
+        phase:
+          $ref: '#/components/schemas/PlatformSyncRunWorkerPhase'
+          description: Phase that the worker is in
+        reason:
+          type: string
+          description: The reason for the status of the worker
     PlatformSyncIntegrationV2:
       type: object
       description: An integration definition
@@ -146,14 +248,6 @@ components:
           description: Time when the sync was updated
         created_by:
           type: string
-    PlatformPluginTier:
-      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
-      type: string
-      deprecated: true
-      enum:
-      - free
-      - paid
-      - open-core
     PlatformSyncRun:
       description: Managed Sync Run definition
       type: object
@@ -216,62 +310,67 @@ components:
         ingested:
           type: boolean
           description: Whether the sync run's data has been ingested
-    PlatformSyncIntegrationSourceV2:
-      description: Integration Source Definition
-      type: object
-      required:
-      - path
-      - version
-      - tables
-      - env
-      - spec
-      properties:
-        test_connection_id:
-          type: string
-          format: uuid
-          example: 12345678-1234-1234-1234-1234567890ab
-          description: unique ID of the test connection
-          x-go-name: TestConnectionID
-        path:
-          $ref: '#/components/schemas/PlatformSyncPluginPath'
-          example: cloudquery/aws
-        version:
-          type: string
-          description: Version of the plugin
-          example: v1.2.3
-        tables:
-          type: array
-          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
-          items:
+    PlatformSyncDestinationV2:
+      allOf:
+      - $ref: '#/components/schemas/PlatformSyncDestinationCreate'
+      - type: object
+        required:
+        - name
+        - display_name
+        - path
+        - version
+        - write_mode
+        - migrate_mode
+        - spec
+        - env
+        - created_at
+        - updated_at
+        - last_update_source
+        - draft
+        - transformers
+        - disabled
+        properties:
+          created_at:
             type: string
-        skip_tables:
-          type: array
-          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
-          items:
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was created
+          updated_at:
             type: string
-        spec:
-          type: object
-          additionalProperties: true
-          format: Plugin parameters, specific to each plugin
-        env:
-          description: Environment variables for the plugin. All environment variables will be stored as secrets.
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformSyncEnv'
-        last_update_source:
-          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
-        onboarding_id:
-          $ref: '#/components/schemas/PlatformOnboardingID'
-          description: ID of the onboarding that will be used to authenticate the source.
-        unified_sync_kind:
-          type: string
-          description: The kind of unified sync this source belongs to. Null for standalone integrations.
-          readOnly: true
-          enum:
-          - asset_inventory
-          - asset_inventory_cloudtrail
-          - asset_inventory_metadata
-          - cost_and_usage
+            format: date-time
+            example: '2023-07-14T16:53:42Z'
+            description: Time when the source was last updated
+          env:
+            description: Environment variables for the plugin.
+            type: array
+            items:
+              $ref: '#/components/schemas/PlatformSyncEnv'
+          draft:
+            type: boolean
+            description: If a sync destination is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
+          previous_version:
+            type: string
+            description: Previous version of the plugin during a version upgrade
+            example: v1.2.2
+          disabled:
+            type: boolean
+            description: If true, the sync destination is disabled and cannot be used in syncs.
+          last_run:
+            $ref: '#/components/schemas/PlatformSyncRun'
+          plugin:
+            $ref: '#/components/schemas/PlatformPlugin'
+    PlatformSyncPluginPath:
+      type: string
+      description: Plugin path in CloudQuery registry
+      pattern: ^cloudquery/[^/]+
+      x-pattern-message: should be in the format cloudquery/<name>
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
     PlatformPlugin:
       additionalProperties: false
       description: CloudQuery Plugin
@@ -355,43 +454,24 @@ components:
       - free_rows_per_month
       title: CloudQuery Plugin
       type: object
-    PlatformPluginName:
-      description: The unique name for the plugin.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: aws-source
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
-    PlatformSyncDestinationMigrateMode:
-      type: string
-      description: Migrate mode for the destination
-      enum:
-      - safe
-      - forced
-      default: safe
-    PlatformOnboardingID:
-      description: ID of the cloud provider onboarding session
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: OnboardingID
-    PlatformSyncRunWorkerPhase:
-      description: Phase of the worker in the sync run
+    PlatformSyncLastUpdateSource:
+      description: How was the source or destination been created or updated last
       type: string
       enum:
-      - Pending
-      - Running
-      - Succeeded
-      - Failed
-      - Unknown
-    PlatformDisplayName:
-      description: A human-readable display name
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}\p{N}_][a-zA-Z\p{L}\p{N}_ \-'\(\)\[\]]*$
-      x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
-      type: string
-      example: Human Readable Name
+      - yaml
+      - ui
+    PlatformSyncEnvCreate:
+      type: object
+      description: Environment variable. Environment variables are assumed to be secret.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the environment variable
+        value:
+          type: string
+          description: Value of the environment variable
     PlatformSyncDestinationCreate:
       title: Sync Destination definition for creating a new destination
       description: Sync Destination Definition
@@ -443,13 +523,62 @@ components:
             description: Unique name of the transformer
             pattern: ^[a-zA-Z0-9_-]+$
             x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
-    PlatformTeamName:
-      description: The unique name for the team.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: cloudquery
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformSyncIntegrationSourceV2:
+      description: Integration Source Definition
+      type: object
+      required:
+      - path
+      - version
+      - tables
+      - env
+      - spec
+      properties:
+        test_connection_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the test connection
+          x-go-name: TestConnectionID
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnv'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+        unified_sync_kind:
+          type: string
+          description: The kind of unified sync this source belongs to. Null for standalone integrations.
+          readOnly: true
+          enum:
+          - asset_inventory
+          - asset_inventory_cloudtrail
+          - asset_inventory_metadata
+          - cost_and_usage
     PlatformPluginPriceCategory:
       description: Supported price categories for billing
       type: string
@@ -457,147 +586,6 @@ components:
       - api
       - database
       - free
-    PlatformSyncPluginPath:
-      type: string
-      description: Plugin path in CloudQuery registry
-      pattern: ^cloudquery/[^/]+
-      x-pattern-message: should be in the format cloudquery/<name>
-    PlatformPluginCategory:
-      description: Supported categories for plugins
-      type: string
-      enum:
-      - cloud-infrastructure
-      - databases
-      - sales-marketing
-      - engineering-analytics
-      - marketing-analytics
-      - shipment-tracking
-      - product-analytics
-      - cloud-finops
-      - project-management
-      - fleet-management
-      - security
-      - data-warehouses
-      - human-resources
-      - finance
-      - customer-support
-      - other
-    PlatformPluginReleaseStage:
-      description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
-
-        The Coming Soon stage is for plugins that are not yet ready for Preview, but users can subscribe to be notified when they are ready.
-
-        Both Preview and GA plugins follow semantic versioning. The main differences between the two stages are:
-
-        Preview plugins are still experimental and may have frequent breaking changes. Preview plugins might get deprecated due to lack of usage. Long Term Support with community Discord and bug fixes is only guaranteed for GA plugins. Premium plugins are often discounted or free during the Preview stage.'
-      type: string
-      enum:
-      - coming-soon
-      - preview
-      - ga
-      - deprecated
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformSyncDestinationV2:
-      allOf:
-      - $ref: '#/components/schemas/PlatformSyncDestinationCreate'
-      - type: object
-        required:
-        - name
-        - display_name
-        - path
-        - version
-        - write_mode
-        - migrate_mode
-        - spec
-        - env
-        - created_at
-        - updated_at
-        - last_update_source
-        - draft
-        - transformers
-        - disabled
-        properties:
-          created_at:
-            type: string
-            format: date-time
-            example: '2023-07-14T16:53:42Z'
-            description: Time when the source was created
-          updated_at:
-            type: string
-            format: date-time
-            example: '2023-07-14T16:53:42Z'
-            description: Time when the source was last updated
-          env:
-            description: Environment variables for the plugin.
-            type: array
-            items:
-              $ref: '#/components/schemas/PlatformSyncEnv'
-          draft:
-            type: boolean
-            description: If a sync destination is in draft, it cannot be used in syncs. To get it out of draft, 'promote' it using a successful test connection ID.
-          previous_version:
-            type: string
-            description: Previous version of the plugin during a version upgrade
-            example: v1.2.2
-          disabled:
-            type: boolean
-            description: If true, the sync destination is disabled and cannot be used in syncs.
-          last_run:
-            $ref: '#/components/schemas/PlatformSyncRun'
-          plugin:
-            $ref: '#/components/schemas/PlatformPlugin'
-    PlatformSyncDestinationWriteMode:
-      type: string
-      description: Write mode for the destination
-      enum:
-      - append
-      - overwrite
-      - overwrite-delete-stale
-      default: overwrite-delete-stale
-    PlatformSyncRunWorkerStatus:
-      description: The worker information for a sync run
-      type: object
-      required:
-      - phase
-      properties:
-        phase:
-          $ref: '#/components/schemas/PlatformSyncRunWorkerPhase'
-          description: Phase that the worker is in
-        reason:
-          type: string
-          description: The reason for the status of the worker
-    PlatformSyncRunStatusReason:
-      description: The reason for the status
-      type: string
-      enum:
-      - error
-      - oom_killed
-      - partial_success
-      - ingestion_failed
-    PlatformSyncEnvCreate:
-      type: object
-      description: Environment variable. Environment variables are assumed to be secret.
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name of the environment variable
-        value:
-          type: string
-          description: Value of the environment variable
   responses:
     PlatformInternalError:
       content:

@@ -1,35 +1,21 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   contact:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
-
-    ### Authentication
-
-    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
-
-    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
-
-    ### Example Request
-
-    To test your connection to the API, we can use the `/plugins` endpoint. For example:
-
-    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
-
-    '
+  description: Welcome to the CloudQuery Platform API documentation!
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
   termsOfService: https://www.cloudquery.io/terms
-  title: CloudQuery Platform OpenAPI Spec admin filters API
+  title: CloudQuery Platform OpenAPI Spec Filters API
   version: 1.0.0
 security:
 - bearerAuth: []
 - cookieAuth: []
 tags:
-- name: filters
+- name: Filters
 paths:
   /filters:
     get:
@@ -68,7 +54,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform list filters
+      x-summary-source: derived
   /filters/tags:
     get:
       description: List Filter Tags
@@ -103,7 +91,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform list filter tags
+      x-summary-source: derived
   /filters/{filter_id}:
     get:
       description: Get a table filter by ID
@@ -128,7 +118,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform get filter by ID
+      x-summary-source: derived
     patch:
       description: Update a table filter
       operationId: PlatformUpdateFilter
@@ -157,7 +149,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform update filter
+      x-summary-source: derived
     delete:
       description: Delete a table filter
       operationId: PlatformDeleteFilter
@@ -177,7 +171,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform delete filter
+      x-summary-source: derived
   /queries/{query_id}/filters:
     get:
       description: List Query Filters
@@ -216,7 +212,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform query list filters
+      x-summary-source: derived
     post:
       description: Save Query Filter
       operationId: PlatformQuerySaveFilter
@@ -254,7 +252,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform query save filter
+      x-summary-source: derived
   /queries/{query_id}/filters/tags:
     get:
       description: List Filter Tags For A Saved Query
@@ -290,7 +290,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform query list filter tags
+      x-summary-source: derived
   /tables/{table_name}/filters:
     get:
       description: List Table Filters
@@ -329,7 +331,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform table list filters
+      x-summary-source: derived
     post:
       description: Save Table Filter
       operationId: PlatformTableSaveFilter
@@ -367,7 +371,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform table save filter
+      x-summary-source: derived
   /tables/{table_name}/filters/tags:
     get:
       description: List Filter Tags For A Table
@@ -403,67 +409,136 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - filters
+      - Filters
+      summary: Platform table list filter tags
+      x-summary-source: derived
 components:
+  parameters:
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_filter_id:
+      in: path
+      name: filter_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformFilterID'
+      x-go-name: FilterID
+    platform_table_name:
+      in: path
+      name: table_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableName'
+    platform_query_id:
+      in: path
+      name: query_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformQueryID'
+      x-go-name: QueryID
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_filter_name_filter:
+      name: name_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by filter name
+        type: string
+    platform_filter_tags:
+      name: tag
+      in: query
+      description: Filter tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterTag'
+      x-go-name: FilterTags
+    platform_filter_expression_filter:
+      name: expression_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by filter expression
+        type: string
+  responses:
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   schemas:
-    PlatformFilterUpdate:
-      title: Filter definition for updating a filter
-      description: Filter Update Definition
-      type: object
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        description:
-          type: string
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
     PlatformFilterID:
       description: The unique ID for the filter.
       type: string
       format: uuid
       x-go-name: FilterID
-    PlatformQueryID:
-      description: The unique ID for the query.
-      type: string
-      format: uuid
-      x-go-name: QueryID
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
     PlatformFilterTag:
       description: A table column filter tag.
       type: string
-    PlatformFilterExpression:
-      description: A table column filter.
-      type: string
-      example: resource_type=aws_s3_buckets
     PlatformFilter:
       title: Filter
       type: object
@@ -504,6 +579,62 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
+    PlatformFilterUpdate:
+      title: Filter definition for updating a filter
+      description: Filter Update Definition
+      type: object
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        description:
+          type: string
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+    PlatformQueryID:
+      description: The unique ID for the query.
+      type: string
+      format: uuid
+      x-go-name: QueryID
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformFilterCreate:
       title: Filter definition for creating a filter
       type: object
@@ -532,133 +663,10 @@ components:
         description:
           type: string
           example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
     PlatformTableName:
       description: The name of the table.
       type: string
       example: cloud_assets
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-  parameters:
-    platform_filter_name_filter:
-      name: name_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by filter name
-        type: string
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_filter_id:
-      in: path
-      name: filter_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformFilterID'
-      x-go-name: FilterID
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_name:
-      in: path
-      name: table_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableName'
-    platform_filter_tags:
-      name: tag
-      in: query
-      description: Filter tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterTag'
-      x-go-name: FilterTags
-    platform_filter_expression_filter:
-      name: expression_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by filter expression
-        type: string
-    platform_query_id:
-      in: path
-      name: query_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformQueryID'
-      x-go-name: QueryID
-  responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
   securitySchemes:
     bearerAuth:
       scheme: bearer

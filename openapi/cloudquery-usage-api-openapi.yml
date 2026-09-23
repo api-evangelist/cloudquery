@@ -1,35 +1,21 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   contact:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
-
-    ### Authentication
-
-    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
-
-    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
-
-    ### Example Request
-
-    To test your connection to the API, we can use the `/plugins` endpoint. For example:
-
-    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
-
-    '
+  description: Welcome to the CloudQuery Platform API documentation!
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
   termsOfService: https://www.cloudquery.io/terms
-  title: CloudQuery Platform OpenAPI Spec admin usage API
+  title: CloudQuery Platform OpenAPI Spec Usage API
   version: 1.0.0
 security:
 - bearerAuth: []
 - cookieAuth: []
 tags:
-- name: usage
+- name: Usage
 paths:
   /usage-summary:
     get:
@@ -95,7 +81,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - usage
+      - Usage
+      summary: Platform get team usage summary
+      x-summary-source: derived
   /usage-summary/{group_by}:
     get:
       description: Get a grouped summary of usage for the specified time range.
@@ -170,44 +158,64 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - usage
+      - Usage
+      summary: Platform get grouped team usage summary
+      x-summary-source: derived
 components:
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   schemas:
-    PlatformUsageSummaryValue:
-      title: CloudQuery Usage Summary Value
-      description: A usage summary value.
+    PlatformUsageSummaryGroup:
+      title: CloudQuery Usage Summary Group
+      description: A usage summary group.
       type: object
       required:
-      - timestamp
+      - name
+      - value
       properties:
-        timestamp:
+        name:
           type: string
-          format: date-time
-          description: The timestamp marking the start of a period.
-        paid_rows:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: The paid rows that were synced in this period, one per group.
-        cloud_vcpu_seconds:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: vCPU/seconds consumed in this period, one per group.
-        cloud_vram_byte_seconds:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: vRAM/byte-seconds consumed in this period, one per group.
-        cloud_egress_bytes:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: Egress bytes consumed in this period, one per group.
+          description: The name of the group.
+          example: plugin
+        value:
+          type: string
+          description: The value of the group at this index.
+          example: cloudquery/source/aws
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -294,22 +302,41 @@ components:
                 - cloud_vram_byte_seconds
               default:
               - paid_rows
-    PlatformUsageSummaryGroup:
-      title: CloudQuery Usage Summary Group
-      description: A usage summary group.
+    PlatformUsageSummaryValue:
+      title: CloudQuery Usage Summary Value
+      description: A usage summary value.
       type: object
       required:
-      - name
-      - value
+      - timestamp
       properties:
-        name:
+        timestamp:
           type: string
-          description: The name of the group.
-          example: plugin
-        value:
-          type: string
-          description: The value of the group at this index.
-          example: cloudquery/source/aws
+          format: date-time
+          description: The timestamp marking the start of a period.
+        paid_rows:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The paid rows that were synced in this period, one per group.
+        cloud_vcpu_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vCPU/seconds consumed in this period, one per group.
+        cloud_vram_byte_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vRAM/byte-seconds consumed in this period, one per group.
+        cloud_egress_bytes:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: Egress bytes consumed in this period, one per group.
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -323,43 +350,6 @@ components:
           type: integer
       title: Basic Error
       type: object
-  responses:
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
   securitySchemes:
     bearerAuth:
       scheme: bearer

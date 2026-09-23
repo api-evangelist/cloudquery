@@ -1,35 +1,21 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   contact:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
-
-    ### Authentication
-
-    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
-
-    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
-
-    ### Example Request
-
-    To test your connection to the API, we can use the `/plugins` endpoint. For example:
-
-    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
-
-    '
+  description: Welcome to the CloudQuery Platform API documentation!
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
   termsOfService: https://www.cloudquery.io/terms
-  title: CloudQuery Platform OpenAPI Spec admin rbac API
+  title: CloudQuery Platform OpenAPI Spec Rbac API
   version: 1.0.0
 security:
 - bearerAuth: []
 - cookieAuth: []
 tags:
-- name: rbac
+- name: RBAC
 paths:
   /rbac/permissions:
     get:
@@ -74,7 +60,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform list all RBAC permissions
+      x-summary-source: derived
     post:
       description: Create a permission
       operationId: PlatformCreateRBACPermission
@@ -104,7 +92,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform create RBAC permission
+      x-summary-source: derived
   /rbac/permissions/{permission_id}:
     get:
       description: Get a permission
@@ -131,7 +121,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform get RBAC permission
+      x-summary-source: derived
     patch:
       description: Update a permission
       operationId: PlatformUpdateRBACPermission
@@ -163,7 +155,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform update RBAC permission
+      x-summary-source: derived
     delete:
       description: Delete a permission
       operationId: PlatformDeleteRBACPermission
@@ -183,7 +177,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform delete RBAC permission
+      x-summary-source: derived
   /rbac/roles:
     get:
       description: List all roles
@@ -232,7 +228,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform list all RBAC roles
+      x-summary-source: derived
     post:
       description: Create a role
       operationId: PlatformCreateRBACRole
@@ -262,7 +260,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform create RBAC role
+      x-summary-source: derived
   /rbac/roles/{role_id}:
     get:
       description: Get a role
@@ -289,7 +289,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform get RBAC role
+      x-summary-source: derived
     patch:
       description: Update a role (custom roles only)
       operationId: PlatformUpdateRBACRole
@@ -321,7 +323,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform update RBAC role
+      x-summary-source: derived
     delete:
       description: Delete a role
       operationId: PlatformDeleteRBACRole
@@ -341,39 +345,104 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - rbac
+      - RBAC
+      summary: Platform delete RBAC role
+      x-summary-source: derived
 components:
-  schemas:
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformRoleID:
-      description: The unique ID for the role.
-      type: string
-      format: uuid
+  parameters:
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_rbac_permissions_sort_bys:
+      name: sort_by
+      in: query
+      description: Sort by options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformRBACPermissionSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: RBACPermissionSortBys
+    platform_rbac_roles_sort_bys:
+      name: sort_by
+      in: query
+      description: Sort by options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformRBACRoleSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: RBACRoleSortBys
+    platform_rbac_permissions_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Sort direction options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformRBACPermissionSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: RBACPermissionSortDirections
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_rbac_roles_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Sort direction options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformRBACRoleSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: RBACRoleSortDirections
+    platform_rbac_role_id:
+      in: path
+      name: role_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformRoleID'
       x-go-name: RoleID
+    platform_rbac_permission_id:
+      in: path
+      name: permission_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformRBACPermissionID'
+      x-go-name: RBACPermissionID
+  schemas:
+    PlatformRBACPermissionUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
     PlatformRole:
       type: object
       description: Role
@@ -417,20 +486,6 @@ components:
       type: string
       format: uuid
       x-go-name: RBACPermissionID
-    PlatformRBACRoleSortDirection:
-      title: RBACRoleSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
-    PlatformRBACPermissionSortDirection:
-      title: RBACPermissionSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
     PlatformUserName:
       description: The unique name for the user.
       minLength: 1
@@ -439,6 +494,52 @@ components:
       x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
       type: string
       example: Sarah O'Connor
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformRoleType:
+      type: string
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+    PlatformRBACRoleSortBy:
+      title: RBACRoleSortBy
+      type: string
+      enum:
+      - id
+      - name
+      - description
+      - created_by
+      - created_at
+      - updated_at
+    PlatformRoleID:
+      description: The unique ID for the role.
+      type: string
+      format: uuid
+      x-go-name: RoleID
     PlatformRBACPermission:
       type: object
       required:
@@ -474,39 +575,99 @@ components:
           type: integer
         number_of_affected_users:
           type: integer
-    PlatformRBACPermissionUpdate:
+    PlatformRBACRoleUpdate:
       type: object
       properties:
         name:
           type: string
         description:
           type: string
-        query:
-          type: string
-    PlatformRoleType:
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermissionID'
+    PlatformRBACRoleSortDirection:
+      title: RBACRoleSortDirection
       type: string
       enum:
-      - admin:write
-      - admin:read
-      - general:read
-      - general:write
-      - ci
-      - schema-only
-      - custom
-      x-enum-varnames:
-      - AdminWrite
-      - AdminRead
-      - GeneralRead
-      - GeneralWrite
-      - CI
-      - SchemaOnly
-      - Custom
+      - asc
+      - desc
+      default: asc
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
     PlatformUserID:
       description: ID of the User
       type: string
       format: uuid
       example: 12345678-1234-1234-1234-1234567890ab
       x-go-name: UserID
+    PlatformRBACPermissionSortBy:
+      title: RBACPermissionSortBy
+      type: string
+      enum:
+      - id
+      - name
+      - description
+      - created_by
+      - created_at
+      - updated_at
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformRBACRoleCreate:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermissionID'
+    PlatformRBACPermissionSortDirection:
+      title: RBACPermissionSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
     PlatformRBACPermissionCreate:
       type: object
       required:
@@ -523,96 +684,7 @@ components:
         dry_run:
           type: boolean
           default: false
-    PlatformRBACRoleCreate:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRBACPermissionID'
-    PlatformRBACPermissionSortBy:
-      title: RBACPermissionSortBy
-      type: string
-      enum:
-      - id
-      - name
-      - description
-      - created_by
-      - created_at
-      - updated_at
-    PlatformRBACRoleUpdate:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRBACPermissionID'
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformRBACRoleSortBy:
-      title: RBACRoleSortBy
-      type: string
-      enum:
-      - id
-      - name
-      - description
-      - created_by
-      - created_at
-      - updated_at
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
   responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
     PlatformForbidden:
       content:
         application/json:
@@ -625,96 +697,30 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
     PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
-  parameters:
-    platform_rbac_role_id:
-      in: path
-      name: role_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformRoleID'
-      x-go-name: RoleID
-    platform_rbac_roles_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Sort direction options
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformRBACRoleSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: RBACRoleSortDirections
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_rbac_permissions_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Sort direction options
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformRBACPermissionSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: RBACPermissionSortDirections
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_rbac_permission_id:
-      in: path
-      name: permission_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformRBACPermissionID'
-      x-go-name: RBACPermissionID
-    platform_rbac_roles_sort_bys:
-      name: sort_by
-      in: query
-      description: Sort by options
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformRBACRoleSortBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: RBACRoleSortBys
-    platform_rbac_permissions_sort_bys:
-      name: sort_by
-      in: query
-      description: Sort by options
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformRBACPermissionSortBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: RBACPermissionSortBys
   securitySchemes:
     bearerAuth:
       scheme: bearer

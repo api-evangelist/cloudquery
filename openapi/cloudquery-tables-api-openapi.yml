@@ -1,35 +1,21 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   contact:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
-
-    ### Authentication
-
-    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
-
-    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
-
-    ### Example Request
-
-    To test your connection to the API, we can use the `/plugins` endpoint. For example:
-
-    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`
-
-    '
+  description: Welcome to the CloudQuery Platform API documentation!
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
   termsOfService: https://www.cloudquery.io/terms
-  title: CloudQuery Platform OpenAPI Spec admin tables API
+  title: CloudQuery Platform OpenAPI Spec Tables API
   version: 1.0.0
 security:
 - bearerAuth: []
 - cookieAuth: []
 tags:
-- name: tables
+- name: Tables
 paths:
   /tables:
     get:
@@ -65,13 +51,15 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform list tables
+      x-summary-source: derived
   /tables/data:
     get:
       description: Get all sources and their associated tables. Returns data in the format needed for the delete action.
       operationId: PlatformGetTablesData
       tags:
-      - tables
+      - Tables
       parameters:
       - $ref: '#/components/parameters/platform_per_page'
       - $ref: '#/components/parameters/platform_page'
@@ -118,11 +106,13 @@ paths:
           $ref: '#/components/responses/PlatformForbidden'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform get tables data
+      x-summary-source: derived
     post:
       description: 'Perform an action on table data across multiple sources. Supported actions: delete (drops partitions for specified tenant/source/table combinations).'
       operationId: PlatformTablesDataAction
       tags:
-      - tables
+      - Tables
       requestBody:
         required: true
         content:
@@ -142,6 +132,8 @@ paths:
           $ref: '#/components/responses/PlatformUnprocessableEntity'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform tables data action
+      x-summary-source: derived
   /tables/{table_name}/data:
     get:
       description: List Table Rows
@@ -184,7 +176,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table list rows
+      x-summary-source: derived
   /tables/{table_name}/data/{table_row_id}:
     get:
       description: Get Table row
@@ -224,7 +218,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table row by id
+      x-summary-source: derived
   /tables/{table_name}/schema:
     get:
       description: Get Table Schema
@@ -273,7 +269,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table schema
+      x-summary-source: derived
   /tables/relations:
     get:
       description: Get resource relations for all configured tables.
@@ -294,7 +292,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform get tables relations
+      x-summary-source: derived
   /tables/{table_name}/related-resources:
     post:
       description: 'Execute the curated relation queries defined for the given source
@@ -309,9 +309,7 @@ paths:
 
         explicit `fields` map before each relation query is executed against
 
-        ClickHouse.
-
-        '
+        ClickHouse.'
       operationId: PlatformGetTablesRelatedResources
       parameters:
       - name: table_name
@@ -342,7 +340,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform get tables related resources
+      x-summary-source: derived
   /tables/schemas:
     get:
       description: Get Table Schemas
@@ -384,7 +384,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform batch table schemas
+      x-summary-source: derived
   /tables/{table_name}/columns:
     get:
       description: Get Table Columns
@@ -422,7 +424,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table list columns
+      x-summary-source: derived
   /tables/{table_name}/columns/{column_name}/values:
     get:
       description: Get Table Column Values
@@ -461,12 +465,12 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table column list values
+      x-summary-source: derived
   /tables/{table_name}/columns/{column_name}/grouped:
     get:
-      description: 'Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory''s Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.
-
-        '
+      description: Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory's Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.
       operationId: PlatformTableColumnListGrouped
       parameters:
       - $ref: '#/components/parameters/platform_table_name'
@@ -502,7 +506,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table column list grouped
+      x-summary-source: derived
   /tables/{table_name}/filters:
     get:
       description: List Table Filters
@@ -541,7 +547,9 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table list filters
+      x-summary-source: derived
     post:
       description: Save Table Filter
       operationId: PlatformTableSaveFilter
@@ -579,34 +587,196 @@ paths:
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
-      - tables
+      - Tables
+      summary: Platform table save filter
+      x-summary-source: derived
 components:
+  parameters:
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_table_sort_bys:
+      name: sort_by
+      in: query
+      description: Table sort by options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortBys
+    platform_table_filters:
+      name: filter
+      in: query
+      description: Table filters. This filters the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Filters
+    platform_table_name:
+      in: path
+      name: table_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableName'
+    platform_table_column_value_filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        description: Filter by column value.
+        type: string
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_table_filter_mode:
+      name: filter_mode
+      in: query
+      description: 'Table filter mode.
+
+
+        Smart mode switches between column and search mode based on the filtered table and
+
+
+        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
+
+        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
+
+        Search mode may also be used against cloud_assets but it will only return results from resource tables.
+
+
+        Column mode searches purely using the columns in the table.
+
+        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
+
+        '
+      schema:
+        type: string
+        enum:
+        - smart
+        - search
+        - column
+        default: smart
+    platform_table_selects:
+      name: select
+      in: query
+      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSelect'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Selects
+    platform_table_group_bys:
+      name: group_by
+      in: query
+      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableGroupBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: GroupBys
+    platform_table_row_id:
+      in: path
+      name: table_row_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableRowID'
+    platform_filter_tags:
+      name: tag
+      in: query
+      description: Filter tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterTag'
+      x-go-name: FilterTags
+    platform_column_name:
+      in: path
+      name: column_name
+      required: true
+      schema:
+        description: The name of a table column.
+        type: string
+    platform_table_column_name_filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        description: Filter by column name
+        type: string
+    platform_table_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Table sort direction options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortDirections
+    platform_table_filter_ids:
+      name: filter_id
+      in: query
+      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
+
+        will be applied to the query results before returning them.
+
+        '
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterID'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: FilterIDs
   schemas:
-    PlatformListMetadata:
-      required:
-      - page_size
+    PlatformTableColumnListItem:
+      additionalProperties: false
       properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
+        name:
+          $ref: '#/components/schemas/PlatformTableColumnName'
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        nullable:
+          type: boolean
+          description: Whether the column is nullable.
+      required:
+      - name
+      - kind
+      - nullable
+      title: TableColumnListItem
+      type: object
     PlatformTableDataAction:
       description: Request body for performing actions on table data
       type: object
@@ -635,82 +805,82 @@ components:
           - table_2
           source_name_2:
           - table_3
-    PlatformRelationColumnDef:
-      type: object
-      required:
-      - field
-      - label
-      properties:
-        field:
-          type: string
-          description: Column field name in the query result.
-        label:
-          type: string
-          description: Display label for the column.
-        type:
-          type: string
-          description: Column render type (e.g. text, tags, boolean, json, code).
-        hidden:
-          type: boolean
-          description: Whether the column is present for navigation but not displayed.
-    PlatformTableDataListItem:
-      description: Sync with its associated tables
-      type: object
-      required:
-      - source_name
-      - tables
-      properties:
-        source_name:
-          type: string
-          description: The unique name of the source (source_name from synced_tables)
-          example: aws-integration
-        display_name:
-          type: string
-          description: Human-readable display name of the source
-          example: AWS Integration
-        plugin:
-          $ref: '#/components/schemas/PlatformSyncPluginPath'
-          example: cloudquery/aws
-        tables:
-          type: array
-          items:
-            type: object
-            required:
-            - name
-            - deletion_pending
-            properties:
-              name:
-                type: string
-                description: The table name
-              deletion_pending:
-                type: boolean
-                description: Whether this table's data is marked for deletion
-          description: List of tables synced by this integration with their deletion status
-          example:
-          - name: aws_ec2_instances
-            deletion_pending: false
-          - name: aws_s3_buckets
-            deletion_pending: true
-      example:
-        source_name: aws-integration
-        display_name: AWS Integration
-        plugin: cloudquery/aws
-        tables:
-        - name: aws_ec2_instances
-          deletion_pending: false
-        - name: aws_s3_buckets
-          deletion_pending: false
-        - name: aws_iam_users
-          deletion_pending: true
-    PlatformTableListItem:
+    PlatformTableSchemaColumn:
       additionalProperties: false
       properties:
         name:
-          $ref: '#/components/schemas/PlatformTableName'
+          type: string
+          example: column_name
+          description: Column name
+        type:
+          type: string
+          example: Nullable(String)
+          description: Column type
+        default_kind:
+          type: string
+          description: Expression type (DEFAULT, MATERIALIZED, ALIAS) for the default value, or an empty string if it is not defined.
+          example: DEFAULT
+        default_expression:
+          type: string
+          description: Expression for the default value, or an empty string if it is not defined.
+        comment:
+          type: string
+          description: Comment on the column, or an empty string if it is not defined.
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        nullable:
+          type: boolean
+          description: Whether the column is nullable.
       required:
       - name
-      title: TableListItem
+      - type
+      - default_kind
+      - default_expression
+      - comment
+      - kind
+      - nullable
+      title: TableSchemaColumn
       type: object
+    PlatformFilterID:
+      description: The unique ID for the filter.
+      type: string
+      format: uuid
+      x-go-name: FilterID
+    PlatformTableSelect:
+      title: TableSelect
+      type: string
+    PlatformTableData:
+      additionalProperties: false
+      properties:
+        query:
+          $ref: '#/components/schemas/PlatformQueryExpression'
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+            required:
+            - name
+            - type
+        rows:
+          type: array
+          items:
+            type: array
+            items: {}
+      required:
+      - columns
+      - rows
+      title: TableData
+      type: object
+    PlatformTableSchema:
+      items:
+        $ref: '#/components/schemas/PlatformTableSchemaColumn'
+      title: TableSchema
+      type: array
     PlatformTableRowFieldMatch:
       type: object
       title: TableRowFieldMatch
@@ -728,6 +898,28 @@ components:
         end_index:
           type: integer
           format: int64
+    PlatformTableRow:
+      additionalProperties: true
+      title: TableRow
+      type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformQueryExpression:
+      title: QueryExpression
+      type: string
+      description: Query expression
+      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
     PlatformTableDisplayColumn:
       title: TableDisplayColumn
       description: 'One entry in the resolved per-table column layout for the UI''s column picker.
@@ -790,175 +982,21 @@ components:
             Account / Name / Region / Tags layout). `details` columns are
 
             rendered below in schema order.'
-    PlatformTableData:
-      additionalProperties: false
-      properties:
-        query:
-          $ref: '#/components/schemas/PlatformQueryExpression'
-        columns:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              type:
-                type: string
-            required:
-            - name
-            - type
-        rows:
-          type: array
-          items:
-            type: array
-            items: {}
-      required:
-      - columns
-      - rows
-      title: TableData
-      type: object
-    PlatformTableSelect:
-      title: TableSelect
-      type: string
-    PlatformFilterID:
-      description: The unique ID for the filter.
-      type: string
-      format: uuid
-      x-go-name: FilterID
-    PlatformTableColumnGroupedItem:
-      additionalProperties: false
-      properties:
-        value:
-          type: string
-          description: The distinct value of the grouped column.
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        count:
-          type: integer
-          format: int64
-          description: Exact number of rows in the group.
-      required:
-      - value
-      - kind
-      - count
-      title: TableColumnGroupedItem
-      type: object
-    PlatformTableColumnName:
-      description: The name of the table column.
-      type: string
-      example: region
-    PlatformQueryID:
-      description: The unique ID for the query.
-      type: string
-      format: uuid
-      x-go-name: QueryID
-    PlatformTableSchemaColumn:
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          example: column_name
-          description: Column name
-        type:
-          type: string
-          example: Nullable(String)
-          description: Column type
-        default_kind:
-          type: string
-          description: Expression type (DEFAULT, MATERIALIZED, ALIAS) for the default value, or an empty string if it is not defined.
-          example: DEFAULT
-        default_expression:
-          type: string
-          description: Expression for the default value, or an empty string if it is not defined.
-        comment:
-          type: string
-          description: Comment on the column, or an empty string if it is not defined.
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        nullable:
-          type: boolean
-          description: Whether the column is nullable.
-      required:
-      - name
-      - type
-      - default_kind
-      - default_expression
-      - comment
-      - kind
-      - nullable
-      title: TableSchemaColumn
-      type: object
-    PlatformQueryExpression:
-      title: QueryExpression
-      type: string
-      description: Query expression
-      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
-    PlatformTableColumnListItem:
-      additionalProperties: false
-      properties:
-        name:
-          $ref: '#/components/schemas/PlatformTableColumnName'
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        nullable:
-          type: boolean
-          description: Whether the column is nullable.
-      required:
-      - name
-      - kind
-      - nullable
-      title: TableColumnListItem
-      type: object
-    PlatformTableRowID:
-      description: ID of the Resource
-      type: string
-      example: table_12345678-1234-1234-1234-1234567890ab
-    PlatformTableSchemaColumnKind:
-      description: The kind of the schema column type
-      type: string
-      enum:
-      - any
-      - array
-      - bool
-      - date
-      - datetime
-      - enum
-      - map
-      - number
-      - string
-      - tuple
-      - unknown
-      - uuid
     PlatformFilterTag:
       description: A table column filter tag.
       type: string
-    PlatformRelatedResourcesResponse:
-      type: object
-      description: 'Curated relation results for a source row, grouped by relation title.
-
-        '
-      required:
-      - table_name
-      - relations
+    PlatformTableGroupBy:
+      title: TableGroupBy
+      type: string
+    PlatformTableListItem:
+      additionalProperties: false
       properties:
-        table_name:
-          type: string
-          description: The source table the relations are defined for.
-        relations:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRelatedResourcesGroup'
-    PlatformFilterExpression:
-      description: A table column filter.
-      type: string
-      example: resource_type=aws_s3_buckets
-    PlatformTableSortDirection:
-      title: TableSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
+        name:
+          $ref: '#/components/schemas/PlatformTableName'
+      required:
+      - name
+      title: TableListItem
+      type: object
     PlatformFilter:
       title: Filter
       type: object
@@ -999,83 +1037,63 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformRelatedResourcesRequest:
+    PlatformTableSortDirection:
+      title: TableSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformRelatedResourcesResponse:
       type: object
-      description: 'Inputs for executing the curated relation queries defined for a source
-
-        table against a specific resource row. Either `platform_id` or `fields`
-
-        must be supplied; if both are present, `fields` wins.
+      description: 'Curated relation results for a source row, grouped by relation title.
 
         '
-      properties:
-        platform_id:
-          type: string
-          description: '`_cq_platform_id` of the source row. When set (and `fields` is absent),
-
-            the server fetches the row from the source table and uses its column
-
-            values to substitute the relation templates.
-
-            '
-        fields:
-          type: object
-          additionalProperties:
-            type: string
-          description: 'Pre-extracted field values keyed by column name. Used to substitute
-
-            `{{field_name}}` placeholders in the relation SQL templates.
-
-            '
-    PlatformTableRow:
-      additionalProperties: true
-      title: TableRow
-      type: object
-    PlatformFilterCreate:
-      title: Filter definition for creating a filter
-      type: object
-      description: Saved filter
-      additionalProperties: false
       required:
-      - name
-      - expression
+      - table_name
+      - relations
       properties:
-        name:
+        table_name:
           type: string
-          example: t2.micro EC2 instances
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        public:
-          type: boolean
-          default: true
-          x-omitempty: false
-          x-go-type-skip-optional-pointer: true
-          description: Whether the filter is visible to all users, or only to the user who created it
-        tags:
+          description: The source table the relations are defined for.
+        relations:
           type: array
           items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-    PlatformTableColumnValueListItem:
+            $ref: '#/components/schemas/PlatformRelatedResourcesGroup'
+    PlatformTableSchemaColumnKind:
+      description: The kind of the schema column type
+      type: string
+      enum:
+      - any
+      - array
+      - bool
+      - date
+      - datetime
+      - enum
+      - map
+      - number
+      - string
+      - tuple
+      - unknown
+      - uuid
+    PlatformTableColumnGroupedItem:
       additionalProperties: false
       properties:
         value:
           type: string
+          description: The distinct value of the grouped column.
         kind:
           $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        count:
+          type: integer
+          format: int64
+          description: Exact number of rows in the group.
       required:
-      - name
+      - value
       - kind
-      title: TableColumnValueListItem
+      - count
+      title: TableColumnGroupedItem
       type: object
-    PlatformSyncPluginPath:
-      type: string
-      description: Plugin path in CloudQuery registry
-      pattern: ^cloudquery/[^/]+
-      x-pattern-message: should be in the format cloudquery/<name>
     PlatformRelatedResourcesGroup:
       type: object
       description: 'Result for one curated relation defined on the source table — the
@@ -1114,34 +1132,219 @@ components:
         error:
           type: string
           description: Populated when the relation query failed to execute.
-    PlatformTableGroupBy:
-      title: TableGroupBy
+    PlatformTableColumnValueListItem:
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+      required:
+      - name
+      - kind
+      title: TableColumnValueListItem
+      type: object
+    PlatformRelatedResourcesRequest:
+      type: object
+      description: 'Inputs for executing the curated relation queries defined for a source
+
+        table against a specific resource row. Either `platform_id` or `fields`
+
+        must be supplied; if both are present, `fields` wins.
+
+        '
+      properties:
+        platform_id:
+          type: string
+          description: '`_cq_platform_id` of the source row. When set (and `fields` is absent),
+
+            the server fetches the row from the source table and uses its column
+
+            values to substitute the relation templates.
+
+            '
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'Pre-extracted field values keyed by column name. Used to substitute
+
+            `{{field_name}}` placeholders in the relation SQL templates.
+
+            '
+    PlatformQueryID:
+      description: The unique ID for the query.
       type: string
+      format: uuid
+      x-go-name: QueryID
+    PlatformTableRowID:
+      description: ID of the Resource
+      type: string
+      example: table_12345678-1234-1234-1234-1234567890ab
+    PlatformRelationColumnDef:
+      type: object
+      required:
+      - field
+      - label
+      properties:
+        field:
+          type: string
+          description: Column field name in the query result.
+        label:
+          type: string
+          description: Display label for the column.
+        type:
+          type: string
+          description: Column render type (e.g. text, tags, boolean, json, code).
+        hidden:
+          type: boolean
+          description: Whether the column is present for navigation but not displayed.
+    PlatformSyncPluginPath:
+      type: string
+      description: Plugin path in CloudQuery registry
+      pattern: ^cloudquery/[^/]+
+      x-pattern-message: should be in the format cloudquery/<name>
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformTableColumnName:
+      description: The name of the table column.
+      type: string
+      example: region
+    PlatformTableDataListItem:
+      description: Sync with its associated tables
+      type: object
+      required:
+      - source_name
+      - tables
+      properties:
+        source_name:
+          type: string
+          description: The unique name of the source (source_name from synced_tables)
+          example: aws-integration
+        display_name:
+          type: string
+          description: Human-readable display name of the source
+          example: AWS Integration
+        plugin:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        tables:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            - deletion_pending
+            properties:
+              name:
+                type: string
+                description: The table name
+              deletion_pending:
+                type: boolean
+                description: Whether this table's data is marked for deletion
+          description: List of tables synced by this integration with their deletion status
+          example:
+          - name: aws_ec2_instances
+            deletion_pending: false
+          - name: aws_s3_buckets
+            deletion_pending: true
+      example:
+        source_name: aws-integration
+        display_name: AWS Integration
+        plugin: cloudquery/aws
+        tables:
+        - name: aws_ec2_instances
+          deletion_pending: false
+        - name: aws_s3_buckets
+          deletion_pending: false
+        - name: aws_iam_users
+          deletion_pending: true
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformRelationDef:
+      type: object
+      required:
+      - title
+      - resource_type
+      - columns
+      - sql_query
+      properties:
+        title:
+          type: string
+          description: Display title for the relation tab/section.
+        resource_type:
+          type: string
+          description: Target CloudQuery table name.
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRelationColumnDef'
+          description: Column definitions for the relation view.
+        sql_query:
+          type: string
+          description: ClickHouse SQL template with {{field_name}} placeholders.
+    PlatformFilterCreate:
+      title: Filter definition for creating a filter
+      type: object
+      description: Saved filter
+      additionalProperties: false
+      required:
+      - name
+      - expression
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        public:
+          type: boolean
+          default: true
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Whether the filter is visible to all users, or only to the user who created it
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformTableSortBy:
       title: TableSortBy
       type: string
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformTableSchema:
-      items:
-        $ref: '#/components/schemas/PlatformTableSchemaColumn'
-      title: TableSchema
-      type: array
-    PlatformTableName:
-      description: The name of the table.
-      type: string
-      example: cloud_assets
     PlatformBatchTableSchemaItem:
       title: BatchTableSchemaItem
       type: object
@@ -1168,222 +1371,11 @@ components:
             TableDisplayColumn for the slot resolution model.'
           items:
             $ref: '#/components/schemas/PlatformTableDisplayColumn'
-    PlatformUserID:
-      description: ID of the User
+    PlatformTableName:
+      description: The name of the table.
       type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformRelationDef:
-      type: object
-      required:
-      - title
-      - resource_type
-      - columns
-      - sql_query
-      properties:
-        title:
-          type: string
-          description: Display title for the relation tab/section.
-        resource_type:
-          type: string
-          description: Target CloudQuery table name.
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRelationColumnDef'
-          description: Column definitions for the relation view.
-        sql_query:
-          type: string
-          description: ClickHouse SQL template with {{field_name}} placeholders.
-  parameters:
-    platform_column_name:
-      in: path
-      name: column_name
-      required: true
-      schema:
-        description: The name of a table column.
-        type: string
-    platform_table_filter_ids:
-      name: filter_id
-      in: query
-      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
-
-        will be applied to the query results before returning them.
-
-        '
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterID'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: FilterIDs
-    platform_table_filters:
-      name: filter
-      in: query
-      description: Table filters. This filters the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Filters
-    platform_table_column_value_filter:
-      name: filter
-      in: query
-      required: false
-      schema:
-        description: Filter by column value.
-        type: string
-    platform_table_sort_bys:
-      name: sort_by
-      in: query
-      description: Table sort by options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortBys
-    platform_table_filter_mode:
-      name: filter_mode
-      in: query
-      description: 'Table filter mode.
-
-
-        Smart mode switches between column and search mode based on the filtered table and
-
-
-        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
-
-        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
-
-        Search mode may also be used against cloud_assets but it will only return results from resource tables.
-
-
-        Column mode searches purely using the columns in the table.
-
-        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
-
-        '
-      schema:
-        type: string
-        enum:
-        - smart
-        - search
-        - column
-        default: smart
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Table sort direction options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortDirections
-    platform_table_selects:
-      name: select
-      in: query
-      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSelect'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Selects
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_row_id:
-      in: path
-      name: table_row_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableRowID'
-    platform_table_name:
-      in: path
-      name: table_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableName'
-    platform_filter_tags:
-      name: tag
-      in: query
-      description: Filter tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterTag'
-      x-go-name: FilterTags
-    platform_table_group_bys:
-      name: group_by
-      in: query
-      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableGroupBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: GroupBys
-    platform_table_column_name_filter:
-      name: filter
-      in: query
-      required: false
-      schema:
-        description: Filter by column name
-        type: string
+      example: cloud_assets
   responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
     PlatformForbidden:
       content:
         application/json:
@@ -1396,6 +1388,24 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
     PlatformRequiresAuthentication:
       content:
         application/json:

@@ -1,0 +1,30 @@
+# Front Door AI Index — cloudquery — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: cloudquery
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.cloudquery.io
+  final_host: www.cloudquery.io
+  ownership: own
+  owner: cloudquery
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 12
+  host_score: 12
+  density: 12.82
+  words: 936
+  tiers:
+    agentic: 7
+    core: 4
+    model: 1
+  ambiguous: 13
+  top_terms:
+    agent: 13
+    AI: 4
+    MCP: 4
+    AI agent: 2
+    Claude: 1
+    copilot: 1
