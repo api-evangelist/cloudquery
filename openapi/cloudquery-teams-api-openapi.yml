@@ -75,17 +75,32 @@ components:
         minimum: 1
         type: integer
         format: int64
+  responses:
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   schemas:
-    PlatformTeam:
-      additionalProperties: false
-      description: CloudQuery Team
-      properties:
-        name:
-          $ref: '#/components/schemas/PlatformTeamName'
-      required:
-      - name
-      title: Team
-      type: object
     PlatformTeamName:
       description: The unique name for the team.
       maxLength: 255
@@ -93,18 +108,6 @@ components:
       type: string
       example: cloudquery
       x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -118,6 +121,28 @@ components:
               type: string
             type: object
         type: object
+    PlatformTeam:
+      additionalProperties: false
+      description: CloudQuery Team
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformTeamName'
+      required:
+      - name
+      title: Team
+      type: object
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -131,31 +156,6 @@ components:
           type: integer
       title: Basic Error
       type: object
-  responses:
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
   securitySchemes:
     bearerAuth:
       scheme: bearer

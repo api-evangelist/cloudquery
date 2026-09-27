@@ -35,6 +35,9 @@ accessModel:
   generated: '2026-09-03'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/cloudquery.png
+x-docs-platform: redocly
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-24
 tags:
   - Cloud Infrastructure
   - Cloud Asset Inventory
@@ -69,7 +72,7 @@ apis:
   - type: GettingStarted
     url: https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account
 - aid: cloudquery:cloudquery-admin-api
-  name: CloudQuery admin API
+  name: CloudQuery Admin API
   description: The admin API from CloudQuery — 7 operation(s) for admin.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -81,7 +84,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-admin-api-openapi.yml
 - aid: cloudquery:cloudquery-alerts-api
-  name: CloudQuery alerts API
+  name: CloudQuery Alerts API
   description: The alerts API from CloudQuery — 10 operation(s) for alerts.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -93,7 +96,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-alerts-api-openapi.yml
 - aid: cloudquery:cloudquery-api-keys-api
-  name: CloudQuery api-keys API
+  name: CloudQuery API Keys API
   description: The api-keys API from CloudQuery — 2 operation(s) for api-keys.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -105,7 +108,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-api-keys-api-openapi.yml
 - aid: cloudquery:cloudquery-apps-api
-  name: CloudQuery apps API
+  name: CloudQuery Apps API
   description: The apps API from CloudQuery — 1 operation(s) for apps.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -117,7 +120,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-apps-api-openapi.yml
 - aid: cloudquery:cloudquery-audit-logs-api
-  name: CloudQuery audit-logs API
+  name: CloudQuery Audit Logs API
   description: The audit-logs API from CloudQuery — 2 operation(s) for audit-logs.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -129,7 +132,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-audit-logs-api-openapi.yml
 - aid: cloudquery:cloudquery-chat-api
-  name: CloudQuery chat API
+  name: CloudQuery Chat API
   description: The chat API from CloudQuery — 7 operation(s) for chat.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -141,7 +144,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-chat-api-openapi.yml
 - aid: cloudquery:cloudquery-custom-columns-api
-  name: CloudQuery custom-columns API
+  name: CloudQuery Custom Columns API
   description: The custom-columns API from CloudQuery — 2 operation(s) for custom-columns.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -151,7 +154,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-custom-columns-api-openapi.yml
 - aid: cloudquery:cloudquery-filters-api
-  name: CloudQuery filters API
+  name: CloudQuery Filters API
   description: The filters API from CloudQuery — 7 operation(s) for filters.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -163,7 +166,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-filters-api-openapi.yml
 - aid: cloudquery:cloudquery-insights-api
-  name: CloudQuery insights API
+  name: CloudQuery Insights API
   description: The insights API from CloudQuery — 8 operation(s) for insights.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -175,7 +178,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-insights-api-openapi.yml
 - aid: cloudquery:cloudquery-notifications-api
-  name: CloudQuery notifications API
+  name: CloudQuery Notifications API
   description: The notifications API from CloudQuery — 1 operation(s) for notifications.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -187,7 +190,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-notifications-api-openapi.yml
 - aid: cloudquery:cloudquery-onboardings-api
-  name: CloudQuery onboardings API
+  name: CloudQuery Onboardings API
   description: The onboardings API from CloudQuery — 21 operation(s) for onboardings.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -209,7 +212,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-openapi-json-api-openapi.yml
 - aid: cloudquery:cloudquery-platform-api
-  name: CloudQuery platform API
+  name: CloudQuery Platform API
   description: The platform API from CloudQuery — 2 operation(s) for platform.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -221,7 +224,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-platform-api-openapi.yml
 - aid: cloudquery:cloudquery-plugins-api
-  name: CloudQuery plugins API
+  name: CloudQuery Plugins API
   description: The plugins API from CloudQuery — 8 operation(s) for plugins.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -233,7 +236,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-plugins-api-openapi.yml
 - aid: cloudquery:cloudquery-policies-api
-  name: CloudQuery policies API
+  name: CloudQuery Policies API
   description: The policies API from CloudQuery — 10 operation(s) for policies.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -245,7 +248,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-policies-api-openapi.yml
 - aid: cloudquery:cloudquery-queries-api
-  name: CloudQuery queries API
+  name: CloudQuery Queries API
   description: The queries API from CloudQuery — 11 operation(s) for queries.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -257,7 +260,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-queries-api-openapi.yml
 - aid: cloudquery:cloudquery-rbac-api
-  name: CloudQuery rbac API
+  name: CloudQuery Rbac API
   description: The rbac API from CloudQuery — 4 operation(s) for rbac.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -269,7 +272,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-rbac-api-openapi.yml
 - aid: cloudquery:cloudquery-reports-api
-  name: CloudQuery reports API
+  name: CloudQuery Reports API
   description: The reports API from CloudQuery — 4 operation(s) for reports.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -281,7 +284,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-reports-api-openapi.yml
 - aid: cloudquery:cloudquery-sync-integrations-api
-  name: CloudQuery sync-integrations API
+  name: CloudQuery Sync Integrations API
   description: The sync-integrations API from CloudQuery — 1 operation(s) for sync-integrations.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -291,7 +294,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-sync-integrations-api-openapi.yml
 - aid: cloudquery:cloudquery-syncs-api
-  name: CloudQuery syncs API
+  name: CloudQuery Syncs API
   description: The syncs API from CloudQuery — 37 operation(s) for syncs.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -303,7 +306,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-syncs-api-openapi.yml
 - aid: cloudquery:cloudquery-tables-api
-  name: CloudQuery tables API
+  name: CloudQuery Tables API
   description: The tables API from CloudQuery — 12 operation(s) for tables.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -315,7 +318,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-tables-api-openapi.yml
 - aid: cloudquery:cloudquery-teams-api
-  name: CloudQuery teams API
+  name: CloudQuery Teams API
   description: The teams API from CloudQuery — 1 operation(s) for teams.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -327,7 +330,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-teams-api-openapi.yml
 - aid: cloudquery:cloudquery-usage-api
-  name: CloudQuery usage API
+  name: CloudQuery Usage API
   description: The usage API from CloudQuery — 2 operation(s) for usage.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
@@ -339,7 +342,7 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-usage-api-openapi.yml
 - aid: cloudquery:cloudquery-users-api
-  name: CloudQuery users API
+  name: CloudQuery Users API
   description: The users API from CloudQuery — 11 operation(s) for users.
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io

@@ -559,267 +559,31 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    PlatformAWSUnifiedTestConnectionsRequest:
+    PlatformOnboardingAWSUnifiedCreateRequest:
       type: object
-      description: Request to create test connections for AWS unified features without an onboarding. Each feature is enabled by including its config block. The frontend is responsible for building the full plugin spec (e.g. cloudquery/aws with an accounts array of {role_arn, external_id}) and supplying any external_id values via the env list.
-      additionalProperties: false
-      properties:
-        asset_inventory:
-          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
-        cost_and_usage:
-          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
-        additional_metadata:
-          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
-    PlatformOnboardingAWSUnifiedTestConnectionsRequest:
-      type: object
-      description: Request to create test connections for all enabled features
-      additionalProperties: false
-      properties:
-        asset_inventory:
-          type: object
-          description: Configuration for asset inventory test connection (regions, etc.)
-          additionalProperties: true
-        cost_and_usage:
-          type: object
-          description: Configuration for cost and usage test connection
-          additionalProperties: true
-        additional_metadata:
-          type: object
-          description: Configuration for additional metadata test connection
-          additionalProperties: true
-    PlatformOnboardingAWSUnifiedCostAndUsage:
-      type: object
-      description: Cost and usage feature status and details
+      description: Request to create a unified AWS onboarding
       additionalProperties: false
       required:
-      - stage
+      - features
       properties:
-        stage:
-          type: string
-          description: 'Stage of the cost and usage feature. Values: pending, started, deployed, provisioning, verified, failed, revoked.
+        features:
+          type: array
+          description: 'List of features to enable. Determines the CloudFormation template composition.
 
             '
-        failure_reason:
-          type: string
-          description: Error details if the feature failed
-          x-go-name: FailureReason
-        sync_role_arn:
-          type: string
-          x-go-name: SyncRoleARN
-        s3_bucket_name:
-          type: string
-          x-go-name: S3BucketName
-        s3_report_prefix:
-          type: string
-          x-go-name: S3ReportPrefix
-        cur_report_name:
-          type: string
-          x-go-name: CURReportName
-    PlatformStartedNotification:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBaseNotification'
-      - type: object
-        properties:
-          status:
-            enum:
-            - started
-    PlatformRevokedNotification:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBaseNotification'
-      - type: object
-        properties:
-          status:
-            enum:
-            - revoked
-    PlatformOnboardingAWSAccounts:
-      type: object
-      description: AWS OpenID onboarding account structure
-      additionalProperties: false
-      required:
-      - id
-      - type
-      properties:
-        id:
-          type: string
-          description: ID of the account or OU
-          x-go-name: ID
-        arn:
-          type: string
-          description: ARN of the account or OU
-          x-go-name: ARN
-        type:
-          type: string
-          description: Type of the account
-          enum:
-          - OU
-          - account
-          - root
-        name:
-          type: string
-          description: Display name of the account or OU
-        children:
-          type: array
-          description: Children accounts and OUs of the target account
           items:
-            $ref: '#/components/schemas/PlatformOnboardingAWSAccounts'
-    PlatformOnboardingAWSCUR:
-      type: object
-      description: AWS CUR onboarding
-      additionalProperties: false
-      required:
-      - id
-      - stage
-      - created_at
-      - updated_at
-      - issuer_url
-      - audience
-      - subject
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformOnboardingID'
-        stage:
-          type: string
-          description: Stage of the onboarding process
-          x-go-name: OnboardingStage
-        created_at:
-          type: string
-          format: date-time
-          example: '2017-07-14T16:53:42Z'
-        updated_at:
-          type: string
-          format: date-time
-          example: '2017-07-14T16:53:42Z'
-        issuer_url:
-          type: string
-          description: URL of the OpenID server to use when setting up a trust relationship
-          x-go-name: IssuerURL
-        audience:
-          type: string
-          description: OpenID audience claim for the trust relationship
-          x-go-name: Audience
-        subject:
-          type: string
-          description: OpenID subject claim for the trust relationship
-          x-go-name: Subject
-        sync_role_arn:
-          type: string
-          description: Role used to access the S3 bucket with CUR reports
-          x-go-name: SyncRoleARN
-        s3_bucket_name:
-          type: string
-          description: Name of the S3 bucket containing CUR reports
-          x-go-name: S3BucketName
-        s3_report_prefix:
-          type: string
-          description: Prefix path for CUR reports in the S3 bucket
-          x-go-name: S3ReportPrefix
-        cur_report_name:
-          type: string
-          description: Name of the CUR report
-          x-go-name: CURReportName
-        failure_reason:
-          type: string
-          description: Error details if the onboarding failed
-          x-go-name: FailureReason
-    PlatformDeployedCURNotification:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBaseNotification'
-      - type: object
-        required:
-        - main_role_arn
-        - sync_role_arn
-        - s3_bucket_name
-        - s3_report_prefix
-        - cur_report_name
-        - stack_id
-        properties:
-          status:
+            type: string
             enum:
-            - deployed_cur
-          main_role_arn:
-            type: string
-          sync_role_arn:
-            type: string
-          s3_bucket_name:
-            type: string
-          s3_report_prefix:
-            type: string
-          cur_report_name:
-            type: string
-          stack_id:
-            type: string
-    PlatformOnboardingAWSUnifiedNotification:
-      oneOf:
-      - $ref: '#/components/schemas/PlatformStartedNotification'
-      - $ref: '#/components/schemas/PlatformRevokedNotification'
-      - $ref: '#/components/schemas/PlatformFailedNotification'
-      - $ref: '#/components/schemas/PlatformDeployedUnifiedNotification'
-      - $ref: '#/components/schemas/PlatformCompletedNotification'
-      - $ref: '#/components/schemas/PlatformCompletedSingleAccountNotification'
-      discriminator:
-        propertyName: status
-        mapping:
-          started: '#/components/schemas/PlatformStartedNotification'
-          revoked: '#/components/schemas/PlatformRevokedNotification'
-          failed: '#/components/schemas/PlatformFailedNotification'
-          deployed_unified: '#/components/schemas/PlatformDeployedUnifiedNotification'
-          completed: '#/components/schemas/PlatformCompletedNotification'
-          completed_account: '#/components/schemas/PlatformCompletedSingleAccountNotification'
-    PlatformDeployedUnifiedNotification:
-      type: object
-      description: Notification sent when unified CloudFormation stack deployment completes
-      additionalProperties: false
-      required:
-      - status
-      - stack_id
-      properties:
-        status:
-          type: string
-          enum:
-          - deployed_unified
-        stack_id:
-          type: string
-          description: CloudFormation stack ARN
-        management_role_arn:
-          type: string
-          description: Management role ARN (present when asset_inventory is active)
-          x-go-name: ManagementRoleArn
-        deployment_mode:
-          type: string
-          description: Deployment mode (present when asset_inventory is active)
-        cur_main_role_arn:
-          type: string
-          description: CUR main role ARN (present when cost_and_usage is active)
-          x-go-name: CurMainRoleArn
-        cur_sync_role_arn:
-          type: string
-          description: CUR sync role ARN (present when cost_and_usage is active)
-          x-go-name: CurSyncRoleArn
-        cur_s3_bucket_name:
-          type: string
-          description: S3 bucket for CUR data (present when cost_and_usage is active)
-          x-go-name: CurS3BucketName
-        cur_s3_report_prefix:
-          type: string
-          description: S3 prefix for CUR reports (present when cost_and_usage is active)
-          x-go-name: CurS3ReportPrefix
-        cur_report_name:
-          type: string
-          description: BCM Data Export name (present when cost_and_usage is active)
-          x-go-name: CurReportName
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
+            - asset_inventory
+            - cost_and_usage
+            - additional_metadata
+          minItems: 1
+        single_account:
+          type: boolean
+          default: false
+          description: 'Only relevant when asset_inventory is selected. If true, uses single-account mode instead of organization mode.
+
+            '
     PlatformOnboardingAWSUnified:
       type: object
       description: Unified AWS onboarding status with per-feature stages
@@ -856,28 +620,6 @@ components:
           $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedAssetInventory'
         cost_and_usage:
           $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedCostAndUsage'
-    PlatformCompletedSingleAccountNotification:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBaseNotification'
-      - type: object
-        required:
-        - sync_role_arn
-        - stack_id
-        properties:
-          status:
-            enum:
-            - completed_account
-          sync_role_arn:
-            type: string
-          stack_id:
-            type: string
-    PlatformBaseNotification:
-      type: object
-      required:
-      - status
-      properties:
-        status:
-          type: string
     PlatformDisplayName:
       description: A human-readable display name
       minLength: 1
@@ -886,153 +628,92 @@ components:
       x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
       type: string
       example: Human Readable Name
-    PlatformOnboardingID:
-      description: ID of the cloud provider onboarding session
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: OnboardingID
-    PlatformDeployedNotification:
+    PlatformOnboardingAWSUnifiedCostAndUsage:
+      type: object
+      description: Cost and usage feature status and details
+      additionalProperties: false
+      required:
+      - stage
+      properties:
+        stage:
+          type: string
+          description: 'Stage of the cost and usage feature. Values: pending, started, deployed, provisioning, verified, failed, revoked.
+
+            '
+        failure_reason:
+          type: string
+          description: Error details if the feature failed
+          x-go-name: FailureReason
+        sync_role_arn:
+          type: string
+          x-go-name: SyncRoleARN
+        s3_bucket_name:
+          type: string
+          x-go-name: S3BucketName
+        s3_report_prefix:
+          type: string
+          x-go-name: S3ReportPrefix
+        cur_report_name:
+          type: string
+          x-go-name: CURReportName
+    PlatformOnboardingAWSAccounts:
+      type: object
+      description: AWS OpenID onboarding account structure
+      additionalProperties: false
+      required:
+      - id
+      - type
+      properties:
+        id:
+          type: string
+          description: ID of the account or OU
+          x-go-name: ID
+        arn:
+          type: string
+          description: ARN of the account or OU
+          x-go-name: ARN
+        type:
+          type: string
+          description: Type of the account
+          enum:
+          - OU
+          - account
+          - root
+        name:
+          type: string
+          description: Display name of the account or OU
+        children:
+          type: array
+          description: Children accounts and OUs of the target account
+          items:
+            $ref: '#/components/schemas/PlatformOnboardingAWSAccounts'
+    PlatformDeployedCURNotification:
       allOf:
       - $ref: '#/components/schemas/PlatformBaseNotification'
       - type: object
         required:
-        - management_role_arn
-        - deployment_mode
+        - main_role_arn
+        - sync_role_arn
+        - s3_bucket_name
+        - s3_report_prefix
+        - cur_report_name
         - stack_id
         properties:
           status:
             enum:
-            - deployed
-          management_role_arn:
+            - deployed_cur
+          main_role_arn:
             type: string
-          deployment_mode:
+          sync_role_arn:
+            type: string
+          s3_bucket_name:
+            type: string
+          s3_report_prefix:
+            type: string
+          cur_report_name:
             type: string
           stack_id:
             type: string
-    PlatformOrganizationalUnitID:
-      description: ID of an organizational unit in AWS
-      type: string
-      example: ou-7f3s-j8zfa1ao
-      pattern: ^ou-[a-z0-9]{4,32}-[a-z0-9]{8,32}$
-      x-pattern-message: must start with "ou-" followed by 4 to 32 lowercase letters or digits, then a second "-" dash, and finally 8 to 32 additional lowercase letters or digits
-      x-go-name: OrganizationalUnitID
-    PlatformOnboardingAWSNotification:
-      oneOf:
-      - $ref: '#/components/schemas/PlatformStartedNotification'
-      - $ref: '#/components/schemas/PlatformRevokedNotification'
-      - $ref: '#/components/schemas/PlatformFailedNotification'
-      - $ref: '#/components/schemas/PlatformDeployedNotification'
-      - $ref: '#/components/schemas/PlatformCompletedNotification'
-      - $ref: '#/components/schemas/PlatformCompletedSingleAccountNotification'
-      discriminator:
-        propertyName: status
-        mapping:
-          started: '#/components/schemas/PlatformStartedNotification'
-          revoked: '#/components/schemas/PlatformRevokedNotification'
-          failed: '#/components/schemas/PlatformFailedNotification'
-          deployed: '#/components/schemas/PlatformDeployedNotification'
-          completed: '#/components/schemas/PlatformCompletedNotification'
-          completed_account: '#/components/schemas/PlatformCompletedSingleAccountNotification'
-    PlatformOnboardingAWSUnifiedIntegrationsRequest:
-      type: object
-      description: Request to create integrations for all enabled features
-      additionalProperties: false
-      required:
-      - name
-      - destination_names
-      properties:
-        name:
-          type: string
-          description: Base name for the integrations. Sub-integrations derive their names from this value.
-        display_name:
-          $ref: '#/components/schemas/PlatformDisplayName'
-        destination_names:
-          type: array
-          items:
-            type: string
-        schedule:
-          type: string
-          description: Cron schedule for recurring syncs
-        asset_inventory:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
-        cost_and_usage:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
-        additional_metadata:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
-    PlatformOnboardingAWSUnifiedIntegrationConfig:
-      type: object
-      description: Per-feature configuration for a unified integration, containing only the test connection reference
-      additionalProperties: false
-      required:
-      - test_connection_id
-      properties:
-        test_connection_id:
-          type: string
-          format: uuid
-          x-go-name: TestConnectionID
-    PlatformOnboardingAWSCURCreateResponse:
-      type: object
-      description: AWS CUR onboarding create response
-      additionalProperties: false
-      required:
-      - id
-      - region
-      - issuer_url
-      - audience
-      - subject
-      - template_url
-      - notify_path
-      - notify_token
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformOnboardingID'
-        region:
-          type: string
-          description: AWS region where the CUR stack must be deployed. Always 'us-east-1' because AWS Cost and Usage Reports are only available in that region.
-        stack_name:
-          type: string
-          description: Stack name that should be used
-          maxLength: 128
-        issuer_url:
-          type: string
-          description: URL of the OpenID server to use when setting up a trust relationship
-          x-go-name: IssuerURL
-        audience:
-          type: string
-          description: OpenID audience claim for the trust relationship
-          x-go-name: Audience
-        subject:
-          type: string
-          description: OpenID subject claim for the trust relationship
-          x-go-name: Subject
-        notify_path:
-          type: string
-          description: Path of the notify endpoint to use for status updates
-          x-go-name: NotifyPath
-        template_url:
-          type: string
-          description: URL of the CloudFormation template to use for the CUR setup
-          x-go-name: TemplateURL
-        notify_token:
-          type: string
-          description: An authentication token that should be used for notifications
-    PlatformAWSUnifiedFeatureTestConnectionConfig:
-      type: object
-      description: Per-feature plugin spec and environment variables for a standalone AWS unified test connection. The spec may contain ${ENV_VAR} placeholders that resolve from the env list at sync time.
-      required:
-      - spec
-      additionalProperties: false
-      properties:
-        spec:
-          type: object
-          additionalProperties: true
-          description: Plugin spec (regions, accounts, etc.). May reference env vars via ${VAR}.
-        env:
-          type: array
-          description: Environment variables for the plugin. All values are stored as encrypted secrets and substituted into the spec at sync time.
-          items:
-            $ref: '#/components/schemas/PlatformSyncEnvCreate'
     PlatformOnboardingAWSProvision:
       type: object
       description: Stackset provisioning configuration
@@ -1060,19 +741,6 @@ components:
             example: '615713231484'
             pattern: ^\d{12}$
             x-pattern-message: account ID must be exactly 12 digits
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
     PlatformOnboardingAWSUnifiedCreateResponse:
       type: object
       description: Response when creating a unified AWS onboarding
@@ -1127,64 +795,23 @@ components:
         notify_token:
           type: string
           description: Authentication token for notifications
-    PlatformOnboardingAWSCURNotification:
-      oneOf:
-      - $ref: '#/components/schemas/PlatformStartedNotification'
-      - $ref: '#/components/schemas/PlatformRevokedNotification'
-      - $ref: '#/components/schemas/PlatformFailedNotification'
-      - $ref: '#/components/schemas/PlatformDeployedCURNotification'
-      discriminator:
-        propertyName: status
-        mapping:
-          started: '#/components/schemas/PlatformStartedNotification'
-          revoked: '#/components/schemas/PlatformRevokedNotification'
-          failed: '#/components/schemas/PlatformFailedNotification'
-          deployed_cur: '#/components/schemas/PlatformDeployedCURNotification'
-    PlatformOnboardingAWSCreateResponse:
+    PlatformOnboardingAWSUnifiedIntegrationConfig:
       type: object
-      description: AWS OpenID onboarding
+      description: Per-feature configuration for a unified integration, containing only the test connection reference
       additionalProperties: false
       required:
-      - id
-      - issuer_url
-      - audience
-      - subject
-      - template_url
-      - notify_path
-      - notify_token
+      - test_connection_id
       properties:
-        id:
-          $ref: '#/components/schemas/PlatformOnboardingID'
-        region:
+        test_connection_id:
           type: string
-          description: An AWS region (such as 'us-east-1') where stack is deployed
-        stack_name:
-          type: string
-          description: Stack name that should be used
-          maxLength: 128
-        issuer_url:
-          type: string
-          description: URL of the OpenID server to use when setting up a trust relationship
-          x-go-name: IssuerURL
-        audience:
-          type: string
-          description: OpenID audience claim for the trust realshionship
-          x-go-name: Audience
-        subject:
-          type: string
-          description: OpenID subject claim for the trust relationship
-          x-go-name: Subject
-        notify_path:
-          type: string
-          description: Path of the notify endpoint to use for status updates
-          x-go-name: NotifyPath
-        template_url:
-          type: string
-          description: URL of the CloudFormation template to use for the authentication
-          x-go-name: TemplateURL
-        notify_token:
-          type: string
-          description: An authentication token that should be used for notifications
+          format: uuid
+          x-go-name: TestConnectionID
+    PlatformOnboardingID:
+      description: ID of the cloud provider onboarding session
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: OnboardingID
     PlatformOnboardingAWS:
       type: object
       description: AWS OpenID onboarding
@@ -1248,168 +875,14 @@ components:
             '
           items:
             type: string
-    PlatformSyncEnvCreate:
-      type: object
-      description: Environment variable. Environment variables are assumed to be secret.
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name of the environment variable
-        value:
-          type: string
-          description: Value of the environment variable
-    PlatformOnboardingAWSUnifiedTestConnectionsResponse:
-      type: object
-      description: Response with created test connections
-      additionalProperties: false
-      required:
-      - test_connections
-      properties:
-        test_connections:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            required:
-            - feature
-            - test_connection_id
-            - plugin_path
-            properties:
-              feature:
-                type: string
-                enum:
-                - asset_inventory
-                - cost_and_usage
-                - additional_metadata
-              test_connection_id:
-                type: string
-                format: uuid
-                x-go-name: TestConnectionID
-              plugin_path:
-                type: string
-    PlatformOnboardingAWSUnifiedIntegrationsResponse:
-      type: object
-      description: 'Response containing the integrations created by the unified onboarding flow. Some features create multiple integrations from a single config: asset_inventory creates both a main sync and a companion sync with a "-cloudtrail" suffix, and additional_metadata creates a sync with a "-metadata" suffix. All names are derived from the user-provided name in the request.
-
-        '
-      required:
-      - integrations
-      properties:
-        integrations:
-          type: array
-          items:
-            type: object
-            required:
-            - name
-            - feature
-            properties:
-              name:
-                type: string
-                description: 'The integration name. For asset_inventory, this may be the base name or the base name with a "-cloudtrail" suffix. For additional_metadata, this is the base name with a "-metadata" suffix.
-
-                  '
-              feature:
-                type: string
-                enum:
-                - asset_inventory
-                - cost_and_usage
-                - additional_metadata
-    PlatformFailedNotification:
+    PlatformRevokedNotification:
       allOf:
       - $ref: '#/components/schemas/PlatformBaseNotification'
       - type: object
-        required:
-        - reason
         properties:
           status:
             enum:
-            - failed
-          reason:
-            type: string
-    PlatformOnboardingAWSUnifiedCreateRequest:
-      type: object
-      description: Request to create a unified AWS onboarding
-      additionalProperties: false
-      required:
-      - features
-      properties:
-        features:
-          type: array
-          description: 'List of features to enable. Determines the CloudFormation template composition.
-
-            '
-          items:
-            type: string
-            enum:
-            - asset_inventory
-            - cost_and_usage
-            - additional_metadata
-          minItems: 1
-        single_account:
-          type: boolean
-          default: false
-          description: 'Only relevant when asset_inventory is selected. If true, uses single-account mode instead of organization mode.
-
-            '
-    PlatformCompletedNotification:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBaseNotification'
-      - type: object
-        required:
-        - admin_role_arn
-        - sync_role_name
-        - organizational_units
-        - skipped_accounts
-        properties:
-          status:
-            enum:
-            - completed
-          admin_role_arn:
-            type: string
-          sync_role_name:
-            type: string
-          organizational_units:
-            type: array
-            items:
-              type: string
-          skipped_accounts:
-            type: array
-            items:
-              type: string
-          failed_accounts:
-            type: number
-          additional_stack_ids:
-            type: array
-            items:
-              type: string
-    PlatformAWSUnifiedIntegrationsRequest:
-      type: object
-      description: 'Request to create AWS unified integrations from previously created standalone test connections (no onboarding). Sub-integrations derive their names from the base name: asset_inventory creates -asset-inventory and -cloudtrail syncs, additional_metadata creates a -metadata sync, and cost_and_usage creates a -cost-and-usage sync.'
-      additionalProperties: false
-      required:
-      - name
-      - destination_names
-      properties:
-        name:
-          type: string
-          description: Base name for the integrations. Sub-integrations derive their names from this value.
-        display_name:
-          $ref: '#/components/schemas/PlatformDisplayName'
-        destination_names:
-          type: array
-          items:
-            type: string
-        schedule:
-          type: string
-          description: Cron schedule for recurring syncs
-        asset_inventory:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
-        cost_and_usage:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
-        additional_metadata:
-          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+            - revoked
     PlatformOnboardingAWSUnifiedAssetInventory:
       type: object
       description: Asset inventory feature status and details
@@ -1451,37 +924,533 @@ components:
         failed_accounts_count:
           type: integer
           x-go-name: FailedAccountsCount
-  responses:
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
+    PlatformOnboardingAWSUnifiedTestConnectionsResponse:
+      type: object
+      description: Response with created test connections
+      additionalProperties: false
+      required:
+      - test_connections
+      properties:
+        test_connections:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - feature
+            - test_connection_id
+            - plugin_path
+            properties:
+              feature:
+                type: string
+                enum:
+                - asset_inventory
+                - cost_and_usage
+                - additional_metadata
+              test_connection_id:
+                type: string
+                format: uuid
+                x-go-name: TestConnectionID
+              plugin_path:
+                type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformOnboardingAWSNotification:
+      oneOf:
+      - $ref: '#/components/schemas/PlatformStartedNotification'
+      - $ref: '#/components/schemas/PlatformRevokedNotification'
+      - $ref: '#/components/schemas/PlatformFailedNotification'
+      - $ref: '#/components/schemas/PlatformDeployedNotification'
+      - $ref: '#/components/schemas/PlatformCompletedNotification'
+      - $ref: '#/components/schemas/PlatformCompletedSingleAccountNotification'
+      discriminator:
+        propertyName: status
+        mapping:
+          started: '#/components/schemas/PlatformStartedNotification'
+          revoked: '#/components/schemas/PlatformRevokedNotification'
+          failed: '#/components/schemas/PlatformFailedNotification'
+          deployed: '#/components/schemas/PlatformDeployedNotification'
+          completed: '#/components/schemas/PlatformCompletedNotification'
+          completed_account: '#/components/schemas/PlatformCompletedSingleAccountNotification'
+    PlatformOnboardingAWSCreateResponse:
+      type: object
+      description: AWS OpenID onboarding
+      additionalProperties: false
+      required:
+      - id
+      - issuer_url
+      - audience
+      - subject
+      - template_url
+      - notify_path
+      - notify_token
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+        region:
+          type: string
+          description: An AWS region (such as 'us-east-1') where stack is deployed
+        stack_name:
+          type: string
+          description: Stack name that should be used
+          maxLength: 128
+        issuer_url:
+          type: string
+          description: URL of the OpenID server to use when setting up a trust relationship
+          x-go-name: IssuerURL
+        audience:
+          type: string
+          description: OpenID audience claim for the trust realshionship
+          x-go-name: Audience
+        subject:
+          type: string
+          description: OpenID subject claim for the trust relationship
+          x-go-name: Subject
+        notify_path:
+          type: string
+          description: Path of the notify endpoint to use for status updates
+          x-go-name: NotifyPath
+        template_url:
+          type: string
+          description: URL of the CloudFormation template to use for the authentication
+          x-go-name: TemplateURL
+        notify_token:
+          type: string
+          description: An authentication token that should be used for notifications
+    PlatformOnboardingAWSUnifiedTestConnectionsRequest:
+      type: object
+      description: Request to create test connections for all enabled features
+      additionalProperties: false
+      properties:
+        asset_inventory:
+          type: object
+          description: Configuration for asset inventory test connection (regions, etc.)
+          additionalProperties: true
+        cost_and_usage:
+          type: object
+          description: Configuration for cost and usage test connection
+          additionalProperties: true
+        additional_metadata:
+          type: object
+          description: Configuration for additional metadata test connection
+          additionalProperties: true
+    PlatformOnboardingAWSUnifiedNotification:
+      oneOf:
+      - $ref: '#/components/schemas/PlatformStartedNotification'
+      - $ref: '#/components/schemas/PlatformRevokedNotification'
+      - $ref: '#/components/schemas/PlatformFailedNotification'
+      - $ref: '#/components/schemas/PlatformDeployedUnifiedNotification'
+      - $ref: '#/components/schemas/PlatformCompletedNotification'
+      - $ref: '#/components/schemas/PlatformCompletedSingleAccountNotification'
+      discriminator:
+        propertyName: status
+        mapping:
+          started: '#/components/schemas/PlatformStartedNotification'
+          revoked: '#/components/schemas/PlatformRevokedNotification'
+          failed: '#/components/schemas/PlatformFailedNotification'
+          deployed_unified: '#/components/schemas/PlatformDeployedUnifiedNotification'
+          completed: '#/components/schemas/PlatformCompletedNotification'
+          completed_account: '#/components/schemas/PlatformCompletedSingleAccountNotification'
+    PlatformCompletedSingleAccountNotification:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBaseNotification'
+      - type: object
+        required:
+        - sync_role_arn
+        - stack_id
+        properties:
+          status:
+            enum:
+            - completed_account
+          sync_role_arn:
+            type: string
+          stack_id:
+            type: string
+    PlatformOnboardingAWSUnifiedIntegrationsResponse:
+      type: object
+      description: 'Response containing the integrations created by the unified onboarding flow. Some features create multiple integrations from a single config: asset_inventory creates both a main sync and a companion sync with a "-cloudtrail" suffix, and additional_metadata creates a sync with a "-metadata" suffix. All names are derived from the user-provided name in the request.
+
+        '
+      required:
+      - integrations
+      properties:
+        integrations:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            - feature
+            properties:
+              name:
+                type: string
+                description: 'The integration name. For asset_inventory, this may be the base name or the base name with a "-cloudtrail" suffix. For additional_metadata, this is the base name with a "-metadata" suffix.
+
+                  '
+              feature:
+                type: string
+                enum:
+                - asset_inventory
+                - cost_and_usage
+                - additional_metadata
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformFailedNotification:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBaseNotification'
+      - type: object
+        required:
+        - reason
+        properties:
+          status:
+            enum:
+            - failed
+          reason:
+            type: string
+    PlatformAWSUnifiedFeatureTestConnectionConfig:
+      type: object
+      description: Per-feature plugin spec and environment variables for a standalone AWS unified test connection. The spec may contain ${ENV_VAR} placeholders that resolve from the env list at sync time.
+      required:
+      - spec
+      additionalProperties: false
+      properties:
+        spec:
+          type: object
+          additionalProperties: true
+          description: Plugin spec (regions, accounts, etc.). May reference env vars via ${VAR}.
+        env:
+          type: array
+          description: Environment variables for the plugin. All values are stored as encrypted secrets and substituted into the spec at sync time.
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+    PlatformOnboardingAWSCURCreateResponse:
+      type: object
+      description: AWS CUR onboarding create response
+      additionalProperties: false
+      required:
+      - id
+      - region
+      - issuer_url
+      - audience
+      - subject
+      - template_url
+      - notify_path
+      - notify_token
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+        region:
+          type: string
+          description: AWS region where the CUR stack must be deployed. Always 'us-east-1' because AWS Cost and Usage Reports are only available in that region.
+        stack_name:
+          type: string
+          description: Stack name that should be used
+          maxLength: 128
+        issuer_url:
+          type: string
+          description: URL of the OpenID server to use when setting up a trust relationship
+          x-go-name: IssuerURL
+        audience:
+          type: string
+          description: OpenID audience claim for the trust relationship
+          x-go-name: Audience
+        subject:
+          type: string
+          description: OpenID subject claim for the trust relationship
+          x-go-name: Subject
+        notify_path:
+          type: string
+          description: Path of the notify endpoint to use for status updates
+          x-go-name: NotifyPath
+        template_url:
+          type: string
+          description: URL of the CloudFormation template to use for the CUR setup
+          x-go-name: TemplateURL
+        notify_token:
+          type: string
+          description: An authentication token that should be used for notifications
+    PlatformOnboardingAWSUnifiedIntegrationsRequest:
+      type: object
+      description: Request to create integrations for all enabled features
+      additionalProperties: false
+      required:
+      - name
+      - destination_names
+      properties:
+        name:
+          type: string
+          description: Base name for the integrations. Sub-integrations derive their names from this value.
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        destination_names:
+          type: array
+          items:
+            type: string
+        schedule:
+          type: string
+          description: Cron schedule for recurring syncs
+        asset_inventory:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+        cost_and_usage:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+        additional_metadata:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+    PlatformAWSUnifiedTestConnectionsRequest:
+      type: object
+      description: Request to create test connections for AWS unified features without an onboarding. Each feature is enabled by including its config block. The frontend is responsible for building the full plugin spec (e.g. cloudquery/aws with an accounts array of {role_arn, external_id}) and supplying any external_id values via the env list.
+      additionalProperties: false
+      properties:
+        asset_inventory:
+          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
+        cost_and_usage:
+          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
+        additional_metadata:
+          $ref: '#/components/schemas/PlatformAWSUnifiedFeatureTestConnectionConfig'
+    PlatformAWSUnifiedIntegrationsRequest:
+      type: object
+      description: 'Request to create AWS unified integrations from previously created standalone test connections (no onboarding). Sub-integrations derive their names from the base name: asset_inventory creates -asset-inventory and -cloudtrail syncs, additional_metadata creates a -metadata sync, and cost_and_usage creates a -cost-and-usage sync.'
+      additionalProperties: false
+      required:
+      - name
+      - destination_names
+      properties:
+        name:
+          type: string
+          description: Base name for the integrations. Sub-integrations derive their names from this value.
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        destination_names:
+          type: array
+          items:
+            type: string
+        schedule:
+          type: string
+          description: Cron schedule for recurring syncs
+        asset_inventory:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+        cost_and_usage:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+        additional_metadata:
+          $ref: '#/components/schemas/PlatformOnboardingAWSUnifiedIntegrationConfig'
+    PlatformOnboardingAWSCURNotification:
+      oneOf:
+      - $ref: '#/components/schemas/PlatformStartedNotification'
+      - $ref: '#/components/schemas/PlatformRevokedNotification'
+      - $ref: '#/components/schemas/PlatformFailedNotification'
+      - $ref: '#/components/schemas/PlatformDeployedCURNotification'
+      discriminator:
+        propertyName: status
+        mapping:
+          started: '#/components/schemas/PlatformStartedNotification'
+          revoked: '#/components/schemas/PlatformRevokedNotification'
+          failed: '#/components/schemas/PlatformFailedNotification'
+          deployed_cur: '#/components/schemas/PlatformDeployedCURNotification'
+    PlatformBaseNotification:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+    PlatformCompletedNotification:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBaseNotification'
+      - type: object
+        required:
+        - admin_role_arn
+        - sync_role_name
+        - organizational_units
+        - skipped_accounts
+        properties:
+          status:
+            enum:
+            - completed
+          admin_role_arn:
+            type: string
+          sync_role_name:
+            type: string
+          organizational_units:
+            type: array
+            items:
+              type: string
+          skipped_accounts:
+            type: array
+            items:
+              type: string
+          failed_accounts:
+            type: number
+          additional_stack_ids:
+            type: array
+            items:
+              type: string
+    PlatformDeployedNotification:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBaseNotification'
+      - type: object
+        required:
+        - management_role_arn
+        - deployment_mode
+        - stack_id
+        properties:
+          status:
+            enum:
+            - deployed
+          management_role_arn:
+            type: string
+          deployment_mode:
+            type: string
+          stack_id:
+            type: string
+    PlatformOrganizationalUnitID:
+      description: ID of an organizational unit in AWS
+      type: string
+      example: ou-7f3s-j8zfa1ao
+      pattern: ^ou-[a-z0-9]{4,32}-[a-z0-9]{8,32}$
+      x-pattern-message: must start with "ou-" followed by 4 to 32 lowercase letters or digits, then a second "-" dash, and finally 8 to 32 additional lowercase letters or digits
+      x-go-name: OrganizationalUnitID
+    PlatformDeployedUnifiedNotification:
+      type: object
+      description: Notification sent when unified CloudFormation stack deployment completes
+      additionalProperties: false
+      required:
+      - status
+      - stack_id
+      properties:
+        status:
+          type: string
+          enum:
+          - deployed_unified
+        stack_id:
+          type: string
+          description: CloudFormation stack ARN
+        management_role_arn:
+          type: string
+          description: Management role ARN (present when asset_inventory is active)
+          x-go-name: ManagementRoleArn
+        deployment_mode:
+          type: string
+          description: Deployment mode (present when asset_inventory is active)
+        cur_main_role_arn:
+          type: string
+          description: CUR main role ARN (present when cost_and_usage is active)
+          x-go-name: CurMainRoleArn
+        cur_sync_role_arn:
+          type: string
+          description: CUR sync role ARN (present when cost_and_usage is active)
+          x-go-name: CurSyncRoleArn
+        cur_s3_bucket_name:
+          type: string
+          description: S3 bucket for CUR data (present when cost_and_usage is active)
+          x-go-name: CurS3BucketName
+        cur_s3_report_prefix:
+          type: string
+          description: S3 prefix for CUR reports (present when cost_and_usage is active)
+          x-go-name: CurS3ReportPrefix
+        cur_report_name:
+          type: string
+          description: BCM Data Export name (present when cost_and_usage is active)
+          x-go-name: CurReportName
+    PlatformSyncEnvCreate:
+      type: object
+      description: Environment variable. Environment variables are assumed to be secret.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the environment variable
+        value:
+          type: string
+          description: Value of the environment variable
+    PlatformOnboardingAWSCUR:
+      type: object
+      description: AWS CUR onboarding
+      additionalProperties: false
+      required:
+      - id
+      - stage
+      - created_at
+      - updated_at
+      - issuer_url
+      - audience
+      - subject
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+        stage:
+          type: string
+          description: Stage of the onboarding process
+          x-go-name: OnboardingStage
+        created_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2017-07-14T16:53:42Z'
+        issuer_url:
+          type: string
+          description: URL of the OpenID server to use when setting up a trust relationship
+          x-go-name: IssuerURL
+        audience:
+          type: string
+          description: OpenID audience claim for the trust relationship
+          x-go-name: Audience
+        subject:
+          type: string
+          description: OpenID subject claim for the trust relationship
+          x-go-name: Subject
+        sync_role_arn:
+          type: string
+          description: Role used to access the S3 bucket with CUR reports
+          x-go-name: SyncRoleARN
+        s3_bucket_name:
+          type: string
+          description: Name of the S3 bucket containing CUR reports
+          x-go-name: S3BucketName
+        s3_report_prefix:
+          type: string
+          description: Prefix path for CUR reports in the S3 bucket
+          x-go-name: S3ReportPrefix
+        cur_report_name:
+          type: string
+          description: Name of the CUR report
+          x-go-name: CURReportName
+        failure_reason:
+          type: string
+          description: Error details if the onboarding failed
+          x-go-name: FailureReason
+    PlatformStartedNotification:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBaseNotification'
+      - type: object
+        properties:
+          status:
+            enum:
+            - started
   parameters:
     platform_aws_orgunit_id:
       name: aws_orgunit_id
@@ -1497,6 +1466,37 @@ components:
       x-go-name: OnboardingID
       schema:
         $ref: '#/components/schemas/PlatformOnboardingID'
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
   securitySchemes:
     bearerAuth:
       scheme: bearer

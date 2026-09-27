@@ -139,19 +139,6 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformVersion:
-      type: object
-      required:
-      - name
-      - created_at
-      properties:
-        name:
-          type: string
-          description: Name of the version
-        created_at:
-          type: string
-          format: date-time
-          description: Time when the version was first installed
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -165,6 +152,19 @@ components:
           type: integer
       title: Basic Error
       type: object
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
   securitySchemes:
     bearerAuth:
       scheme: bearer

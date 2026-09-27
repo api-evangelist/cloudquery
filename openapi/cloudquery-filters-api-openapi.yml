@@ -425,6 +425,31 @@ components:
         minimum: 1
         type: integer
         format: int64
+    platform_filter_name_filter:
+      name: name_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by filter name
+        type: string
+    platform_filter_expression_filter:
+      name: expression_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by filter expression
+        type: string
+    platform_filter_tags:
+      name: tag
+      in: query
+      description: Filter tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterTag'
+      x-go-name: FilterTags
     platform_filter_id:
       in: path
       name: filter_id
@@ -438,13 +463,6 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/PlatformTableName'
-    platform_query_id:
-      in: path
-      name: query_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformQueryID'
-      x-go-name: QueryID
     platform_page:
       description: Page number of the results to fetch
       in: query
@@ -455,74 +473,79 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_filter_name_filter:
-      name: name_filter
-      in: query
-      required: false
+    platform_query_id:
+      in: path
+      name: query_id
+      required: true
       schema:
-        description: Filter by filter name
-        type: string
-    platform_filter_tags:
-      name: tag
-      in: query
-      description: Filter tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterTag'
-      x-go-name: FilterTags
-    platform_filter_expression_filter:
-      name: expression_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by filter expression
-        type: string
-  responses:
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
+        $ref: '#/components/schemas/PlatformQueryID'
+      x-go-name: QueryID
   schemas:
+    PlatformFilterTag:
+      description: A table column filter tag.
+      type: string
+    PlatformFilterCreate:
+      title: Filter definition for creating a filter
+      type: object
+      description: Saved filter
+      additionalProperties: false
+      required:
+      - name
+      - expression
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        public:
+          type: boolean
+          default: true
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Whether the filter is visible to all users, or only to the user who created it
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformFilterID:
       description: The unique ID for the filter.
       type: string
       format: uuid
       x-go-name: FilterID
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -536,9 +559,28 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformFilterTag:
-      description: A table column filter tag.
+    PlatformUserID:
+      description: ID of the User
       type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformFilterUpdate:
+      title: Filter definition for updating a filter
+      description: Filter Update Definition
+      type: object
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        description:
+          type: string
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
     PlatformFilter:
       title: Filter
       type: object
@@ -579,94 +621,52 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformFilterUpdate:
-      title: Filter definition for updating a filter
-      description: Filter Update Definition
-      type: object
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        description:
-          type: string
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
     PlatformQueryID:
       description: The unique ID for the query.
       type: string
       format: uuid
       x-go-name: QueryID
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformFilterExpression:
-      description: A table column filter.
-      type: string
-      example: resource_type=aws_s3_buckets
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformFilterCreate:
-      title: Filter definition for creating a filter
-      type: object
-      description: Saved filter
-      additionalProperties: false
-      required:
-      - name
-      - expression
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        public:
-          type: boolean
-          default: true
-          x-omitempty: false
-          x-go-type-skip-optional-pointer: true
-          description: Whether the filter is visible to all users, or only to the user who created it
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
     PlatformTableName:
       description: The name of the table.
       type: string
       example: cloud_assets
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
   securitySchemes:
     bearerAuth:
       scheme: bearer

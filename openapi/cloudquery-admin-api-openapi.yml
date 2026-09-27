@@ -563,6 +563,150 @@ components:
           type: string
           format: date-time
           description: Expiration time of the SAML certificate that will be used after rollover
+    PlatformSettingsUpdate:
+      type: object
+      description: Platform settings partial update
+      properties:
+        enforce_mfa:
+          type: boolean
+          description: Whether or not to require MFA for all users
+          default: false
+        ai_agent_data_access:
+          type: boolean
+          description: Whether AI agents can execute queries against the data warehouse. When false, agents can only explore schemas and generate queries for the user to run manually.
+          default: false
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+    PlatformRBACPermission:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      - number_of_affected_roles
+      - number_of_affected_users
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformRBACPermissionID'
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        number_of_affected_roles:
+          type: integer
+        number_of_affected_users:
+          type: integer
+    PlatformRoleType:
+      type: string
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformDataSettingsUpdate:
+      type: object
+      description: Platform data settings partial update
+      properties:
+        ownership_tags:
+          type: array
+          description: List of tag names for asset ownership
+          items:
+            type: string
+    PlatformDataSettings:
+      type: object
+      description: Platform data settings definition
+      required:
+      - ownership_tags
+      properties:
+        ownership_tags:
+          type: array
+          description: List of tag names for asset ownership
+          items:
+            type: string
+          default: []
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
     PlatformUserProvider:
       title: LocalUserProvider
       type: string
@@ -570,6 +714,26 @@ components:
       - local
       - saml
       default: local
+    PlatformRoleID:
+      description: The unique ID for the role.
+      type: string
+      format: uuid
+      x-go-name: RoleID
+    PlatformSettings:
+      type: object
+      description: Platform settings definition
+      required:
+      - enforce_mfa
+      - ai_agent_data_access
+      properties:
+        enforce_mfa:
+          type: boolean
+          description: Whether or not to require MFA for all users
+          default: false
+        ai_agent_data_access:
+          type: boolean
+          description: Whether AI agents can execute queries against the data warehouse. When false, agents can only explore schemas and generate queries for the user to run manually.
+          default: false
     PlatformRole:
       type: object
       description: Role
@@ -608,32 +772,6 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/PlatformRoleType'
-    PlatformDataSettingsUpdate:
-      type: object
-      description: Platform data settings partial update
-      properties:
-        ownership_tags:
-          type: array
-          description: List of tag names for asset ownership
-          items:
-            type: string
-    PlatformDataSettings:
-      type: object
-      description: Platform data settings definition
-      required:
-      - ownership_tags
-      properties:
-        ownership_tags:
-          type: array
-          description: List of tag names for asset ownership
-          items:
-            type: string
-          default: []
-    PlatformRBACPermissionID:
-      description: The unique ID for the data permission.
-      type: string
-      format: uuid
-      x-go-name: RBACPermissionID
     PlatformSAMLConfigUpdate:
       title: SAML Configuration Update
       type: object
@@ -675,169 +813,31 @@ components:
         enabled:
           type: boolean
           description: Whether to enable or disable SAML
-    PlatformRoleType:
-      type: string
-      enum:
-      - admin:write
-      - admin:read
-      - general:read
-      - general:write
-      - ci
-      - schema-only
-      - custom
-      x-enum-varnames:
-      - AdminWrite
-      - AdminRead
-      - GeneralRead
-      - GeneralWrite
-      - CI
-      - SchemaOnly
-      - Custom
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
-      type: string
-      example: Sarah O'Connor
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformSettings:
-      type: object
-      description: Platform settings definition
-      required:
-      - enforce_mfa
-      - ai_agent_data_access
-      properties:
-        enforce_mfa:
-          type: boolean
-          description: Whether or not to require MFA for all users
-          default: false
-        ai_agent_data_access:
-          type: boolean
-          description: Whether AI agents can execute queries against the data warehouse. When false, agents can only explore schemas and generate queries for the user to run manually.
-          default: false
-    PlatformRoleID:
-      description: The unique ID for the role.
-      type: string
-      format: uuid
-      x-go-name: RoleID
-    PlatformSettingsUpdate:
-      type: object
-      description: Platform settings partial update
-      properties:
-        enforce_mfa:
-          type: boolean
-          description: Whether or not to require MFA for all users
-          default: false
-        ai_agent_data_access:
-          type: boolean
-          description: Whether AI agents can execute queries against the data warehouse. When false, agents can only explore schemas and generate queries for the user to run manually.
-          default: false
-    PlatformRBACPermission:
-      type: object
-      required:
-      - id
-      - name
-      - description
-      - query
-      - created_by
-      - created_at
-      - updated_at
-      - number_of_affected_roles
-      - number_of_affected_users
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformRBACPermissionID'
-        name:
-          type: string
-        description:
-          type: string
-        query:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        number_of_affected_roles:
-          type: integer
-        number_of_affected_users:
-          type: integer
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
   responses:
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
     PlatformUnprocessableEntity:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
-    PlatformConflict:
+    PlatformForbidden:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
-      description: Conflict
+      description: Forbidden
     PlatformNotFound:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
     PlatformInternalError:
       content:
         application/json:
@@ -850,18 +850,18 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Bad request
+    PlatformConflict:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Conflict
     PlatformMethodNotAllowed:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Method not allowed
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
   parameters:
     platform_user_id:
       name: user_id
