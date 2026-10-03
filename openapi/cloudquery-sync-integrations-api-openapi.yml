@@ -46,37 +46,33 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    PlatformDisplayName:
-      description: A human-readable display name
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}\p{N}_][a-zA-Z\p{L}\p{N}_ \-'\(\)\[\]]*$
-      x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
+    PlatformPluginPriceCategory:
+      description: Supported price categories for billing
       type: string
-      example: Human Readable Name
-    PlatformPluginName:
-      description: The unique name for the plugin.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: aws-source
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
-    PlatformPluginTier:
-      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
-      type: string
-      deprecated: true
       enum:
+      - api
+      - database
       - free
-      - paid
-      - open-core
-    PlatformSyncDestinationMigrateMode:
+    PlatformSyncRunWorkerPhase:
+      description: Phase of the worker in the sync run
       type: string
-      description: Migrate mode for the destination
       enum:
-      - safe
-      - forced
-      default: safe
-    PlatformSyncEnv:
+      - Pending
+      - Running
+      - Succeeded
+      - Failed
+      - Unknown
+    PlatformSyncRunStatus:
+      description: The status of the sync run
+      type: string
+      enum:
+      - completed
+      - failed
+      - started
+      - cancelled
+      - created
+      - pending
+    PlatformSyncEnvCreate:
       type: object
       description: Environment variable. Environment variables are assumed to be secret.
       required:
@@ -85,12 +81,9 @@ components:
         name:
           type: string
           description: Name of the environment variable
-    PlatformOnboardingID:
-      description: ID of the cloud provider onboarding session
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: OnboardingID
+        value:
+          type: string
+          description: Value of the environment variable
     PlatformSyncIntegrationV2:
       type: object
       description: An integration definition
@@ -130,6 +123,169 @@ components:
           description: Time when the sync was updated
         created_by:
           type: string
+    PlatformSyncDestinationWriteMode:
+      type: string
+      description: Write mode for the destination
+      enum:
+      - append
+      - overwrite
+      - overwrite-delete-stale
+      default: overwrite-delete-stale
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformSyncPluginPath:
+      type: string
+      description: Plugin path in CloudQuery registry
+      pattern: ^cloudquery/[^/]+
+      x-pattern-message: should be in the format cloudquery/<name>
+    PlatformSyncIntegrationSourceV2:
+      description: Integration Source Definition
+      type: object
+      required:
+      - path
+      - version
+      - tables
+      - env
+      - spec
+      properties:
+        test_connection_id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the test connection
+          x-go-name: TestConnectionID
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/aws
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        tables:
+          type: array
+          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
+          items:
+            type: string
+        skip_tables:
+          type: array
+          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
+          items:
+            type: string
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnv'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        onboarding_id:
+          $ref: '#/components/schemas/PlatformOnboardingID'
+          description: ID of the onboarding that will be used to authenticate the source.
+        unified_sync_kind:
+          type: string
+          description: The kind of unified sync this source belongs to. Null for standalone integrations.
+          readOnly: true
+          enum:
+          - asset_inventory
+          - asset_inventory_cloudtrail
+          - asset_inventory_metadata
+          - cost_and_usage
+    PlatformSyncRun:
+      description: Managed Sync Run definition
+      type: object
+      required:
+      - created_at
+      - sync_name
+      - id
+      - status
+      - total_rows
+      - warnings
+      - errors
+      - migrate
+      - ingested
+      properties:
+        sync_name:
+          type: string
+          description: Name of the sync
+        id:
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          description: unique ID of the run
+          x-go-name: ID
+        status:
+          $ref: '#/components/schemas/PlatformSyncRunStatus'
+          description: Status of the sync run
+        status_reason:
+          $ref: '#/components/schemas/PlatformSyncRunStatusReason'
+          description: Reason for the status of the sync run
+        workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncRunWorkerStatus'
+          description: Information about the workers used in the sync run
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was created
+        completed_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+          description: Time the sync run was completed
+        total_rows:
+          type: integer
+          format: int64
+          description: Total number of rows in the sync
+        warnings:
+          type: integer
+          format: int64
+          description: Number of warnings encountered during the sync
+        errors:
+          type: integer
+          format: int64
+          description: Number of errors encountered during the sync
+        migration:
+          type: boolean
+          description: Whether the sync run is a migration
+        ingested:
+          type: boolean
+          description: Whether the sync run's data has been ingested
+    PlatformSyncDestinationMigrateMode:
+      type: string
+      description: Migrate mode for the destination
+      enum:
+      - safe
+      - forced
+      default: safe
+    PlatformSyncRunWorkerStatus:
+      description: The worker information for a sync run
+      type: object
+      required:
+      - phase
+      properties:
+        phase:
+          $ref: '#/components/schemas/PlatformSyncRunWorkerPhase'
+          description: Phase that the worker is in
+        reason:
+          type: string
+          description: The reason for the status of the worker
     PlatformPluginCategory:
       description: Supported categories for plugins
       type: string
@@ -150,6 +306,126 @@ components:
       - finance
       - customer-support
       - other
+    PlatformSyncDestinationCreate:
+      title: Sync Destination definition for creating a new destination
+      description: Sync Destination Definition
+      type: object
+      required:
+      - name
+      - path
+      - version
+      properties:
+        name:
+          type: string
+          example: my-destination-definition
+          description: Descriptive, unique name for the destination
+          pattern: ^[a-zA-Z0-9_-]+$
+          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+        display_name:
+          $ref: '#/components/schemas/PlatformDisplayName'
+        path:
+          $ref: '#/components/schemas/PlatformSyncPluginPath'
+          example: cloudquery/postgresql
+        version:
+          type: string
+          description: Version of the plugin
+          example: v1.2.3
+        write_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
+        migrate_mode:
+          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
+        sync_group_id:
+          type: string
+          x-go-name: SyncGroupID
+        send_sync_summary:
+          type: boolean
+        spec:
+          type: object
+          additionalProperties: true
+          format: Plugin parameters, specific to each plugin
+        env:
+          description: Environment variables for the plugin. All environment variables will be stored as secrets.
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncEnvCreate'
+        last_update_source:
+          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
+        transformers:
+          type: array
+          items:
+            type: string
+            description: Unique name of the transformer
+            pattern: ^[a-zA-Z0-9_-]+$
+            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
+    PlatformSyncIntegrationGroup:
+      type: object
+      description: A group of integrations linked by a shared onboarding
+      additionalProperties: false
+      required:
+      - integrations
+      properties:
+        onboarding_id:
+          type: string
+          format: uuid
+          description: Onboarding ID linking the integrations. Null for standalone integrations.
+          x-go-name: OnboardingID
+        integrations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSyncIntegrationV2'
+    PlatformSyncRunStatusReason:
+      description: The reason for the status
+      type: string
+      enum:
+      - error
+      - oom_killed
+      - partial_success
+      - ingestion_failed
+    PlatformPluginKind:
+      description: The kind of plugin, ie. source or destination.
+      type: string
+      example: source
+      enum:
+      - source
+      - destination
+      - transformer
+    PlatformSyncLastUpdateSource:
+      description: How was the source or destination been created or updated last
+      type: string
+      enum:
+      - yaml
+      - ui
+    PlatformPluginTier:
+      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
+      type: string
+      deprecated: true
+      enum:
+      - free
+      - paid
+      - open-core
+    PlatformDisplayName:
+      description: A human-readable display name
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}\p{N}_][a-zA-Z\p{L}\p{N}_ \-'\(\)\[\]]*$
+      x-pattern-message: can contain only letters, numbers, spaces, hyphens, underscores, brackets and apostrophes
+      type: string
+      example: Human Readable Name
+    PlatformOnboardingID:
+      description: ID of the cloud provider onboarding session
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: OnboardingID
+    PlatformSyncEnv:
+      type: object
+      description: Environment variable. Environment variables are assumed to be secret.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the environment variable
     PlatformPlugin:
       additionalProperties: false
       description: CloudQuery Plugin
@@ -233,41 +509,6 @@ components:
       - free_rows_per_month
       title: CloudQuery Plugin
       type: object
-    PlatformSyncIntegrationGroup:
-      type: object
-      description: A group of integrations linked by a shared onboarding
-      additionalProperties: false
-      required:
-      - integrations
-      properties:
-        onboarding_id:
-          type: string
-          format: uuid
-          description: Onboarding ID linking the integrations. Null for standalone integrations.
-          x-go-name: OnboardingID
-        integrations:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformSyncIntegrationV2'
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformSyncLastUpdateSource:
-      description: How was the source or destination been created or updated last
-      type: string
-      enum:
-      - yaml
-      - ui
     PlatformTeamName:
       description: The unique name for the team.
       maxLength: 255
@@ -275,122 +516,6 @@ components:
       type: string
       example: cloudquery
       x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
-    PlatformSyncRunWorkerPhase:
-      description: Phase of the worker in the sync run
-      type: string
-      enum:
-      - Pending
-      - Running
-      - Succeeded
-      - Failed
-      - Unknown
-    PlatformSyncRunWorkerStatus:
-      description: The worker information for a sync run
-      type: object
-      required:
-      - phase
-      properties:
-        phase:
-          $ref: '#/components/schemas/PlatformSyncRunWorkerPhase'
-          description: Phase that the worker is in
-        reason:
-          type: string
-          description: The reason for the status of the worker
-    PlatformPluginKind:
-      description: The kind of plugin, ie. source or destination.
-      type: string
-      example: source
-      enum:
-      - source
-      - destination
-      - transformer
-    PlatformPluginPriceCategory:
-      description: Supported price categories for billing
-      type: string
-      enum:
-      - api
-      - database
-      - free
-    PlatformSyncRun:
-      description: Managed Sync Run definition
-      type: object
-      required:
-      - created_at
-      - sync_name
-      - id
-      - status
-      - total_rows
-      - warnings
-      - errors
-      - migrate
-      - ingested
-      properties:
-        sync_name:
-          type: string
-          description: Name of the sync
-        id:
-          type: string
-          format: uuid
-          example: 12345678-1234-1234-1234-1234567890ab
-          description: unique ID of the run
-          x-go-name: ID
-        status:
-          $ref: '#/components/schemas/PlatformSyncRunStatus'
-          description: Status of the sync run
-        status_reason:
-          $ref: '#/components/schemas/PlatformSyncRunStatusReason'
-          description: Reason for the status of the sync run
-        workers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformSyncRunWorkerStatus'
-          description: Information about the workers used in the sync run
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-          description: Time the sync run was created
-        completed_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-          description: Time the sync run was completed
-        total_rows:
-          type: integer
-          format: int64
-          description: Total number of rows in the sync
-        warnings:
-          type: integer
-          format: int64
-          description: Number of warnings encountered during the sync
-        errors:
-          type: integer
-          format: int64
-          description: Number of errors encountered during the sync
-        migration:
-          type: boolean
-          description: Whether the sync run is a migration
-        ingested:
-          type: boolean
-          description: Whether the sync run's data has been ingested
-    PlatformSyncDestinationWriteMode:
-      type: string
-      description: Write mode for the destination
-      enum:
-      - append
-      - overwrite
-      - overwrite-delete-stale
-      default: overwrite-delete-stale
-    PlatformSyncRunStatus:
-      description: The status of the sync run
-      type: string
-      enum:
-      - completed
-      - failed
-      - started
-      - cancelled
-      - created
-      - pending
     PlatformSyncDestinationV2:
       allOf:
       - $ref: '#/components/schemas/PlatformSyncDestinationCreate'
@@ -440,74 +565,6 @@ components:
             $ref: '#/components/schemas/PlatformSyncRun'
           plugin:
             $ref: '#/components/schemas/PlatformPlugin'
-    PlatformSyncDestinationCreate:
-      title: Sync Destination definition for creating a new destination
-      description: Sync Destination Definition
-      type: object
-      required:
-      - name
-      - path
-      - version
-      properties:
-        name:
-          type: string
-          example: my-destination-definition
-          description: Descriptive, unique name for the destination
-          pattern: ^[a-zA-Z0-9_-]+$
-          x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
-        display_name:
-          $ref: '#/components/schemas/PlatformDisplayName'
-        path:
-          $ref: '#/components/schemas/PlatformSyncPluginPath'
-          example: cloudquery/postgresql
-        version:
-          type: string
-          description: Version of the plugin
-          example: v1.2.3
-        write_mode:
-          $ref: '#/components/schemas/PlatformSyncDestinationWriteMode'
-        migrate_mode:
-          $ref: '#/components/schemas/PlatformSyncDestinationMigrateMode'
-        sync_group_id:
-          type: string
-          x-go-name: SyncGroupID
-        send_sync_summary:
-          type: boolean
-        spec:
-          type: object
-          additionalProperties: true
-          format: Plugin parameters, specific to each plugin
-        env:
-          description: Environment variables for the plugin. All environment variables will be stored as secrets.
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformSyncEnvCreate'
-        last_update_source:
-          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
-        transformers:
-          type: array
-          items:
-            type: string
-            description: Unique name of the transformer
-            pattern: ^[a-zA-Z0-9_-]+$
-            x-pattern-message: can contain only alphanumerical characters, dashes, and underscores
-    PlatformSyncEnvCreate:
-      type: object
-      description: Environment variable. Environment variables are assumed to be secret.
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name of the environment variable
-        value:
-          type: string
-          description: Value of the environment variable
-    PlatformSyncPluginPath:
-      type: string
-      description: Plugin path in CloudQuery registry
-      pattern: ^cloudquery/[^/]+
-      x-pattern-message: should be in the format cloudquery/<name>
     PlatformPluginReleaseStage:
       description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
 
@@ -522,83 +579,26 @@ components:
       - preview
       - ga
       - deprecated
-    PlatformSyncIntegrationSourceV2:
-      description: Integration Source Definition
-      type: object
-      required:
-      - path
-      - version
-      - tables
-      - env
-      - spec
-      properties:
-        test_connection_id:
-          type: string
-          format: uuid
-          example: 12345678-1234-1234-1234-1234567890ab
-          description: unique ID of the test connection
-          x-go-name: TestConnectionID
-        path:
-          $ref: '#/components/schemas/PlatformSyncPluginPath'
-          example: cloudquery/aws
-        version:
-          type: string
-          description: Version of the plugin
-          example: v1.2.3
-        tables:
-          type: array
-          description: Tables to sync. Wildcards are supported. Note that child tables are excluded by default, and need to be explicitly specified.
-          items:
-            type: string
-        skip_tables:
-          type: array
-          description: Tables matched by `tables` that should be skipped. Wildcards are supported.
-          items:
-            type: string
-        spec:
-          type: object
-          additionalProperties: true
-          format: Plugin parameters, specific to each plugin
-        env:
-          description: Environment variables for the plugin. All environment variables will be stored as secrets.
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformSyncEnv'
-        last_update_source:
-          $ref: '#/components/schemas/PlatformSyncLastUpdateSource'
-        onboarding_id:
-          $ref: '#/components/schemas/PlatformOnboardingID'
-          description: ID of the onboarding that will be used to authenticate the source.
-        unified_sync_kind:
-          type: string
-          description: The kind of unified sync this source belongs to. Null for standalone integrations.
-          readOnly: true
-          enum:
-          - asset_inventory
-          - asset_inventory_cloudtrail
-          - asset_inventory_metadata
-          - cost_and_usage
-    PlatformSyncRunStatusReason:
-      description: The reason for the status
+    PlatformPluginName:
+      description: The unique name for the plugin.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
       type: string
-      enum:
-      - error
-      - oom_killed
-      - partial_success
-      - ingestion_failed
+      example: aws-source
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
   responses:
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
     PlatformInternalError:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Internal Error
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   securitySchemes:
     bearerAuth:
       scheme: bearer

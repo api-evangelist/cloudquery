@@ -85,32 +85,19 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Internal Error
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
     PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
   schemas:
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -124,6 +111,19 @@ components:
           type: integer
       title: Basic Error
       type: object
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
   securitySchemes:
     bearerAuth:
       scheme: bearer

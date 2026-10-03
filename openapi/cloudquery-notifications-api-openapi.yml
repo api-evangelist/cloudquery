@@ -75,60 +75,41 @@ paths:
       summary: Platform list notifications
       x-summary-source: derived
 components:
-  parameters:
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-  responses:
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
   schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformPolicySeverity:
+      description: Policy severity
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+      x-go-name: PolicySeverity
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
     PlatformNotificationDetail:
       title: Notification Detail
       type: object
@@ -198,63 +179,18 @@ components:
       - pending
       - inactive
       - triggered
-    PlatformPolicyGroupID:
-      title: Policy Group ID
-      type: string
-      format: uuid
-      x-go-name: PolicyGroupID
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
-      type: string
-      format: uuid
-      x-go-name: NotificationDestinationID
-    PlatformPolicySeverity:
-      description: Policy severity
+    PlatformAlertSeverity:
       type: string
       enum:
       - low
       - medium
       - high
       - critical
-      x-go-name: PolicySeverity
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
+    PlatformPolicyGroupID:
+      title: Policy Group ID
+      type: string
+      format: uuid
+      x-go-name: PolicyGroupID
     PlatformNotificationDestinationListItem:
       title: Notification Destination List Item
       type: object
@@ -300,13 +236,77 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformAlertSeverity:
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
       type: string
-      enum:
-      - low
-      - medium
-      - high
-      - critical
+      format: uuid
+      x-go-name: NotificationDestinationID
+  responses:
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
   securitySchemes:
     bearerAuth:
       scheme: bearer

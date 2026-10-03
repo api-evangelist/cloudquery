@@ -91,6 +91,45 @@ paths:
       summary: Platform list platform versions
       x-summary-source: derived
 components:
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
   parameters:
     platform_per_page:
       description: The number of results per page (max 1000).
@@ -126,45 +165,6 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
-  schemas:
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformVersion:
-      type: object
-      required:
-      - name
-      - created_at
-      properties:
-        name:
-          type: string
-          description: Name of the version
-        created_at:
-          type: string
-          format: date-time
-          description: Time when the version was first installed
   securitySchemes:
     bearerAuth:
       scheme: bearer

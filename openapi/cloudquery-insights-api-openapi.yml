@@ -901,13 +901,20 @@ paths:
       x-summary-source: derived
 components:
   parameters:
-    platform_asset_id:
+    platform_insight_filter_id:
       in: path
-      name: asset_id
+      name: insight_filter_id
       required: true
       schema:
-        $ref: '#/components/schemas/PlatformTableRowID'
-      x-go-name: AssetID
+        $ref: '#/components/schemas/PlatformInsightFilterID'
+      x-go-name: InsightFilterID
+    platform_insight_id:
+      in: path
+      name: insight_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightID'
+      x-go-name: InsightID
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -916,6 +923,31 @@ components:
       schema:
         default: 100
         maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_asset_id:
+      in: path
+      name: asset_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableRowID'
+      x-go-name: AssetID
+    platform_insight_column_name:
+      in: path
+      name: column_name
+      required: true
+      description: Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true.
+      schema:
+        type: string
+      x-go-name: InsightColumnName
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
         minimum: 1
         type: integer
         format: int64
@@ -934,88 +966,88 @@ components:
         - instance-type
         - tag
       x-go-name: InsightAssetColumnName
-    platform_insight_id:
-      in: path
-      name: insight_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformInsightID'
-      x-go-name: InsightID
-    platform_insight_column_name:
-      in: path
-      name: column_name
-      required: true
-      description: Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true.
-      schema:
-        type: string
-      x-go-name: InsightColumnName
-    platform_insight_filter_id:
-      in: path
-      name: insight_filter_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformInsightFilterID'
-      x-go-name: InsightFilterID
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
   schemas:
-    PlatformPolicyViolation:
-      title: Policy Violation
-      type: object
-      description: Policy violation resource information
+    PlatformBasicError:
       additionalProperties: false
+      description: Basic Error
       required:
-      - cloud
-      - resource_type_label
-      - _cq_account_name
-      - name
-      - region
-      - _cq_platform_id
+      - message
+      - status
       properties:
-        cloud:
+        message:
           type: string
-          example: aws
-        resource_type_label:
-          type: string
-          example: EC2 Instance
-        _cq_account_name:
-          type: string
-          example: my-account
-        name:
-          type: string
-          example: my-resource
-        region:
-          type: string
-          example: us-east-1
-        _cq_platform_id:
-          type: string
-          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags associated with the resource (e.g. for insights)
-        additional_properties:
-          type: object
-          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
-          additionalProperties: true
-    PlatformInsightsListMetadata:
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformInsightSeverity:
+      description: Insight severity level
+      type: string
+      enum:
+      - Low
+      - Medium
+      - High
+      - Critical
+      x-go-name: InsightSeverity
+    PlatformInsightID:
+      description: Unique identifier for the insight
+      type: string
+      x-go-name: InsightID
+    PlatformListMetadata:
       required:
       - page_size
       properties:
         total_count:
-          type: integer
-        resource_count:
-          type: integer
-        resource_types:
           type: integer
         last_page:
           type: integer
@@ -1023,6 +1055,92 @@ components:
           type: integer
         time_ms:
           type: integer
+    PlatformInsight:
+      title: Insight
+      type: object
+      description: Security or compliance insight summary
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - severity
+      - insight_category
+      - source
+      - source_category
+      - resource_types
+      - resources_count
+      - accounts_count
+      - created_at
+      - detected_at
+      - last_synced_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformInsightID'
+        title:
+          type: string
+          description: Title of the insight
+        evidence:
+          type: string
+          description: Detailed evidence (description) of the insight (Markdown)
+        mitigation:
+          type: string
+          description: Mitigation steps for the insight (Markdown)
+        severity:
+          $ref: '#/components/schemas/PlatformInsightSeverity'
+        insight_category:
+          type: string
+          description: Category (e.g. Security, FinOps)
+        source:
+          type: string
+          description: Source (e.g. Platform, Wiz, Lacework)
+        source_category:
+          type: string
+          description: Source category (e.g. Platform, Third Party, Custom)
+        subcategory:
+          type: string
+          nullable: true
+        resource_types:
+          type: string
+          description: Resource types affected
+        resources_count:
+          type: integer
+          format: int64
+          description: Number of resources affected
+        accounts_count:
+          type: integer
+          format: int64
+          description: Number of accounts affected
+        additional_properties:
+          type: object
+          description: Insight-specific metadata summed for all affected resources (e.g. cost insight fields).
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the insight
+        created_at:
+          type: string
+          format: date-time
+          description: When the insight record was created
+        detected_at:
+          type: string
+          format: date-time
+          description: When the insight was first detected
+        last_synced_at:
+          type: string
+          format: date-time
+          description: When the insight was last synced
+    PlatformTableRowID:
+      description: ID of the Resource
+      type: string
+      example: table_12345678-1234-1234-1234-1234567890ab
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
     PlatformInsightFilter:
       title: Insight Filter
       type: object
@@ -1139,11 +1257,15 @@ components:
           type: string
           format: date-time
           example: '2017-07-14T16:53:42Z'
-    PlatformListMetadata:
+    PlatformInsightsListMetadata:
       required:
       - page_size
       properties:
         total_count:
+          type: integer
+        resource_count:
+          type: integer
+        resource_types:
           type: integer
         last_page:
           type: integer
@@ -1151,6 +1273,76 @@ components:
           type: integer
         time_ms:
           type: integer
+    PlatformInsightFilterID:
+      description: The unique ID for the insight filter
+      type: string
+      format: uuid
+      x-go-name: InsightFilterID
+    PlatformInsightFilterUpdate:
+      title: Insight Filter Update
+      type: object
+      description: Definition for updating an existing saved insight filter
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        search:
+          type: string
+        insight_category:
+          type: array
+          items:
+            type: string
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        resource_types:
+          type: array
+          items:
+            type: string
+        source:
+          type: array
+          items:
+            type: string
+        source_category:
+          type: array
+          items:
+            type: string
+        clouds:
+          type: array
+          items:
+            type: string
+        accounts:
+          type: array
+          items:
+            type: string
+        regions:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ownership_tags:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Ownership tag filters keyed by tag name
+          example:
+            team:
+            - engineering
+            - platform
+            org:
+            - cloud
+        group_by:
+          type: array
+          items:
+            type: string
     PlatformInsightFilterCreate:
       title: Insight Filter Create
       type: object
@@ -1221,238 +1413,46 @@ components:
           type: array
           items:
             type: string
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformBasicError:
+    PlatformPolicyViolation:
+      title: Policy Violation
+      type: object
+      description: Policy violation resource information
       additionalProperties: false
-      description: Basic Error
       required:
-      - message
-      - status
+      - cloud
+      - resource_type_label
+      - _cq_account_name
+      - name
+      - region
+      - _cq_platform_id
       properties:
-        message:
+        cloud:
           type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformInsightFilterUpdate:
-      title: Insight Filter Update
-      type: object
-      description: Definition for updating an existing saved insight filter
-      additionalProperties: false
-      properties:
+          example: aws
+        resource_type_label:
+          type: string
+          example: EC2 Instance
+        _cq_account_name:
+          type: string
+          example: my-account
         name:
           type: string
-        description:
+          example: my-resource
+        region:
           type: string
-        search:
+          example: us-east-1
+        _cq_platform_id:
           type: string
-        insight_category:
-          type: array
-          items:
-            type: string
-        severities:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformInsightSeverity'
-        resource_types:
-          type: array
-          items:
-            type: string
-        source:
-          type: array
-          items:
-            type: string
-        source_category:
-          type: array
-          items:
-            type: string
-        clouds:
-          type: array
-          items:
-            type: string
-        accounts:
-          type: array
-          items:
-            type: string
-        regions:
-          type: array
-          items:
-            type: string
+          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
         tags:
           type: array
           items:
             type: string
-        ownership_tags:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          description: Ownership tag filters keyed by tag name
-          example:
-            team:
-            - engineering
-            - platform
-            org:
-            - cloud
-        group_by:
-          type: array
-          items:
-            type: string
-    PlatformInsightID:
-      description: Unique identifier for the insight
-      type: string
-      x-go-name: InsightID
-    PlatformInsightFilterID:
-      description: The unique ID for the insight filter
-      type: string
-      format: uuid
-      x-go-name: InsightFilterID
-    PlatformInsight:
-      title: Insight
-      type: object
-      description: Security or compliance insight summary
-      additionalProperties: false
-      required:
-      - id
-      - title
-      - severity
-      - insight_category
-      - source
-      - source_category
-      - resource_types
-      - resources_count
-      - accounts_count
-      - created_at
-      - detected_at
-      - last_synced_at
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformInsightID'
-        title:
-          type: string
-          description: Title of the insight
-        evidence:
-          type: string
-          description: Detailed evidence (description) of the insight (Markdown)
-        mitigation:
-          type: string
-          description: Mitigation steps for the insight (Markdown)
-        severity:
-          $ref: '#/components/schemas/PlatformInsightSeverity'
-        insight_category:
-          type: string
-          description: Category (e.g. Security, FinOps)
-        source:
-          type: string
-          description: Source (e.g. Platform, Wiz, Lacework)
-        source_category:
-          type: string
-          description: Source category (e.g. Platform, Third Party, Custom)
-        subcategory:
-          type: string
-          nullable: true
-        resource_types:
-          type: string
-          description: Resource types affected
-        resources_count:
-          type: integer
-          format: int64
-          description: Number of resources affected
-        accounts_count:
-          type: integer
-          format: int64
-          description: Number of accounts affected
+          description: Tags associated with the resource (e.g. for insights)
         additional_properties:
           type: object
-          description: Insight-specific metadata summed for all affected resources (e.g. cost insight fields).
+          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
           additionalProperties: true
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags associated with the insight
-        created_at:
-          type: string
-          format: date-time
-          description: When the insight record was created
-        detected_at:
-          type: string
-          format: date-time
-          description: When the insight was first detected
-        last_synced_at:
-          type: string
-          format: date-time
-          description: When the insight was last synced
-    PlatformTableRowID:
-      description: ID of the Resource
-      type: string
-      example: table_12345678-1234-1234-1234-1234567890ab
-    PlatformInsightSeverity:
-      description: Insight severity level
-      type: string
-      enum:
-      - Low
-      - Medium
-      - High
-      - Critical
-      x-go-name: InsightSeverity
-  responses:
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer
