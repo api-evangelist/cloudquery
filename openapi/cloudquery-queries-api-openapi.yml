@@ -543,214 +543,11 @@ paths:
       summary: Platform table list filter tags
       x-summary-source: derived
 components:
-  parameters:
-    platform_alert_enabled:
-      name: alert_enabled
-      in: query
-      description: Alert enabled
-      schema:
-        type: boolean
-    platform_table_group_bys:
-      name: group_by
-      in: query
-      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableGroupBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: GroupBys
-    platform_alert_message_filter:
-      name: alert_message_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by alert message.
-        type: string
-    platform_table_name:
-      in: path
-      name: table_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableName'
-    platform_table_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Table sort direction options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortDirections
-    platform_query_name_filter:
-      name: name_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by query name.
-        type: string
-    platform_query_tags:
-      name: tag
-      in: query
-      description: Query tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformQueryTag'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: QueryTags
-    platform_table_filter_mode:
-      name: filter_mode
-      in: query
-      description: 'Table filter mode.
-
-
-        Smart mode switches between column and search mode based on the filtered table and
-
-
-        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
-
-        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
-
-        Search mode may also be used against cloud_assets but it will only return results from resource tables.
-
-
-        Column mode searches purely using the columns in the table.
-
-        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
-
-        '
-      schema:
-        type: string
-        enum:
-        - smart
-        - search
-        - column
-        default: smart
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_query_filter:
-      name: query_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by query
-        type: string
-    platform_alert_configured:
-      name: alert_configured
-      in: query
-      description: Alert configured
-      schema:
-        type: boolean
-    platform_query_column_filter:
-      name: column_filter
-      in: query
-      description: Filter queries that return all specified columns
-      required: false
-      explode: true
-      schema:
-        type: array
-        items:
-          type: string
-    platform_query_id:
-      in: path
-      name: query_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformQueryID'
-      x-go-name: QueryID
-    platform_table_filters:
-      name: filter
-      in: query
-      description: Table filters. This filters the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Filters
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_sort_bys:
-      name: sort_by
-      in: query
-      description: Table sort by options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortBys
-    platform_table_filter_ids:
-      name: filter_id
-      in: query
-      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
-
-        will be applied to the query results before returning them.
-
-        '
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterID'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: FilterIDs
-    platform_filter_tags:
-      name: tag
-      in: query
-      description: Filter tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterTag'
-      x-go-name: FilterTags
-    platform_table_selects:
-      name: select
-      in: query
-      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSelect'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Selects
   schemas:
-    PlatformQueryTag:
-      description: A saved query tag.
+    PlatformTableName:
+      description: The name of the table.
       type: string
+      example: cloud_assets
     PlatformQueryDetail:
       title: Query Detail
       type: object
@@ -797,9 +594,53 @@ components:
           $ref: '#/components/schemas/PlatformAlertDetail'
         view_name:
           $ref: '#/components/schemas/PlatformQueryViewName'
+    PlatformQueryCreate:
+      title: Query Create
+      type: object
+      description: Create a saved query
+      additionalProperties: false
+      required:
+      - name
+      - query
+      properties:
+        name:
+          type: string
+          example: Find all t2.micro EC2 instances
+        query:
+          type: string
+          example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
+        public:
+          type: boolean
+          default: true
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformQueryTag'
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+        view_name:
+          $ref: '#/components/schemas/PlatformQueryViewName'
+        alert:
+          $ref: '#/components/schemas/PlatformAlertCreate'
     PlatformTableGroupBy:
       title: TableGroupBy
       type: string
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -813,77 +654,17 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformQuery:
-      title: Query
-      type: object
-      description: Saved query
-      additionalProperties: false
-      required:
-      - id
-      - name
-      - query
-      - created_at
-      - alert_configured
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformQueryID'
-        name:
-          type: string
-          example: Find all t2.micro EC2 instances
-        query:
-          $ref: '#/components/schemas/PlatformQueryExpression'
-        description:
-          type: string
-          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-        user_id:
-          $ref: '#/components/schemas/PlatformUserID'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformQueryTag'
-          x-go-type-skip-optional-pointer: true
-        columns:
-          type: array
-          items:
-            type: string
-          description: Columns returned by this query
-          x-go-type-skip-optional-pointer: true
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        alert_configured:
-          type: boolean
-          description: Indicates if the query has an alert configured
-        alert:
-          $ref: '#/components/schemas/PlatformAlert'
-        view_name:
-          $ref: '#/components/schemas/PlatformQueryViewName'
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
+    PlatformFilterTag:
+      description: A table column filter tag.
+      type: string
+    PlatformQueryExpression:
+      title: QueryExpression
+      type: string
+      description: Query expression
+      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
+    PlatformTableSortBy:
+      title: TableSortBy
+      type: string
     PlatformQueryColumns:
       type: object
       additionalProperties: false
@@ -906,68 +687,34 @@ components:
           type: boolean
           description: True when the top-level SELECT collapses input rows — either because a `GROUP BY` clause is present or because every top-level SELECT item is an aggregate function call (count/sum/avg/min/max, etc).
       title: QueryColumns
-    PlatformQueryID:
-      description: The unique ID for the query.
+    PlatformTableSelect:
+      title: TableSelect
       type: string
-      format: uuid
-      x-go-name: QueryID
-    PlatformQueryExpression:
-      title: QueryExpression
-      type: string
-      description: Query expression
-      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
-    PlatformFilterTag:
-      description: A table column filter tag.
-      type: string
+    PlatformAlertUpdate:
+      title: Alert Update
+      description: Alert Update Definition
+      type: object
+      properties:
+        message:
+          type: string
+          example: All resources need to be tagged
+        severity:
+          $ref: '#/components/schemas/PlatformAlertSeverity'
+        enabled:
+          type: boolean
+          description: Indicates if the alert is enabled
+        notification_destinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformNotificationDestinationID'
+          description: List of notification destinations to send alerts to
+          allowEmptyValue: true
+          explode: true
     PlatformQueryViewName:
       description: The name of the view the query is saved to in the warehouse
       type: string
       pattern: ^(saved_query_view_[a-zA-Z0-9_]+|)$
       x-pattern-message: can contain only alphanumerical characters and underscores. must start with `saved_query_view_`
-    PlatformFilter:
-      title: Filter
-      type: object
-      description: Saved filter
-      additionalProperties: false
-      required:
-      - id
-      - name
-      - expression
-      - created_at
-      properties:
-        id:
-          description: ID of the Filter
-          type: string
-          format: uuid
-          example: 12345678-1234-1234-1234-1234567890ab
-          x-go-name: ID
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        description:
-          type: string
-          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-        table:
-          $ref: '#/components/schemas/PlatformTableName'
-        query_id:
-          $ref: '#/components/schemas/PlatformQueryID'
-        user_id:
-          $ref: '#/components/schemas/PlatformUserID'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-          x-go-type-skip-optional-pointer: true
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-    PlatformTableName:
-      description: The name of the table.
-      type: string
-      example: cloud_assets
     PlatformTableData:
       additionalProperties: false
       properties:
@@ -995,6 +742,123 @@ components:
       - rows
       title: TableData
       type: object
+    PlatformNotificationDestinationListItem:
+      title: Notification Destination List Item
+      type: object
+      description: Notification Destination List Item
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel names (only for slack type)
+          x-go-name: SlackChannels
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformFilterCreate:
+      title: Filter definition for creating a filter
+      type: object
+      description: Saved filter
+      additionalProperties: false
+      required:
+      - name
+      - expression
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        public:
+          type: boolean
+          default: true
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Whether the filter is visible to all users, or only to the user who created it
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+    PlatformTableSortDirection:
+      title: TableSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformAlertState:
+      type: string
+      enum:
+      - unknown
+      - pending
+      - inactive
+      - triggered
+    PlatformQueryUpdate:
+      title: Query Update
+      type: object
+      description: Update a saved query
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          example: Find all t2.micro EC2 instances
+        query:
+          type: string
+          example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instances WHERE instance_type = 't2.micro'
+        public:
+          type: boolean
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformQueryTag'
+        description:
+          type: string
+          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instances raw table
+        view_name:
+          $ref: '#/components/schemas/PlatformQueryViewName'
+        alert:
+          $ref: '#/components/schemas/PlatformAlertUpdate'
+    PlatformQueryID:
+      description: The unique ID for the query.
+      type: string
+      format: uuid
+      x-go-name: QueryID
     PlatformAlert:
       title: Alert
       type: object
@@ -1055,76 +919,70 @@ components:
         num_destinations:
           type: integer
           description: Number of notification destinations this alert is configured to send to
-    PlatformNotificationDestinationListItem:
-      title: Notification Destination List Item
+    PlatformQuery:
+      title: Query
       type: object
-      description: Notification Destination List Item
+      description: Saved query
       additionalProperties: false
       required:
       - id
       - name
-      - enabled
-      - type
-      - url
+      - query
       - created_at
-      - updated_at
+      - alert_configured
       properties:
         id:
-          $ref: '#/components/schemas/PlatformNotificationDestinationID'
-        name:
-          type: string
-          example: Send to Slack
-        enabled:
-          type: boolean
-        type:
-          type: string
-          enum:
-          - webhook
-          - slack
-          description: Type of notification destination
-        url:
-          type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
-          x-go-name: URL
-        slack_channels:
-          type: array
-          items:
-            type: string
-          description: List of Slack channel names (only for slack type)
-          x-go-name: SlackChannels
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-    PlatformQueryUpdate:
-      title: Query Update
-      type: object
-      description: Update a saved query
-      additionalProperties: false
-      properties:
+          $ref: '#/components/schemas/PlatformQueryID'
         name:
           type: string
           example: Find all t2.micro EC2 instances
         query:
+          $ref: '#/components/schemas/PlatformQueryExpression'
+        description:
           type: string
-          example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instances WHERE instance_type = 't2.micro'
-        public:
-          type: boolean
+          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+        user_id:
+          $ref: '#/components/schemas/PlatformUserID'
         tags:
           type: array
           items:
             $ref: '#/components/schemas/PlatformQueryTag'
-        description:
+          x-go-type-skip-optional-pointer: true
+        columns:
+          type: array
+          items:
+            type: string
+          description: Columns returned by this query
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
           type: string
-          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instances raw table
+        alert_configured:
+          type: boolean
+          description: Indicates if the query has an alert configured
+        alert:
+          $ref: '#/components/schemas/PlatformAlert'
         view_name:
           $ref: '#/components/schemas/PlatformQueryViewName'
-        alert:
-          $ref: '#/components/schemas/PlatformAlertUpdate'
+    PlatformQueryTag:
+      description: A saved query tag.
+      type: string
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
     PlatformAlertCreate:
       title: Alert Create
       type: object
@@ -1151,82 +1009,6 @@ components:
           x-go-type-skip-optional-pointer: true
           allowEmptyValue: true
           explode: true
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformFilterExpression:
-      description: A table column filter.
-      type: string
-      example: resource_type=aws_s3_buckets
-    PlatformTableSortDirection:
-      title: TableSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
-    PlatformFilterCreate:
-      title: Filter definition for creating a filter
-      type: object
-      description: Saved filter
-      additionalProperties: false
-      required:
-      - name
-      - expression
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        public:
-          type: boolean
-          default: true
-          x-omitempty: false
-          x-go-type-skip-optional-pointer: true
-          description: Whether the filter is visible to all users, or only to the user who created it
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-    PlatformTableSortBy:
-      title: TableSortBy
-      type: string
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
-      type: string
-      format: uuid
-      x-go-name: NotificationDestinationID
-    PlatformTableSelect:
-      title: TableSelect
-      type: string
-    PlatformAlertUpdate:
-      title: Alert Update
-      description: Alert Update Definition
-      type: object
-      properties:
-        message:
-          type: string
-          example: All resources need to be tagged
-        severity:
-          $ref: '#/components/schemas/PlatformAlertSeverity'
-        enabled:
-          type: boolean
-          description: Indicates if the alert is enabled
-        notification_destinations:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformNotificationDestinationID'
-          description: List of notification destinations to send alerts to
-          allowEmptyValue: true
-          explode: true
     PlatformAlertSeverity:
       type: string
       enum:
@@ -1234,13 +1016,6 @@ components:
       - medium
       - high
       - critical
-    PlatformAlertState:
-      type: string
-      enum:
-      - unknown
-      - pending
-      - inactive
-      - triggered
     PlatformAlertDetail:
       title: Alert Detail
       type: object
@@ -1306,50 +1081,275 @@ components:
           x-go-type-skip-optional-pointer: true
           allowEmptyValue: true
           explode: true
-    PlatformQueryCreate:
-      title: Query Create
-      type: object
-      description: Create a saved query
-      additionalProperties: false
-      required:
-      - name
-      - query
-      properties:
-        name:
-          type: string
-          example: Find all t2.micro EC2 instances
-        query:
-          type: string
-          example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
-        public:
-          type: boolean
-          default: true
-          x-omitempty: false
-          x-go-type-skip-optional-pointer: true
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformQueryTag'
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          example: Query to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-        view_name:
-          $ref: '#/components/schemas/PlatformQueryViewName'
-        alert:
-          $ref: '#/components/schemas/PlatformAlertCreate'
     PlatformFilterID:
       description: The unique ID for the filter.
       type: string
       format: uuid
       x-go-name: FilterID
+    PlatformFilter:
+      title: Filter
+      type: object
+      description: Saved filter
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - expression
+      - created_at
+      properties:
+        id:
+          description: ID of the Filter
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          x-go-name: ID
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        description:
+          type: string
+          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
+        table:
+          $ref: '#/components/schemas/PlatformTableName'
+        query_id:
+          $ref: '#/components/schemas/PlatformQueryID'
+        user_id:
+          $ref: '#/components/schemas/PlatformUserID'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+  parameters:
+    platform_table_name:
+      in: path
+      name: table_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableName'
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_query_name_filter:
+      name: name_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by query name.
+        type: string
+    platform_table_filter_mode:
+      name: filter_mode
+      in: query
+      description: 'Table filter mode.
+
+
+        Smart mode switches between column and search mode based on the filtered table and
+
+
+        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
+
+        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
+
+        Search mode may also be used against cloud_assets but it will only return results from resource tables.
+
+
+        Column mode searches purely using the columns in the table.
+
+        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
+
+        '
+      schema:
+        type: string
+        enum:
+        - smart
+        - search
+        - column
+        default: smart
+    platform_alert_enabled:
+      name: alert_enabled
+      in: query
+      description: Alert enabled
+      schema:
+        type: boolean
+    platform_table_filter_ids:
+      name: filter_id
+      in: query
+      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
+
+        will be applied to the query results before returning them.
+
+        '
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterID'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: FilterIDs
+    platform_filter_tags:
+      name: tag
+      in: query
+      description: Filter tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterTag'
+      x-go-name: FilterTags
+    platform_query_id:
+      in: path
+      name: query_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformQueryID'
+      x-go-name: QueryID
+    platform_table_filters:
+      name: filter
+      in: query
+      description: Table filters. This filters the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Filters
+    platform_query_column_filter:
+      name: column_filter
+      in: query
+      description: Filter queries that return all specified columns
+      required: false
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+    platform_table_sort_bys:
+      name: sort_by
+      in: query
+      description: Table sort by options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortBys
+    platform_query_filter:
+      name: query_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by query
+        type: string
+    platform_query_tags:
+      name: tag
+      in: query
+      description: Query tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformQueryTag'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: QueryTags
+    platform_table_group_bys:
+      name: group_by
+      in: query
+      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableGroupBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: GroupBys
+    platform_table_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Table sort direction options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortDirections
+    platform_alert_configured:
+      name: alert_configured
+      in: query
+      description: Alert configured
+      schema:
+        type: boolean
+    platform_table_selects:
+      name: select
+      in: query
+      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSelect'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Selects
+    platform_alert_message_filter:
+      name: alert_message_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by alert message.
+        type: string
   responses:
-    PlatformInternalError:
+    PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
+      description: Requires authentication
     PlatformNotFound:
       content:
         application/json:
@@ -1362,24 +1362,24 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
     PlatformForbidden:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer

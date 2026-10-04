@@ -179,9 +179,18 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    PlatformCustomColumnValueExpr:
-      type: string
-      description: The SQL expression for the custom column.
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -195,39 +204,6 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformCustomColumnColumnName:
-      type: string
-      description: The name for the custom column.
-      pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
-      example: tags_v1_region
-      x-pattern-message: Letters, numbers, and underscores only. Must start with a letter.
-      minLength: 1
-      maxLength: 63
     PlatformCustomColumnCreateOrUpdate:
       title: Custom Column Create or Update
       type: object
@@ -247,11 +223,25 @@ components:
           example: Environment name
         value_expr:
           $ref: '#/components/schemas/PlatformCustomColumnValueExpr'
-    PlatformCustomColumnID:
-      description: The unique ID for the custom column.
+    PlatformCustomColumnValueExpr:
       type: string
-      format: uuid
-      x-go-name: CustomColumnID
+      description: The SQL expression for the custom column.
+    PlatformCustomColumnColumnName:
+      type: string
+      description: The name for the custom column.
+      pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+      example: tags_v1_region
+      x-pattern-message: Letters, numbers, and underscores only. Must start with a letter.
+      minLength: 1
+      maxLength: 63
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
     PlatformCustomColumnSortDirection:
       title: CustomColumnSortDirection
       type: string
@@ -259,37 +249,11 @@ components:
       - asc
       - desc
       default: asc
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
-    PlatformUserID:
-      description: ID of the User
+    PlatformCustomColumnID:
+      description: The unique ID for the custom column.
       type: string
       format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformCustomColumnSortBy:
-      title: CustomColumnSortBy
-      type: string
-      enum:
-      - id
-      - description
-      - column_name
-      - label
-      - value_expr
-      - created_by
-      - created_at
-      - updated_at
+      x-go-name: CustomColumnID
     PlatformCustomColumn:
       title: Custom Column
       type: object
@@ -320,34 +284,51 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+    PlatformCustomColumnSortBy:
+      title: CustomColumnSortBy
       type: string
-      example: Sarah O'Connor
+      enum:
+      - id
+      - description
+      - column_name
+      - label
+      - value_expr
+      - created_by
+      - created_at
+      - updated_at
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
   parameters:
-    platform_custom_column_id:
-      in: path
-      name: custom_column_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformCustomColumnID'
-      x-go-name: CustomColumnID
-    platform_custom_columns_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Custom column sort direction options
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformCustomColumnSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: CustomColumnSortDirections
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -369,6 +350,13 @@ components:
         minimum: 1
         type: integer
         format: int64
+    platform_custom_column_id:
+      in: path
+      name: custom_column_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformCustomColumnID'
+      x-go-name: CustomColumnID
     platform_custom_columns_sort_bys:
       name: sort_by
       in: query
@@ -381,13 +369,25 @@ components:
           $ref: '#/components/schemas/PlatformCustomColumnSortBy'
       x-go-type-skip-optional-pointer: true
       x-go-name: CustomColumnSortBys
+    platform_custom_columns_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Custom column sort direction options
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformCustomColumnSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: CustomColumnSortDirections
   responses:
-    PlatformInternalError:
+    PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
+      description: Requires authentication
     PlatformNotFound:
       content:
         application/json:
@@ -400,24 +400,24 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
     PlatformForbidden:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer

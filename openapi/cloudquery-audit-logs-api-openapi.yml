@@ -119,32 +119,19 @@ paths:
       summary: Platform get audit log
       x-summary-source: derived
 components:
-  responses:
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
   schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -158,6 +145,124 @@ components:
           type: integer
       title: Basic Error
       type: object
+    PlatformRole:
+      type: object
+      description: Role
+      required:
+      - id
+      - name
+      - description
+      - permissions
+      - created_by
+      - created_at
+      - updated_at
+      - type
+      properties:
+        id:
+          description: The unique ID for the role.
+          type: string
+          format: uuid
+          x-go-name: ID
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermission'
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        type:
+          $ref: '#/components/schemas/PlatformRoleType'
+    PlatformRBACPermission:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      - number_of_affected_roles
+      - number_of_affected_users
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformRBACPermissionID'
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        number_of_affected_roles:
+          type: integer
+        number_of_affected_users:
+          type: integer
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+    PlatformAuditLogEvent:
+      type: object
+      required:
+      - id
+      - user
+      - event_type
+      - created_at
+      - user_ip_address
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the audit log event
+        user:
+          $ref: '#/components/schemas/PlatformUser'
+          description: The user who performed the action
+        user_ip_address:
+          type: string
+          description: The IP address of the user who performed the action
+        event_type:
+          type: string
+          description: The type of event that was logged
+        entity_display_name:
+          type: string
+          description: The display name of the entity that was affected
+          nullable: true
+        event_details:
+          type: object
+          description: Additional details about the event
+          additionalProperties: true
+        is_success:
+          type: boolean
+          description: Whether the event was successful
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the event was created
     PlatformUserProvider:
       title: LocalUserProvider
       type: string
@@ -165,31 +270,30 @@ components:
       - local
       - saml
       default: local
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
+    PlatformRoleType:
+      type: string
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
     PlatformUser:
       additionalProperties: false
       description: User
@@ -245,6 +349,11 @@ components:
       - roles
       title: User
       type: object
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
     PlatformCreatedBy:
       type: object
       required:
@@ -258,153 +367,19 @@ components:
           $ref: '#/components/schemas/PlatformUserName'
         email:
           type: string
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformRole:
-      type: object
-      description: Role
-      required:
-      - id
-      - name
-      - description
-      - permissions
-      - created_by
-      - created_at
-      - updated_at
-      - type
-      properties:
-        id:
-          description: The unique ID for the role.
-          type: string
-          format: uuid
-          x-go-name: ID
-        name:
-          type: string
-        description:
-          type: string
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRBACPermission'
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        type:
-          $ref: '#/components/schemas/PlatformRoleType'
-    PlatformAuditLogEvent:
-      type: object
-      required:
-      - id
-      - user
-      - event_type
-      - created_at
-      - user_ip_address
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique identifier of the audit log event
-        user:
-          $ref: '#/components/schemas/PlatformUser'
-          description: The user who performed the action
-        user_ip_address:
-          type: string
-          description: The IP address of the user who performed the action
-        event_type:
-          type: string
-          description: The type of event that was logged
-        entity_display_name:
-          type: string
-          description: The display name of the entity that was affected
-          nullable: true
-        event_details:
-          type: object
-          description: Additional details about the event
-          additionalProperties: true
-        is_success:
-          type: boolean
-          description: Whether the event was successful
-        created_at:
-          type: string
-          format: date-time
-          description: The timestamp when the event was created
-    PlatformRBACPermission:
-      type: object
-      required:
-      - id
-      - name
-      - description
-      - query
-      - created_by
-      - created_at
-      - updated_at
-      - number_of_affected_roles
-      - number_of_affected_users
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformRBACPermissionID'
-        name:
-          type: string
-        description:
-          type: string
-        query:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        number_of_affected_roles:
-          type: integer
-        number_of_affected_users:
-          type: integer
-    PlatformRBACPermissionID:
-      description: The unique ID for the data permission.
-      type: string
-      format: uuid
-      x-go-name: RBACPermissionID
-    PlatformRoleType:
-      type: string
-      enum:
-      - admin:write
-      - admin:read
-      - general:read
-      - general:write
-      - ci
-      - schema-only
-      - custom
-      x-enum-varnames:
-      - AdminWrite
-      - AdminRead
-      - GeneralRead
-      - GeneralWrite
-      - CI
-      - SchemaOnly
-      - Custom
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
-      type: string
-      example: Sarah O'Connor
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
   parameters:
     platform_per_page:
       description: The number of results per page (max 1000).
@@ -427,6 +402,31 @@ components:
         minimum: 1
         type: integer
         format: int64
+  responses:
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
   securitySchemes:
     bearerAuth:
       scheme: bearer

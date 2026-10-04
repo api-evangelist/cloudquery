@@ -413,44 +413,23 @@ paths:
       summary: Platform table list filter tags
       x-summary-source: derived
 components:
-  responses:
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
   schemas:
+    PlatformTableName:
+      description: The name of the table.
+      type: string
+      example: cloud_assets
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -464,36 +443,73 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformListMetadata:
+    PlatformFilterTag:
+      description: A table column filter tag.
+      type: string
+    PlatformFilterCreate:
+      title: Filter definition for creating a filter
+      type: object
+      description: Saved filter
+      additionalProperties: false
       required:
-      - page_size
+      - name
+      - expression
       properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        public:
+          type: boolean
+          default: true
+          x-omitempty: false
+          x-go-type-skip-optional-pointer: true
+          description: Whether the filter is visible to all users, or only to the user who created it
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
     PlatformQueryID:
       description: The unique ID for the query.
       type: string
       format: uuid
       x-go-name: QueryID
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformFilterUpdate:
+      title: Filter definition for updating a filter
+      description: Filter Update Definition
+      type: object
+      properties:
+        name:
+          type: string
+          example: t2.micro EC2 instances
+        description:
+          type: string
+        expression:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFilterTag'
+    PlatformFilterID:
+      description: The unique ID for the filter.
+      type: string
+      format: uuid
+      x-go-name: FilterID
     PlatformFilter:
       title: Filter
       type: object
@@ -534,72 +550,19 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformFilterTag:
-      description: A table column filter tag.
-      type: string
-    PlatformTableName:
-      description: The name of the table.
-      type: string
-      example: cloud_assets
-    PlatformFilterUpdate:
-      title: Filter definition for updating a filter
-      description: Filter Update Definition
-      type: object
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        description:
-          type: string
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformFilterExpression:
-      description: A table column filter.
-      type: string
-      example: resource_type=aws_s3_buckets
-    PlatformFilterCreate:
-      title: Filter definition for creating a filter
-      type: object
-      description: Saved filter
-      additionalProperties: false
-      required:
-      - name
-      - expression
-      properties:
-        name:
-          type: string
-          example: t2.micro EC2 instances
-        expression:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-        public:
-          type: boolean
-          default: true
-          x-omitempty: false
-          x-go-type-skip-optional-pointer: true
-          description: Whether the filter is visible to all users, or only to the user who created it
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformFilterTag'
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-    PlatformFilterID:
-      description: The unique ID for the filter.
-      type: string
-      format: uuid
-      x-go-name: FilterID
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
   parameters:
     platform_table_name:
       in: path
@@ -618,13 +581,6 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_query_id:
-      in: path
-      name: query_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformQueryID'
-      x-go-name: QueryID
     platform_page:
       description: Page number of the results to fetch
       in: query
@@ -635,20 +591,6 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_filter_id:
-      in: path
-      name: filter_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformFilterID'
-      x-go-name: FilterID
-    platform_filter_expression_filter:
-      name: expression_filter
-      in: query
-      required: false
-      schema:
-        description: Filter by filter expression
-        type: string
     platform_filter_tags:
       name: tag
       in: query
@@ -660,6 +602,20 @@ components:
         items:
           $ref: '#/components/schemas/PlatformFilterTag'
       x-go-name: FilterTags
+    platform_query_id:
+      in: path
+      name: query_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformQueryID'
+      x-go-name: QueryID
+    platform_filter_expression_filter:
+      name: expression_filter
+      in: query
+      required: false
+      schema:
+        description: Filter by filter expression
+        type: string
     platform_filter_name_filter:
       name: name_filter
       in: query
@@ -667,6 +623,50 @@ components:
       schema:
         description: Filter by filter name
         type: string
+    platform_filter_id:
+      in: path
+      name: filter_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformFilterID'
+      x-go-name: FilterID
+  responses:
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer

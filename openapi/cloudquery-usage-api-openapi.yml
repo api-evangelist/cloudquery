@@ -162,7 +162,108 @@ paths:
       summary: Platform get grouped team usage summary
       x-summary-source: derived
 components:
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   schemas:
+    PlatformUsageSummaryValue:
+      title: CloudQuery Usage Summary Value
+      description: A usage summary value.
+      type: object
+      required:
+      - timestamp
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: The timestamp marking the start of a period.
+        paid_rows:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The paid rows that were synced in this period, one per group.
+        cloud_vcpu_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vCPU/seconds consumed in this period, one per group.
+        cloud_vram_byte_seconds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: vRAM/byte-seconds consumed in this period, one per group.
+        cloud_egress_bytes:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: Egress bytes consumed in this period, one per group.
+    PlatformUsageSummaryGroup:
+      title: CloudQuery Usage Summary Group
+      description: A usage summary group.
+      type: object
+      required:
+      - name
+      - value
+      properties:
+        name:
+          type: string
+          description: The name of the group.
+          example: plugin
+        value:
+          type: string
+          description: The value of the group at this index.
+          example: cloudquery/source/aws
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
     PlatformUsageSummary:
       title: CloudQuery Usage Summary
       description: 'A usage summary for a team, summarizing the paid rows synced and/or cloud resource usage over a given time range.
@@ -236,70 +337,6 @@ components:
                 - cloud_vram_byte_seconds
               default:
               - paid_rows
-    PlatformUsageSummaryGroup:
-      title: CloudQuery Usage Summary Group
-      description: A usage summary group.
-      type: object
-      required:
-      - name
-      - value
-      properties:
-        name:
-          type: string
-          description: The name of the group.
-          example: plugin
-        value:
-          type: string
-          description: The value of the group at this index.
-          example: cloudquery/source/aws
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformUsageSummaryValue:
-      title: CloudQuery Usage Summary Value
-      description: A usage summary value.
-      type: object
-      required:
-      - timestamp
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: The timestamp marking the start of a period.
-        paid_rows:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: The paid rows that were synced in this period, one per group.
-        cloud_vcpu_seconds:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: vCPU/seconds consumed in this period, one per group.
-        cloud_vram_byte_seconds:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: vRAM/byte-seconds consumed in this period, one per group.
-        cloud_egress_bytes:
-          type: array
-          items:
-            type: integer
-            format: int64
-          description: Egress bytes consumed in this period, one per group.
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -313,43 +350,6 @@ components:
               type: string
             type: object
         type: object
-  responses:
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer

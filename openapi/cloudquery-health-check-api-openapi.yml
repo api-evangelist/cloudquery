@@ -83,24 +83,24 @@ paths:
       x-summary-source: derived
 components:
   responses:
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformServiceUnavailable:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Service unavailable
     PlatformBadRequest:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Bad request
+    PlatformServiceUnavailable:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Service unavailable
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
   schemas:
     PlatformBasicError:
       additionalProperties: false

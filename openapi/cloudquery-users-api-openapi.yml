@@ -701,56 +701,19 @@ paths:
       summary: Platform magic login user
       x-summary-source: derived
 components:
-  responses:
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformMethodNotAllowed:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Method not allowed
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformTooManyRequests:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Too Many Requests
   schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -764,117 +727,6 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformUserProvider:
-      title: LocalUserProvider
-      type: string
-      enum:
-      - local
-      - saml
-      default: local
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformUser:
-      additionalProperties: false
-      description: User
-      properties:
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        id:
-          description: ID of the User
-          type: string
-          format: uuid
-          example: 12345678-1234-1234-1234-1234567890ab
-          x-go-name: ID
-        email:
-          type: string
-          example: user@example.com
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          type: string
-          format: date-time
-        profile_image_url:
-          type: string
-          description: Profile image URL of user
-          x-go-name: ProfileImageURL
-        last_login_at:
-          type: string
-          format: date-time
-        provider:
-          $ref: '#/components/schemas/PlatformUserProvider'
-        tracking_opted_in:
-          type: boolean
-          description: Whether anonymous user tracking was opted into
-        mfa_configured:
-          type: boolean
-          description: Whether the user has MFA configured
-          x-go-name: MFAConfigured
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRole'
-        enabled:
-          type: boolean
-          description: Whether the user is enabled
-      required:
-      - id
-      - email
-      - enabled
-      - provider
-      - mfa_configured
-      - roles
-      title: User
-      type: object
-    PlatformRoleID:
-      description: The unique ID for the role.
-      type: string
-      format: uuid
-      x-go-name: RoleID
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
     PlatformRole:
       type: object
       description: Role
@@ -948,11 +800,21 @@ components:
           type: integer
         number_of_affected_users:
           type: integer
-    PlatformRBACPermissionID:
-      description: The unique ID for the data permission.
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
       type: string
-      format: uuid
-      x-go-name: RBACPermissionID
+      example: Sarah O'Connor
+    PlatformUserProvider:
+      title: LocalUserProvider
+      type: string
+      enum:
+      - local
+      - saml
+      default: local
     PlatformRoleType:
       type: string
       enum:
@@ -971,14 +833,103 @@ components:
       - CI
       - SchemaOnly
       - Custom
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+    PlatformRoleID:
+      description: The unique ID for the role.
       type: string
-      example: Sarah O'Connor
+      format: uuid
+      x-go-name: RoleID
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformUser:
+      additionalProperties: false
+      description: User
+      properties:
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        id:
+          description: ID of the User
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          x-go-name: ID
+        email:
+          type: string
+          example: user@example.com
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          type: string
+          format: date-time
+        profile_image_url:
+          type: string
+          description: Profile image URL of user
+          x-go-name: ProfileImageURL
+        last_login_at:
+          type: string
+          format: date-time
+        provider:
+          $ref: '#/components/schemas/PlatformUserProvider'
+        tracking_opted_in:
+          type: boolean
+          description: Whether anonymous user tracking was opted into
+        mfa_configured:
+          type: boolean
+          description: Whether the user has MFA configured
+          x-go-name: MFAConfigured
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRole'
+        enabled:
+          type: boolean
+          description: Whether the user is enabled
+      required:
+      - id
+      - email
+      - enabled
+      - provider
+      - mfa_configured
+      - roles
+      title: User
+      type: object
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
   parameters:
     platform_per_page:
       description: The number of results per page (max 1000).
@@ -1008,6 +959,55 @@ components:
       schema:
         $ref: '#/components/schemas/PlatformUserID'
       x-go-name: UserID
+  responses:
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformMethodNotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Method not allowed
   securitySchemes:
     bearerAuth:
       scheme: bearer

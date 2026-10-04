@@ -54,6 +54,13 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
     PlatformListMetadata:
       required:
       - page_size
@@ -66,13 +73,6 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformTeamName:
-      description: The unique name for the team.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: cloudquery
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -116,24 +116,24 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
     PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   parameters:
     platform_per_page:
       description: The number of results per page (max 1000).

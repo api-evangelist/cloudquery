@@ -76,6 +76,18 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    PlatformPolicyGroupID:
+      title: Policy Group ID
+      type: string
+      format: uuid
+      x-go-name: PolicyGroupID
+    PlatformAlertState:
+      type: string
+      enum:
+      - unknown
+      - pending
+      - inactive
+      - triggered
     PlatformListMetadata:
       required:
       - page_size
@@ -88,15 +100,6 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformPolicySeverity:
-      description: Policy severity
-      type: string
-      enum:
-      - low
-      - medium
-      - high
-      - critical
-      x-go-name: PolicySeverity
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -110,6 +113,13 @@ components:
           type: integer
       title: Basic Error
       type: object
+    PlatformAlertSeverity:
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      - critical
     PlatformNotificationDetail:
       title: Notification Detail
       type: object
@@ -172,25 +182,20 @@ components:
           $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
           description: The notification destination for this notification item (null if no destinations configured)
           nullable: true
-    PlatformAlertState:
-      type: string
-      enum:
-      - unknown
-      - pending
-      - inactive
-      - triggered
-    PlatformAlertSeverity:
+    PlatformPolicySeverity:
+      description: Policy severity
       type: string
       enum:
       - low
       - medium
       - high
       - critical
-    PlatformPolicyGroupID:
-      title: Policy Group ID
+      x-go-name: PolicySeverity
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
       type: string
       format: uuid
-      x-go-name: PolicyGroupID
+      x-go-name: NotificationDestinationID
     PlatformNotificationDestinationListItem:
       title: Notification Destination List Item
       type: object
@@ -249,42 +254,37 @@ components:
               type: string
             type: object
         type: object
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
-      type: string
-      format: uuid
-      x-go-name: NotificationDestinationID
   responses:
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
     PlatformUnprocessableEntity:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
-    PlatformInternalError:
+    PlatformForbidden:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
     PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   parameters:
     platform_per_page:
       description: The number of results per page (max 1000).
