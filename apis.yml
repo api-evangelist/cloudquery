@@ -364,6 +364,9 @@ apis:
   - type: OpenAPI
     url: openapi/cloudquery-health-check-api-openapi.yml
 common:
+  - type: CapabilityMap
+    url: capabilities/cloudquery-capability-edges.yml
+    name: CloudQuery Business Capability Map
   - type: AgenticAccess
     url: agentic-access/cloudquery-agentic-access.yml
   - type: TrustCenter

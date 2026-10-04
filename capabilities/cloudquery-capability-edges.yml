@@ -1,0 +1,43 @@
+slug: cloudquery
+provider: CloudQuery
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: RBAC
+  spec_file: cloudquery-rbac-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: POST /rbac/roles PlatformCreateRBACRole ... GET /rbac/permissions PlatformListAllRBACPermissions
+  reason: Create/read/update/delete of roles and permissions is role-based access control administration,
+    squarely Identity & Access Management.
+- tag: Users
+  spec_file: cloudquery-users-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: POST /user/authenticate PlatformAuthenticateUser; DELETE /users/{user_id}/totp; schemas PlatformRole,
+    PlatformRBACPermission
+  reason: User lifecycle, authentication, password change, TOTP MFA and RBAC roles/permissions are plainly
+    identity and access management, not HR employee records.
+- tag: Queries
+  spec_file: cloudquery-queries-api-openapi.yml
+  capability_id: BC-610.50
+  capability_id_l1: BC-610
+  capability_name: Analytics & BI Management
+  confidence: 0.7
+  evidence: POST /queries/execute PlatformExecuteAdHocQuery ... POST /queries/save PlatformSaveQuery
+  reason: Ad-hoc and saved SQL query authoring, syntax checking, column discovery and execution against
+    the normalized data layer — the analytics/BI delivery surface over the platform's data.
