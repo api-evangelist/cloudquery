@@ -92,6 +92,19 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
     PlatformListMetadata:
       required:
       - page_size
@@ -117,20 +130,30 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformVersion:
-      type: object
-      required:
-      - name
-      - created_at
-      properties:
-        name:
-          type: string
-          description: Name of the version
-        created_at:
-          type: string
-          format: date-time
-          description: Time when the version was first installed
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -142,29 +165,6 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-  responses:
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
   securitySchemes:
     bearerAuth:
       scheme: bearer

@@ -352,18 +352,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
     PlatformReportSortDirection:
       title: ReportTemplateSortDirection
       type: string
@@ -371,6 +359,16 @@ components:
       - asc
       - desc
       default: asc
+    PlatformReportTemplateSortBy:
+      title: ReportTemplateSortBy
+      type: string
+      enum:
+      - id
+      - title
+      - description
+      - visible
+      - created_at
+      - updated_at
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -384,44 +382,95 @@ components:
           type: integer
       title: Basic Error
       type: object
-    PlatformReportSortBy:
-      title: ReportSortBy
-      type: string
-      enum:
-      - id
-      - title
-      - description
-      - private
-      - created_at
-      - updated_at
-    PlatformReportTemplate:
+    PlatformReportUpdate:
       type: object
-      required:
-      - id
-      - title
-      - description
-      - content
-      - visible
       properties:
-        id:
-          type: string
-          format: uuid
-          x-go-name: ID
         title:
           type: string
         description:
           type: string
         content:
-          description: YAML body
           type: string
+          description: YAML body
+        private:
+          type: boolean
+        template_id:
+          type: string
+          format: uuid
+          x-go-name: TemplateID
+          description: Template ID, if report is being created from a template
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+    PlatformReportTemplateCreateOrUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+          description: YAML body
         visible:
           type: boolean
-        created_at:
+    PlatformReportCreate:
+      type: object
+      properties:
+        title:
           type: string
-          format: date-time
-        updated_at:
+        description:
           type: string
-          format: date-time
+        content:
+          type: string
+          description: YAML body
+        private:
+          type: boolean
+        template_id:
+          type: string
+          format: uuid
+          x-go-name: TemplateID
+          description: Template ID, if report is being created from a template
+      required:
+      - title
+      - content
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformReportTemplateSortDirection:
+      title: ReportTemplateSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformReport:
       type: object
       required:
@@ -454,99 +503,40 @@ components:
         updated_at:
           type: string
           format: date-time
-    PlatformReportUpdate:
+    PlatformReportTemplate:
       type: object
+      required:
+      - id
+      - title
+      - description
+      - content
+      - visible
       properties:
+        id:
+          type: string
+          format: uuid
+          x-go-name: ID
         title:
           type: string
         description:
           type: string
         content:
-          type: string
           description: YAML body
-        private:
-          type: boolean
-        template_id:
           type: string
-          format: uuid
-          x-go-name: TemplateID
-          description: Template ID, if report is being created from a template
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
-      type: string
-      example: Sarah O'Connor
-    PlatformReportTemplateSortBy:
-      title: ReportTemplateSortBy
-      type: string
-      enum:
-      - id
-      - title
-      - description
-      - visible
-      - created_at
-      - updated_at
+        visible:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     PlatformUserID:
       description: ID of the User
       type: string
       format: uuid
       example: 12345678-1234-1234-1234-1234567890ab
       x-go-name: UserID
-    PlatformReportCreate:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        content:
-          type: string
-          description: YAML body
-        private:
-          type: boolean
-        template_id:
-          type: string
-          format: uuid
-          x-go-name: TemplateID
-          description: Template ID, if report is being created from a template
-      required:
-      - title
-      - content
-    PlatformReportTemplateSortDirection:
-      title: ReportTemplateSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
-    PlatformReportTemplateCreateOrUpdate:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        content:
-          type: string
-          description: YAML body
-        visible:
-          type: boolean
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -560,19 +550,58 @@ components:
               type: string
             type: object
         type: object
+    PlatformReportSortBy:
+      title: ReportSortBy
+      type: string
+      enum:
+      - id
+      - title
+      - description
+      - private
+      - created_at
+      - updated_at
+  responses:
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   parameters:
-    platform_report_templates_sort_dirs:
-      name: sort_dir
+    platform_report_sort_bys:
+      name: sort_by
       in: query
-      description: Report template sort direction options
+      description: Sort by options
       allowEmptyValue: true
       explode: true
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/PlatformReportTemplateSortDirection'
+          $ref: '#/components/schemas/PlatformReportSortBy'
       x-go-type-skip-optional-pointer: true
-      x-go-name: ReportTemplateSortDirections
+      x-go-name: ReportSortBys
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
     platform_report_templates_sort_bys:
       name: sort_by
       in: query
@@ -596,28 +625,18 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_page:
-      description: Page number of the results to fetch
+    platform_report_templates_sort_dirs:
+      name: sort_dir
       in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_report_sort_bys:
-      name: sort_by
-      in: query
-      description: Sort by options
+      description: Report template sort direction options
       allowEmptyValue: true
       explode: true
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/PlatformReportSortBy'
+          $ref: '#/components/schemas/PlatformReportTemplateSortDirection'
       x-go-type-skip-optional-pointer: true
-      x-go-name: ReportSortBys
+      x-go-name: ReportTemplateSortDirections
     platform_report_sort_dirs:
       name: sort_dir
       in: query
@@ -630,25 +649,6 @@ components:
           $ref: '#/components/schemas/PlatformReportSortDirection'
       x-go-type-skip-optional-pointer: true
       x-go-name: ReportSortDirections
-  responses:
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
   securitySchemes:
     bearerAuth:
       scheme: bearer

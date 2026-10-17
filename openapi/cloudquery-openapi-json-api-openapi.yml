@@ -37,19 +37,6 @@ paths:
       - Openapi.json
 components:
   schemas:
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -63,6 +50,19 @@ components:
               type: string
             type: object
         type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
   responses:
     PlatformBadRequest:
       content:

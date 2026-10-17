@@ -305,45 +305,19 @@ paths:
       x-summary-source: derived
 components:
   parameters:
-    platform_include_fips:
-      description: Whether to include fips versions
+    platform_team_name:
+      in: path
+      name: team_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTeamName'
+    platform_include_drafts:
+      description: Whether to include draft versions
       in: query
-      name: include_fips
+      name: include_drafts
       required: false
       schema:
         type: boolean
-    platform_plugin_include_release_stages:
-      description: Include these release stages in the response
-      in: query
-      name: include_release_stages
-      required: false
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformPluginReleaseStage'
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
     platform_plugin_exclude_release_stages:
       description: Exclude these release stages from the response
       in: query
@@ -366,31 +340,52 @@ components:
         enum:
         - created_at
         type: string
+    platform_target_name:
+      in: path
+      name: target_name
+      required: true
+      schema:
+        type: string
+    platform_include_prereleases:
+      description: Whether to include prerelease versions
+      in: query
+      name: include_prereleases
+      required: false
+      schema:
+        type: boolean
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_plugin_kind:
+      in: path
+      name: plugin_kind
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformPluginKind'
     platform_version_filter:
       in: query
       name: version_filter
       required: false
       schema:
         $ref: '#/components/schemas/PlatformVersionFilter'
-    platform_team_name:
-      in: path
-      name: team_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTeamName'
-    platform_include_drafts:
-      description: Whether to include draft versions
+    platform_per_page:
+      description: The number of results per page (max 1000).
       in: query
-      name: include_drafts
+      name: per_page
       required: false
       schema:
-        type: boolean
-    platform_version_name:
-      in: path
-      name: version_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformVersionName'
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
     platform_plugin_sort_by:
       description: The field to sort by
       in: query
@@ -403,91 +398,43 @@ components:
         - name
         - downloads
         type: string
-    platform_include_prereleases:
-      description: Whether to include prerelease versions
+    platform_include_fips:
+      description: Whether to include fips versions
       in: query
-      name: include_prereleases
+      name: include_fips
       required: false
       schema:
         type: boolean
-    platform_target_name:
-      in: path
-      name: target_name
-      required: true
-      schema:
-        type: string
-    platform_plugin_kind:
-      in: path
-      name: plugin_kind
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformPluginKind'
     platform_plugin_name:
       in: path
       name: plugin_name
       required: true
       schema:
         $ref: '#/components/schemas/PlatformPluginName'
+    platform_version_name:
+      in: path
+      name: version_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformVersionName'
     platform_plugin_team:
       in: path
       name: plugin_team
       required: true
       schema:
         $ref: '#/components/schemas/PlatformTeamName'
+    platform_plugin_include_release_stages:
+      description: Include these release stages in the response
+      in: query
+      name: include_release_stages
+      required: false
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformPluginReleaseStage'
   schemas:
-    PlatformPluginCategory:
-      description: Supported categories for plugins
-      type: string
-      enum:
-      - cloud-infrastructure
-      - databases
-      - sales-marketing
-      - engineering-analytics
-      - marketing-analytics
-      - shipment-tracking
-      - product-analytics
-      - cloud-finops
-      - project-management
-      - fleet-management
-      - security
-      - data-warehouses
-      - human-resources
-      - finance
-      - customer-support
-      - other
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformPluginKind:
-      description: The kind of plugin, ie. source or destination.
-      type: string
-      example: source
-      enum:
-      - source
-      - destination
-      - transformer
     PlatformPluginTableDetails:
       additionalProperties: false
       required:
@@ -535,151 +482,21 @@ components:
           example:
           - storage.buckets.list
       type: object
-    PlatformPluginPackageType:
-      description: The package type of the plugin assets
+    PlatformPluginKind:
+      description: The kind of plugin, ie. source or destination.
       type: string
+      example: source
       enum:
-      - native
-      - docker
-    PlatformPluginReleaseStage:
-      description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
-
-        The Coming Soon stage is for plugins that are not yet ready for Preview, but users can subscribe to be notified when they are ready.
-
-        Both Preview and GA plugins follow semantic versioning. The main differences between the two stages are:
-
-        Preview plugins are still experimental and may have frequent breaking changes. Preview plugins might get deprecated due to lack of usage. Long Term Support with community Discord and bug fixes is only guaranteed for GA plugins. Premium plugins are often discounted or free during the Preview stage.'
+      - source
+      - destination
+      - transformer
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
       type: string
-      enum:
-      - coming-soon
-      - preview
-      - ga
-      - deprecated
-    PlatformPluginVersionDetails:
-      allOf:
-      - $ref: '#/components/schemas/PlatformPluginVersion'
-      - type: object
-        required:
-        - example_config
-        properties:
-          example_config:
-            type: string
-            description: Example configuration for the plugin. This can be used in generated quickstart guides, for example. Markdown format.
-          ui_base_url:
-            type: string
-            description: Base URL for the plugin's UI. Only available for plugins with a UI and for logged in users.
-            x-go-name: UIBaseURL
-          ui_base_url_v2:
-            type: string
-            description: Base URL for the plugin's UI. Only available for plugins with a UI and for logged in users.
-            x-go-name: UIBaseURLv2
-    PlatformPluginProtocols:
-      description: The CloudQuery protocols supported by this plugin version (only protocol 3 is supported by new plugins).
-      type: array
-      items:
-        type: integer
-        enum:
-        - 3
-    PlatformPluginPriceCategory:
-      description: Supported price categories for billing
-      type: string
-      enum:
-      - api
-      - database
-      - free
-    PlatformPluginVersion:
-      allOf:
-      - $ref: '#/components/schemas/PlatformPluginVersionBase'
-      - type: object
-        properties:
-          spec_json_schema:
-            $ref: '#/components/schemas/PlatformPluginSpecJSONSchema'
-    PlatformPluginSpecJSONSchema:
-      description: The specification of the plugin. This is a JSON schema that describes the configuration of the plugin.
-      type: string
-    PlatformPluginTable:
-      additionalProperties: false
-      description: CloudQuery Plugin Table
-      required:
-      - description
-      - is_incremental
-      - name
-      - relations
-      - title
-      properties:
-        description:
-          description: Description of the table
-          type: string
-          example: AWS S3 Buckets
-        is_incremental:
-          description: Whether the table is incremental
-          type: boolean
-        name:
-          $ref: '#/components/schemas/PlatformPluginTableName'
-        parent:
-          description: Name of the parent table, if any
-          type: string
-          example: nil
-        relations:
-          description: Names of the tables that depend on this table
-          items:
-            type: string
-          type: array
-          example:
-          - aws_s3_bucket_cors_rules
-        title:
-          description: Title of the table
-          type: string
-          example: AWS S3 Buckets
-        is_paid:
-          description: Whether the table is paid
-          type: boolean
-      title: CloudQuery Plugin Table
-      type: object
-    PlatformPluginAsset:
-      additionalProperties: false
-      description: CloudQuery Plugin Asset
-      required:
-      - checksum
-      - location
-      properties:
-        checksum:
-          type: string
-          description: The checksum of the plugin asset
-        location:
-          type: string
-          format: uri
-          description: The location to download the plugin asset from
-      title: CloudQuery Plugin Asset
-      type: object
-    PlatformListPlugin:
-      allOf:
-      - $ref: '#/components/schemas/PlatformPlugin'
-      - type: object
-        properties:
-          latest_version:
-            $ref: '#/components/schemas/PlatformVersionName'
-    PlatformPluginVersionList:
-      allOf:
-      - $ref: '#/components/schemas/PlatformPluginVersionBase'
-    PlatformVersionName:
-      type: string
-      description: The version in semantic version format.
-      pattern: ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
-      x-pattern-message: should be in semantic version format
-    PlatformPluginTier:
-      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
-      type: string
-      deprecated: true
-      enum:
-      - free
-      - paid
-      - open-core
-    PlatformVersionFilter:
-      type: string
-      description: A version filter in semantic version format with prefix ranges.
-      pattern: ^[^~]?v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
-      x-pattern-message: should be in semantic version format with prefix ranges
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
     PlatformPluginVersionBase:
       additionalProperties: false
       description: CloudQuery Plugin Version
@@ -736,6 +553,79 @@ components:
           $ref: '#/components/schemas/PlatformPluginPackageType'
       title: CloudQuery Plugin Version
       type: object
+    PlatformPluginPackageType:
+      description: The package type of the plugin assets
+      type: string
+      enum:
+      - native
+      - docker
+    PlatformPluginSpecJSONSchema:
+      description: The specification of the plugin. This is a JSON schema that describes the configuration of the plugin.
+      type: string
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformVersionFilter:
+      type: string
+      description: A version filter in semantic version format with prefix ranges.
+      pattern: ^[^~]?v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
+      x-pattern-message: should be in semantic version format with prefix ranges
+    PlatformPluginReleaseStage:
+      description: 'Official plugins can go through three release stages: Coming Soon, Preview, and GA.
+
+        The Coming Soon stage is for plugins that are not yet ready for Preview, but users can subscribe to be notified when they are ready.
+
+        Both Preview and GA plugins follow semantic versioning. The main differences between the two stages are:
+
+        Preview plugins are still experimental and may have frequent breaking changes. Preview plugins might get deprecated due to lack of usage. Long Term Support with community Discord and bug fixes is only guaranteed for GA plugins. Premium plugins are often discounted or free during the Preview stage.'
+      type: string
+      enum:
+      - coming-soon
+      - preview
+      - ga
+      - deprecated
+    PlatformPluginTier:
+      description: "This field is deprecated, refer to `price_category` instead.\nThis field is only kept for backward compatibility and may be removed in a future release.\nSupported tiers for plugins.\n  - free: Free tier, with no paid tables.\n  - paid: Paid tier. These plugins may have paid tables, but can also have free tables. They require login to access.\n  - open-core: This option is deprecated, values will either be free or paid.\n"
+      type: string
+      deprecated: true
+      enum:
+      - free
+      - paid
+      - open-core
+    PlatformPluginAsset:
+      additionalProperties: false
+      description: CloudQuery Plugin Asset
+      required:
+      - checksum
+      - location
+      properties:
+        checksum:
+          type: string
+          description: The checksum of the plugin asset
+        location:
+          type: string
+          format: uri
+          description: The location to download the plugin asset from
+      title: CloudQuery Plugin Asset
+      type: object
+    PlatformPluginVersionList:
+      allOf:
+      - $ref: '#/components/schemas/PlatformPluginVersionBase'
+    PlatformVersionName:
+      type: string
+      description: The version in semantic version format.
+      pattern: ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
+      x-pattern-message: should be in semantic version format
     PlatformPluginName:
       description: The unique name for the plugin.
       maxLength: 255
@@ -743,6 +633,52 @@ components:
       type: string
       example: aws-source
       x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformPluginPriceCategory:
+      description: Supported price categories for billing
+      type: string
+      enum:
+      - api
+      - database
+      - free
+    PlatformPluginTable:
+      additionalProperties: false
+      description: CloudQuery Plugin Table
+      required:
+      - description
+      - is_incremental
+      - name
+      - relations
+      - title
+      properties:
+        description:
+          description: Description of the table
+          type: string
+          example: AWS S3 Buckets
+        is_incremental:
+          description: Whether the table is incremental
+          type: boolean
+        name:
+          $ref: '#/components/schemas/PlatformPluginTableName'
+        parent:
+          description: Name of the parent table, if any
+          type: string
+          example: nil
+        relations:
+          description: Names of the tables that depend on this table
+          items:
+            type: string
+          type: array
+          example:
+          - aws_s3_bucket_cors_rules
+        title:
+          description: Title of the table
+          type: string
+          example: AWS S3 Buckets
+        is_paid:
+          description: Whether the table is paid
+          type: boolean
+      title: CloudQuery Plugin Table
+      type: object
     PlatformPluginTableName:
       description: Name of the table
       maxLength: 255
@@ -750,6 +686,18 @@ components:
       type: string
       example: aws_ec2_instances
       x-pattern-message: can contain only lowercase alphanumerical characters and underscores, starting with a letter
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
     PlatformPluginTableColumn:
       additionalProperties: false
       description: CloudQuery Plugin Column
@@ -788,13 +736,51 @@ components:
           type: boolean
       title: CloudQuery Plugin Table Column
       type: object
-    PlatformTeamName:
-      description: The unique name for the team.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: cloudquery
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
+    PlatformPluginVersion:
+      allOf:
+      - $ref: '#/components/schemas/PlatformPluginVersionBase'
+      - type: object
+        properties:
+          spec_json_schema:
+            $ref: '#/components/schemas/PlatformPluginSpecJSONSchema'
+    PlatformListPlugin:
+      allOf:
+      - $ref: '#/components/schemas/PlatformPlugin'
+      - type: object
+        properties:
+          latest_version:
+            $ref: '#/components/schemas/PlatformVersionName'
+    PlatformPluginVersionDetails:
+      allOf:
+      - $ref: '#/components/schemas/PlatformPluginVersion'
+      - type: object
+        required:
+        - example_config
+        properties:
+          example_config:
+            type: string
+            description: Example configuration for the plugin. This can be used in generated quickstart guides, for example. Markdown format.
+          ui_base_url:
+            type: string
+            description: Base URL for the plugin's UI. Only available for plugins with a UI and for logged in users.
+            x-go-name: UIBaseURL
+          ui_base_url_v2:
+            type: string
+            description: Base URL for the plugin's UI. Only available for plugins with a UI and for logged in users.
+            x-go-name: UIBaseURLv2
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
     PlatformListPlugins:
       type: array
       items:
@@ -816,6 +802,13 @@ components:
         usd_per_row: '0.00123'
         free_rows_per_month: 10000
         release_stage: preview
+    PlatformPluginProtocols:
+      description: The CloudQuery protocols supported by this plugin version (only protocol 3 is supported by new plugins).
+      type: array
+      items:
+        type: integer
+        enum:
+        - 3
     PlatformPlugin:
       additionalProperties: false
       description: CloudQuery Plugin
@@ -899,50 +892,57 @@ components:
       - free_rows_per_month
       title: CloudQuery Plugin
       type: object
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
+    PlatformPluginCategory:
+      description: Supported categories for plugins
+      type: string
+      enum:
+      - cloud-infrastructure
+      - databases
+      - sales-marketing
+      - engineering-analytics
+      - marketing-analytics
+      - shipment-tracking
+      - product-analytics
+      - cloud-finops
+      - project-management
+      - fleet-management
+      - security
+      - data-warehouses
+      - human-resources
+      - finance
+      - customer-support
+      - other
   responses:
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
     PlatformBadRequest:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: Bad request
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
     PlatformTooManyRequests:
       content:
         application/json:

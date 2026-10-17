@@ -75,51 +75,105 @@ paths:
       summary: Platform list notifications
       x-summary-source: derived
 components:
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   schemas:
-    PlatformPolicyGroupID:
-      title: Policy Group ID
-      type: string
-      format: uuid
-      x-go-name: PolicyGroupID
-    PlatformAlertState:
-      type: string
-      enum:
-      - unknown
-      - pending
-      - inactive
-      - triggered
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
+    PlatformNotificationDestinationListItem:
+      title: Notification Destination List Item
       type: object
-    PlatformAlertSeverity:
+      description: Notification Destination List Item
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          x-go-name: URL
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel names (only for slack type)
+          x-go-name: SlackChannels
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformPolicySeverity:
+      description: Policy severity
       type: string
       enum:
       - low
       - medium
       - high
       - critical
+      x-go-name: PolicySeverity
     PlatformNotificationDetail:
       title: Notification Detail
       type: object
@@ -182,110 +236,66 @@ components:
           $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
           description: The notification destination for this notification item (null if no destinations configured)
           nullable: true
-    PlatformPolicySeverity:
-      description: Policy severity
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformAlertSeverity:
       type: string
       enum:
       - low
       - medium
       - high
       - critical
-      x-go-name: PolicySeverity
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
+    PlatformAlertState:
+      type: string
+      enum:
+      - unknown
+      - pending
+      - inactive
+      - triggered
+    PlatformPolicyGroupID:
+      title: Policy Group ID
       type: string
       format: uuid
-      x-go-name: NotificationDestinationID
-    PlatformNotificationDestinationListItem:
-      title: Notification Destination List Item
-      type: object
-      description: Notification Destination List Item
+      x-go-name: PolicyGroupID
+    PlatformBasicError:
       additionalProperties: false
+      description: Basic Error
       required:
-      - id
-      - name
-      - enabled
-      - type
-      - url
-      - created_at
-      - updated_at
+      - message
+      - status
       properties:
-        id:
-          $ref: '#/components/schemas/PlatformNotificationDestinationID'
-        name:
+        message:
           type: string
-          example: Send to Slack
-        enabled:
-          type: boolean
-        type:
-          type: string
-          enum:
-          - webhook
-          - slack
-          description: Type of notification destination
-        url:
-          type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
-          x-go-name: URL
-        slack_channels:
-          type: array
-          items:
-            type: string
-          description: List of Slack channel names (only for slack type)
-          x-go-name: SlackChannels
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-  responses:
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
+        status:
+          type: integer
+      title: Basic Error
+      type: object
   parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -294,16 +304,6 @@ components:
       schema:
         default: 100
         maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
         minimum: 1
         type: integer
         format: int64
