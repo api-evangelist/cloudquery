@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -178,194 +190,14 @@ paths:
       summary: Platform delete custom column
       x-summary-source: derived
 components:
-  responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-  schemas:
-    PlatformCustomColumnSortDirection:
-      title: CustomColumnSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
-    PlatformCustomColumnID:
-      description: The unique ID for the custom column.
-      type: string
-      format: uuid
-      x-go-name: CustomColumnID
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
-      type: string
-      example: Sarah O'Connor
-    PlatformCustomColumnValueExpr:
-      type: string
-      description: The SQL expression for the custom column.
-    PlatformCreatedBy:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformUserID'
-        name:
-          $ref: '#/components/schemas/PlatformUserName'
-        email:
-          type: string
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformCustomColumnCreateOrUpdate:
-      title: Custom Column Create or Update
-      type: object
-      description: Create or update a custom column
-      additionalProperties: false
-      required:
-      - column_name
-      - label
-      - value_expr
-      properties:
-        description:
-          type: string
-        column_name:
-          $ref: '#/components/schemas/PlatformCustomColumnColumnName'
-        label:
-          type: string
-          example: Environment name
-        value_expr:
-          $ref: '#/components/schemas/PlatformCustomColumnValueExpr'
-    PlatformCustomColumnColumnName:
-      type: string
-      description: The name for the custom column.
-      pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
-      example: tags_v1_region
-      x-pattern-message: Letters, numbers, and underscores only. Must start with a letter.
-      minLength: 1
-      maxLength: 63
-    PlatformCustomColumnSortBy:
-      title: CustomColumnSortBy
-      type: string
-      enum:
-      - id
-      - description
-      - column_name
-      - label
-      - value_expr
-      - created_by
-      - created_at
-      - updated_at
-    PlatformCustomColumn:
-      title: Custom Column
-      type: object
-      description: A custom column that is configured manually by the user.
-      additionalProperties: false
-      required:
-      - id
-      - column_name
-      - label
-      - value_expr
-      - created_by
-      - created_at
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformCustomColumnID'
-        description:
-          type: string
-        column_name:
-          $ref: '#/components/schemas/PlatformCustomColumnColumnName'
-        label:
-          type: string
-          example: Environment name
-        value_expr:
-          $ref: '#/components/schemas/PlatformCustomColumnValueExpr'
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
   parameters:
+    platform_custom_column_id:
+      in: path
+      name: custom_column_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformCustomColumnID'
+      x-go-name: CustomColumnID
     platform_custom_columns_sort_dirs:
       name: sort_dir
       in: query
@@ -411,13 +243,202 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_custom_column_id:
-      in: path
-      name: custom_column_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformCustomColumnID'
+  schemas:
+    PlatformCustomColumnValueExpr:
+      type: string
+      description: The SQL expression for the custom column.
+    PlatformCustomColumnSortBy:
+      title: CustomColumnSortBy
+      type: string
+      enum:
+      - id
+      - description
+      - column_name
+      - label
+      - value_expr
+      - created_by
+      - created_at
+      - updated_at
+    PlatformCustomColumnCreateOrUpdate:
+      title: Custom Column Create or Update
+      type: object
+      description: Create or update a custom column
+      additionalProperties: false
+      required:
+      - column_name
+      - label
+      - value_expr
+      properties:
+        description:
+          type: string
+        column_name:
+          $ref: '#/components/schemas/PlatformCustomColumnColumnName'
+        label:
+          type: string
+          example: Environment name
+        value_expr:
+          $ref: '#/components/schemas/PlatformCustomColumnValueExpr'
+    PlatformCustomColumnSortDirection:
+      title: CustomColumnSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
+    PlatformCustomColumn:
+      title: Custom Column
+      type: object
+      description: A custom column that is configured manually by the user.
+      additionalProperties: false
+      required:
+      - id
+      - column_name
+      - label
+      - value_expr
+      - created_by
+      - created_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformCustomColumnID'
+        description:
+          type: string
+        column_name:
+          $ref: '#/components/schemas/PlatformCustomColumnColumnName'
+        label:
+          type: string
+          example: Environment name
+        value_expr:
+          $ref: '#/components/schemas/PlatformCustomColumnValueExpr'
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformCustomColumnColumnName:
+      type: string
+      description: The name for the custom column. Must not begin with the reserved `_cq_` prefix, which is CloudQuery's system-column namespace.
+      pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+      example: tags_v1_region
+      x-pattern-message: Letters, numbers, and underscores only. Must start with a letter.
+      minLength: 1
+      maxLength: 63
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformCustomColumnID:
+      description: The unique ID for the custom column.
+      type: string
+      format: uuid
       x-go-name: CustomColumnID
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
   securitySchemes:
     bearerAuth:
       scheme: bearer

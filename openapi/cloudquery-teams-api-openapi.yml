@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -54,31 +66,69 @@ paths:
       x-summary-source: derived
 components:
   responses:
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
     PlatformInternalError:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Internal Error
-    PlatformNotFound:
+    PlatformForbidden:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
     PlatformRequiresAuthentication:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformTeam:
+      additionalProperties: false
+      description: CloudQuery Team
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformTeamName'
+      required:
+      - name
+      title: Team
+      type: object
+    PlatformTeamName:
+      description: The unique name for the team.
+      maxLength: 255
+      pattern: ^[a-z](-?[a-z0-9]+)+$
+      type: string
+      example: cloudquery
+      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -92,35 +142,6 @@ components:
               type: string
             type: object
         type: object
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformTeamName:
-      description: The unique name for the team.
-      maxLength: 255
-      pattern: ^[a-z](-?[a-z0-9]+)+$
-      type: string
-      example: cloudquery
-      x-pattern-message: can contain only lowercase alphanumerical characters and dashes, starting with a letter
-    PlatformTeam:
-      additionalProperties: false
-      description: CloudQuery Team
-      properties:
-        name:
-          $ref: '#/components/schemas/PlatformTeamName'
-      required:
-      - name
-      title: Team
-      type: object
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error

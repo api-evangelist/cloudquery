@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -91,45 +103,6 @@ paths:
       summary: Platform list platform versions
       x-summary-source: derived
 components:
-  schemas:
-    PlatformVersion:
-      type: object
-      required:
-      - name
-      - created_at
-      properties:
-        name:
-          type: string
-          description: Name of the version
-        created_at:
-          type: string
-          format: date-time
-          description: Time when the version was first installed
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
   responses:
     PlatformInternalError:
       content:
@@ -143,6 +116,54 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
   parameters:
     platform_page:
       description: Page number of the results to fetch

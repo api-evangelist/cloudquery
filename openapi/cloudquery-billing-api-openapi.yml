@@ -1,0 +1,480 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec Billing API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: Billing
+paths:
+  /billing/plan:
+    get:
+      summary: Get tenant plan
+      description: Get the calling tenant's current plan, billing state, usage, and entitlements.
+      operationId: PlatformGetTenantPlan
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTenantPlan'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Billing
+  /billing/payments:
+    get:
+      summary: List billing payments
+      description: List recent payment records for the calling tenant, most recent first.
+      operationId: PlatformListBillingPayments
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformPaymentRecord'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Billing
+components:
+  schemas:
+    PlatformUsageCounter:
+      title: UsageCounter
+      type: object
+      description: Current usage of a metered entitlement against its limit.
+      additionalProperties: false
+      required:
+      - used
+      - limit
+      - period
+      properties:
+        used:
+          type: integer
+          format: int64
+          description: Amount consumed so far in the current period.
+        limit:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum allowed in the current period. `null` means unlimited.
+        period:
+          $ref: '#/components/schemas/PlatformUsagePeriod'
+    PlatformTenantPlanStatus:
+      type: string
+      description: 'Server-computed lifecycle state of the tenant''s plan.
+
+        - `trial`: trial in progress, within window
+
+        - `trial_expired`: trial window elapsed, no paid plan
+
+        - `paid_active`: paid plan, last invoice succeeded
+
+        - `payment_failed`: paid plan, last invoice failed (account may be blocked downstream)
+
+        - `canceling`: paid plan scheduled to cancel at the end of the current period; still active until then. `cancel_at` carries the effective end date.
+
+        - `canceled`: paid plan has been canceled (terminal)
+
+        '
+      enum:
+      - trial
+      - trial_expired
+      - paid_active
+      - payment_failed
+      - canceling
+      - canceled
+    PlatformIntegrationsLimit:
+      title: IntegrationsLimit
+      type: object
+      description: 'Integration usage against the per-plan slot cap. The default integrations are
+
+        free and never consume a slot — `used`/`limit` count only the distinct
+
+        *additional* (non-default) integrations. Integrations are identified by their
+
+        org-qualified path. The UI can enable an integration button when its path is
+
+        in `defaults` ∪ `additional`, or when `used < limit`; otherwise a new
+
+        integration is disabled.
+
+        '
+      additionalProperties: false
+      required:
+      - used
+      - limit
+      - period
+      - defaults
+      - additional
+      properties:
+        used:
+          type: integer
+          format: int64
+          description: Distinct additional (non-default) integrations currently in use.
+        limit:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum additional integrations allowed. `null` means unlimited.
+        period:
+          $ref: '#/components/schemas/PlatformUsagePeriod'
+        defaults:
+          type: array
+          items:
+            type: string
+          description: Org-qualified paths of the free default integrations, always available.
+        additional:
+          type: array
+          items:
+            type: string
+          description: Org-qualified paths of the distinct additional integrations currently in use.
+    PlatformTenantPlanTier:
+      type: string
+      description: 'The tenant''s pricing tier. `trial` is the default for self-serve signups.
+
+        `team` and `foundations` are reached via Stripe checkout. `enterprise` is
+
+        set by sales and is also the default for existing tenants and any
+
+        non-self-serve account.
+
+        '
+      enum:
+      - trial
+      - team
+      - foundations
+      - enterprise
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformUsagePeriod:
+      type: string
+      description: The window over which a usage limit is measured.
+      enum:
+      - month
+      - year
+    PlatformPaymentRecordStatus:
+      type: string
+      description: Lifecycle state of a payment / invoice attempt.
+      enum:
+      - succeeded
+      - failed
+      - pending
+      - refunded
+    PlatformTenantPlanFeatures:
+      title: TenantPlanFeatures
+      type: object
+      description: Boolean feature flags derived from the tenant's plan.
+      additionalProperties: false
+      required:
+      - mcp_and_api_access
+      - email_support
+      - dedicated_customer_success
+      - custom_slas_and_contracts
+      - sso_scim_audit_logs
+      - external_destinations
+      - table_exports
+      properties:
+        mcp_and_api_access:
+          type: boolean
+          description: MCP server + public API access. Foundations and Enterprise.
+        email_support:
+          type: boolean
+          description: Email support. Team and above.
+        dedicated_customer_success:
+          type: boolean
+          description: Enterprise only.
+        custom_slas_and_contracts:
+          type: boolean
+          description: Enterprise only.
+        sso_scim_audit_logs:
+          type: boolean
+          description: SSO, SCIM provisioning, and audit log exports. Enterprise only.
+        external_destinations:
+          type: boolean
+          description: 'Permission to create / update syncs that target external data destinations (S3, Postgres, ClickHouse, etc.). Enterprise only — Trial, Team, and Foundations do not have this (they sync into the bundled platform warehouse only; Trial follows the broader invariant that gated features are paid-only).
+
+            '
+        table_exports:
+          type: boolean
+          description: 'Async export of query results to object storage (Parquet / CSV / JSONL). Enterprise only.
+
+            '
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformPaymentRecord:
+      title: PaymentRecord
+      type: object
+      description: A single payment / invoice attempt observed via Stripe webhooks.
+      additionalProperties: false
+      required:
+      - id
+      - date
+      - amount
+      - currency
+      - status
+      properties:
+        id:
+          type: string
+          description: Internal payment record identifier.
+        date:
+          type: string
+          format: date-time
+          description: When the payment was charged or attempted.
+        amount:
+          type: integer
+          format: int64
+          description: Amount in the smallest currency unit (e.g. cents for USD).
+        currency:
+          type: string
+          description: ISO 4217 currency code (lowercase, as returned by Stripe).
+        status:
+          $ref: '#/components/schemas/PlatformPaymentRecordStatus'
+        invoice_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Stripe-hosted invoice URL if available.
+          x-go-name: InvoiceURL
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformTenantPlan:
+      title: TenantPlan
+      type: object
+      description: The calling tenant's current plan, billing state, usage, and entitlements.
+      additionalProperties: false
+      required:
+      - status
+      - tier
+      - plan_name
+      - sales_managed
+      - limits
+      - features
+      properties:
+        status:
+          $ref: '#/components/schemas/PlatformTenantPlanStatus'
+        tier:
+          $ref: '#/components/schemas/PlatformTenantPlanTier'
+        plan_name:
+          type: string
+          description: Human-readable plan name for display, e.g. "Free trial", "Team", "Foundations", "Enterprise".
+        sales_managed:
+          type: boolean
+          description: 'True when the plan is set by Sales via HubSpot (no Stripe subscription)
+
+            rather than self-serve billing. Sales-managed plans have no billing
+
+            period, so `current_period_start` / `current_period_end` are omitted.
+
+            '
+        current_period_start:
+          type: string
+          format: date-time
+          nullable: true
+          description: 'Start of the active period. For `trial`, the trial start. For paid
+
+            plans, the Stripe-reported `current_period_start`. Omitted for
+
+            sales-managed plans (no billing period).
+
+            '
+        current_period_end:
+          type: string
+          format: date-time
+          nullable: true
+          description: 'End of the active period. For `trial`, the trial expiry. For paid
+
+            plans, the next billing date — unless `status` is `canceling`, in which
+
+            case billing stops and `cancel_at` is the effective end date. Omitted
+
+            for sales-managed plans (they do not expire).
+
+            '
+        cancel_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 'When `status` is `canceling`, the date the subscription will end and
+
+            access stops (the customer scheduled cancellation but is still active
+
+            until then). `null` for every other status.
+
+            '
+        limits:
+          $ref: '#/components/schemas/PlatformTenantPlanLimits'
+        features:
+          $ref: '#/components/schemas/PlatformTenantPlanFeatures'
+        last_payment_status:
+          allOf:
+          - $ref: '#/components/schemas/PlatformPaymentRecordStatus'
+          nullable: true
+          description: 'Status of the most recent payment. `null` when the tenant has no
+
+            payment history (e.g. trial, never charged).
+
+            '
+        last_payment_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date of the most recent payment, regardless of outcome.
+    PlatformTenantPlanLimits:
+      title: TenantPlanLimits
+      type: object
+      description: Per-tenant usage counters surfaced to the billing UI.
+      additionalProperties: false
+      required:
+      - ai_conversations
+      - integrations
+      - users
+      properties:
+        ai_conversations:
+          $ref: '#/components/schemas/PlatformUsageCounter'
+        integrations:
+          $ref: '#/components/schemas/PlatformIntegrationsLimit'
+        users:
+          allOf:
+          - $ref: '#/components/schemas/PlatformUsageCounter'
+          description: 'User cap usage. Always present; `limit` is `null` when the tier has no
+
+            user cap (enterprise).
+
+            '
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

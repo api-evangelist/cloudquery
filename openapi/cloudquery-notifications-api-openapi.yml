@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -19,7 +31,7 @@ tags:
 paths:
   /notifications:
     get:
-      description: List all notifications for triggered, enabled, policy-bound alerts
+      description: List the notifications rules delivered, suppressed or failed to deliver, and sync failure notifications, newest first
       operationId: PlatformListNotifications
       parameters:
       - $ref: '#/components/parameters/platform_per_page'
@@ -44,6 +56,13 @@ paths:
         style: form
         explode: true
         description: Filter by policy groups (policy matches any)
+      - in: query
+        name: sent_only
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Return only notifications that were delivered.
       responses:
         '200':
           description: Response
@@ -75,37 +94,6 @@ paths:
       summary: Platform list notifications
       x-summary-source: derived
 components:
-  responses:
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
   schemas:
     PlatformNotificationDestinationListItem:
       title: Notification Destination List Item
@@ -133,10 +121,12 @@ components:
           enum:
           - webhook
           - slack
+          - msteams
+          - email
           description: Type of notification destination
         url:
           type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          example: https://hooks.slack.com/services/REDACTED
           x-go-name: URL
         slack_channels:
           type: array
@@ -144,6 +134,22 @@ components:
             type: string
           description: List of Slack channel names (only for slack type)
           x-go-name: SlackChannels
+        last_notification_error_timestamp:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last notification error
+          x-go-name: LastNotificationErrorTimestamp
+        last_notification_error_code:
+          type: string
+          nullable: true
+          description: Error code of the last notification error
+          x-go-name: LastNotificationErrorCode
+        last_notification_error_message:
+          type: string
+          nullable: true
+          description: Error message of the last notification error
+          x-go-name: LastNotificationErrorMessage
         created_at:
           example: '2017-07-14T16:53:42Z'
           format: date-time
@@ -152,37 +158,13 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformPolicySeverity:
-      description: Policy severity
-      type: string
-      enum:
-      - low
-      - medium
-      - high
-      - critical
-      x-go-name: PolicySeverity
     PlatformNotificationDetail:
       title: Notification Detail
       type: object
-      description: A notification instance for a triggered alert, including one notification destination. Each notification destination for an alert will result in a separate notification item.
+      description: 'One delivery-log entry: a notification a rule delivered, suppressed or failed to deliver to one destination in one evaluation cycle, or a sync failure notification. `id` is the delivery''s event id, `triggered_at` its cycle, `total_violations` the batch size, and `outcome`, `failed_reason` and `resource_sample` describe the delivery.'
       additionalProperties: false
       required:
       - id
-      - query_id
-      - policy_id
       - message
       - severity
       - state
@@ -193,18 +175,34 @@ components:
         id:
           type: string
           format: uuid
-          description: Unique identifier for the alert
+          description: The delivery's event id
           x-go-name: ID
         query_id:
           type: string
           format: uuid
-          description: Reference to the associated query
+          description: The query of the policy the notification is about
           x-go-name: QueryID
         policy_id:
           type: string
           format: uuid
-          description: Reference to the associated policy
+          description: The policy the notification is about, when its insight is a policy's
           x-go-name: PolicyID
+        insight_id:
+          type: string
+          description: The insight the notification is about (unset for a sync failure)
+          x-go-name: InsightID
+        insight_title:
+          type: string
+          description: Title of the insight, when the caller can see it
+          x-go-name: InsightTitle
+        insight_category:
+          type: string
+          description: Category of the insight, when the caller can see it
+          x-go-name: InsightCategory
+        insight_source:
+          type: string
+          description: Source of the insight, when the caller can see it
+          x-go-name: InsightSource
         message:
           type: string
           description: Alert message content
@@ -236,6 +234,22 @@ components:
           $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
           description: The notification destination for this notification item (null if no destinations configured)
           nullable: true
+        outcome:
+          $ref: '#/components/schemas/PlatformNotificationDeliveryOutcome'
+        rule_id:
+          type: string
+          format: uuid
+          description: The notification rule that produced a delivery-log entry
+          x-go-name: RuleID
+        failed_reason:
+          type: string
+          description: Short reason a delivery-log entry ended `failed`
+        resource_sample:
+          type: array
+          description: Up to 10 of the resources in a delivery-log entry's batch, as the rule walk classified them. Omitted for a caller whose role carries an asset permission, so a partial scope never sees resources outside it.
+          items:
+            type: object
+            additionalProperties: true
     PlatformListMetadata:
       required:
       - page_size
@@ -248,18 +262,15 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
-      type: string
-      format: uuid
-      x-go-name: NotificationDestinationID
-    PlatformAlertSeverity:
-      type: string
-      enum:
-      - low
-      - medium
-      - high
-      - critical
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
     PlatformAlertState:
       type: string
       enum:
@@ -267,11 +278,35 @@ components:
       - pending
       - inactive
       - triggered
-    PlatformPolicyGroupID:
-      title: Policy Group ID
+    PlatformAlertSeverity:
       type: string
-      format: uuid
-      x-go-name: PolicyGroupID
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+    PlatformPolicySeverity:
+      description: Policy severity
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      - critical
+      x-go-name: PolicySeverity
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
     PlatformBasicError:
       additionalProperties: false
       description: Basic Error
@@ -285,6 +320,55 @@ components:
           type: integer
       title: Basic Error
       type: object
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformNotificationDeliveryOutcome:
+      title: Notification Delivery Outcome
+      type: string
+      description: Terminal outcome of a Notifications v2 delivery. `suppressed` is a match a suppress rule deliberately silenced, so it has no destination.
+      enum:
+      - delivered
+      - suppressed
+      - failed
+    PlatformPolicyGroupID:
+      title: Policy Group ID
+      type: string
+      format: uuid
+      x-go-name: PolicyGroupID
+  responses:
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
   parameters:
     platform_page:
       description: Page number of the results to fetch

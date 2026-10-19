@@ -8,10 +8,10 @@
     "cloudquery-admin-api-openapi.yml",
     "cloudquery-alerts-api-openapi.yml",
     "cloudquery-api-keys-api-openapi.yml",
-    "cloudquery-apps-api-openapi.yml",
     "cloudquery-audit-logs-api-openapi.yml",
-    "cloudquery-chat-api-openapi.yml",
+    "cloudquery-billing-api-openapi.yml",
     "cloudquery-custom-columns-api-openapi.yml",
+    "cloudquery-external-syncs-api-openapi.yml",
     "cloudquery-filters-api-openapi.yml",
     "cloudquery-healthcheck-api-openapi.yml",
     "cloudquery-insights-api-openapi.yml",
@@ -25,14 +25,13 @@
     "cloudquery-reports-api-openapi.yml",
     "cloudquery-sync-integrations-api-openapi.yml",
     "cloudquery-syncs-api-openapi.yml",
+    "cloudquery-table-exports-api-openapi.yml",
     "cloudquery-tables-api-openapi.yml",
     "cloudquery-teams-api-openapi.yml",
     "cloudquery-usage-api-openapi.yml",
     "cloudquery-users-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -44,34 +43,7 @@
     "cloudquery-openapi.json: declared missing tag: platform",
     "cloudquery-openapi.json: declared missing tag: sync-integrations",
     "cloudquery-openapi.json: declared missing tag: usage",
-    "superseded outputs removed: cloudquery-health-check-api-openapi.yml",
-    "apis.yml register: written (+1 apis, 26 total)"
+    "apis.yml register: written (+4 apis, 27 total)"
   ],
-  "skipped": [
-    "cloudquery-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-alerts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-api-keys-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-apps-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-audit-logs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-chat-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-custom-columns-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-filters-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-health-check-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-insights-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-notifications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-onboardings-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-openapi-json-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-platform-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-plugins-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-policies-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-queries-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-rbac-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-reports-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-sync-integrations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-syncs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-tables-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-teams-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-usage-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "cloudquery-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
-  ]
+  "skipped": []
 }

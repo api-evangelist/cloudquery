@@ -1,0 +1,177 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: Welcome to the CloudQuery Platform API documentation!
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery OpenAPI Spec Platform API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: Platform
+paths:
+  /platform-info:
+    get:
+      description: Information about the platform
+      operationId: PlatformGetPlatformInfo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - public_ips
+                - version
+                - tenant_id
+                - aws_account_id
+                properties:
+                  aws_account_id:
+                    type: string
+                    description: AWS Account ID for the platform
+                    x-go-name: AWSAccountID
+                  public_ips:
+                    type: array
+                    description: List of public IPs for the platform
+                    items:
+                      type: string
+                    x-go-name: PublicIPs
+                  version:
+                    type: string
+                    description: Version of the platform
+                  tenant_id:
+                    type: string
+                    format: uuid
+                    description: The tenant ID of the current user
+                    x-go-name: TenantID
+          description: Response
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Platform
+      summary: Platform get platform info
+      x-summary-source: derived
+  /platform-versions:
+    get:
+      description: List platform versions
+      operationId: PlatformListPlatformVersions
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformVersion'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+          description: Response
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Platform
+      summary: Platform list platform versions
+      x-summary-source: derived
+components:
+  schemas:
+    PlatformVersion:
+      type: object
+      required:
+      - name
+      - created_at
+      properties:
+        name:
+          type: string
+          description: Name of the version
+        created_at:
+          type: string
+          format: date-time
+          description: Time when the version was first installed
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+  responses:
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

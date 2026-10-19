@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -21,9 +33,18 @@ paths:
     get:
       description: List insights with optional filtering
       operationId: PlatformListPlatformInsights
+      x-mcp:
+        name: list_insights
+        description: List security, cost and compliance findings across the inventory. Filter by severities, cloud, account, region, source, resource_types or insight_category; use search for free text. Each item carries an insight_id for get_insight and list_insight_assets. The same findings are queryable as the insights and insight_resources tables through run_query when you need a join.
       parameters:
       - $ref: '#/components/parameters/platform_page'
       - $ref: '#/components/parameters/platform_per_page'
+      - name: silenced
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: When true, return only insights that have at least one active silence. Omit (or false) for the default active view, which hides silenced insights and resources.
       - name: search
         in: query
         required: false
@@ -112,6 +133,13 @@ paths:
         style: form
         explode: true
         description: Filter by tags (any match)
+      - name: app_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Filter to insights whose underlying asset is a member of this app. Membership is read from the materialized app_memberships graph.
       - name: sort_by
         in: query
         required: false
@@ -129,6 +157,8 @@ paths:
           - accounts_count
           - created_at
           - detected_at
+          - cost_last_7_days
+          - cost_last_30_days
           default: detected_at
         description: Field to sort by
       - name: sort_dir
@@ -522,10 +552,260 @@ paths:
       - Insights
       summary: Platform delete insight filter
       x-summary-source: derived
+  /insights/silences:
+    get:
+      description: List insight silence records. Returns the raw active silences for the tenant, optionally filtered to a single insight. Unlike GET /insights/silenced (which aggregates fully-hidden insights), this returns every silence record, including resource-level silences that only partially cover an insight.
+      operationId: PlatformListInsightSilences
+      parameters:
+      - name: insight_id
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Restrict results to silences for this insight.
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsightSilenceList'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Insights
+      summary: Platform list insight silences
+      x-summary-source: derived
+    post:
+      description: Silence one or more insights
+      operationId: PlatformSilenceInsights
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformInsightSilenceCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInsightSilenceList'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Insights
+      summary: Platform silence insights
+      x-summary-source: derived
+    delete:
+      description: 'Delete insight silences. The request body must set exactly one of insight_silence_ids (delete those specific records) or insight_ids (delete every active silence for those insights). Idempotent: returns 204 even when some or all of the referenced silences do not exist.'
+      operationId: PlatformDeleteInsightSilences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformInsightSilenceDelete'
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Insights
+      summary: Platform delete insight silences
+      x-summary-source: derived
+  /insights/silenced:
+    get:
+      description: List silenced insights with their silence metadata
+      operationId: PlatformListSilencedInsights
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformSilencedInsight'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Insights
+      summary: Platform list silenced insights
+      x-summary-source: derived
+  /insights/by-app:
+    get:
+      description: Group insights by the app their underlying assets belong to, returning a per-app count of insights and affected assets (and summed 30-day cost). Answers questions like "list apps by count of security findings" that the per-insight list endpoint cannot express. Only assets that are members of some app contribute; the standard insight filters narrow which insights are counted.
+      operationId: PlatformListPlatformInsightsByApp
+      x-mcp:
+        name: insights_by_app
+        description: Count findings and affected assets per app, with summed 30-day cost. Answers "which apps have the most security findings". Only assets that belong to an app are counted; the standard insight filters apply.
+      parameters:
+      - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_per_page'
+      - name: silenced
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: When true, return only apps whose insights have at least one active silence. Omit (or false) for the default active view.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search in title, evidence (description), mitigation, or related fields
+      - name: severities
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        style: form
+        explode: true
+        description: Filter by severities (any match)
+      - name: cloud
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by cloud
+      - name: account
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by account (repeat for multiple values, OR)
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region
+      - name: insight_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by insight category (repeat for multiple values, OR)
+      - name: source_category
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source category (repeat for multiple values, OR)
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by source (repeat for multiple values, OR)
+      - name: resource_types
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by resource types
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+        description: Filter by tags (any match)
+      responses:
+        '200':
+          description: Per-app insight counts, ordered by insight count descending.
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformInsightAppCount'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Insights
+      summary: Platform list platform insights by app
+      x-summary-source: derived
   /insights/{insight_id}:
     get:
       description: Get insight by ID
       operationId: PlatformGetPlatformInsight
+      x-mcp:
+        name: get_insight
+        description: 'Get one finding by insight_id: title, severity, evidence, mitigation, affected-asset count and cost. Use after list_insights when the summary row is not enough.'
       parameters:
       - $ref: '#/components/parameters/platform_insight_id'
       - name: search
@@ -617,16 +897,33 @@ paths:
     get:
       description: List assets affected by an insight
       operationId: PlatformGetPlatformInsightAssets
+      x-mcp:
+        name: list_insight_assets
+        description: List the resources affected by one finding, with account, region and _cq_platform_id. Pass a platform id to get_asset_insights or get_related_resources to pivot from the finding to the resource.
       parameters:
       - $ref: '#/components/parameters/platform_insight_id'
       - $ref: '#/components/parameters/platform_page'
       - $ref: '#/components/parameters/platform_per_page'
+      - name: silenced
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+        description: When false, resources silenced for this insight are excluded from the response. Defaults to true (all resources are returned).
       - name: search
         in: query
         required: false
         schema:
           type: string
         description: Search in asset name, account, region, etc.
+      - name: app_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Restrict to assets that are members of this app (joined via the materialized app_memberships graph).
       - name: accounts
         in: query
         required: false
@@ -830,6 +1127,9 @@ paths:
     get:
       description: List insights for a specific asset (by _cq_platform_id)
       operationId: PlatformGetPlatformAssetInsights
+      x-mcp:
+        name: get_asset_insights
+        description: List the findings on one resource, by its _cq_platform_id (asset_id). Use when a question starts from a resource, such as "what is wrong with this bucket", rather than from a finding.
       parameters:
       - $ref: '#/components/parameters/platform_asset_id'
       - $ref: '#/components/parameters/platform_page'
@@ -900,202 +1200,91 @@ paths:
       summary: Platform get platform asset insights
       x-summary-source: derived
 components:
-  responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
+  parameters:
+    platform_insight_column_name:
+      in: path
+      name: column_name
+      required: true
+      description: Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true.
+      schema:
+        type: string
+      x-go-name: InsightColumnName
+    platform_insight_filter_id:
+      in: path
+      name: insight_filter_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightFilterID'
+      x-go-name: InsightFilterID
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_asset_id:
+      in: path
+      name: asset_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableRowID'
+      x-go-name: AssetID
+    platform_insight_asset_column_name:
+      in: path
+      name: column_name
+      required: true
+      description: 'Filter dimension for distinct asset values. Allowed values: cloud, region, account, resource-type, instance-type, tag.'
+      schema:
+        type: string
+        enum:
+        - cloud
+        - region
+        - account
+        - resource-type
+        - instance-type
+        - tag
+      x-go-name: InsightAssetColumnName
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_insight_id:
+      in: path
+      name: insight_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightID'
+      x-go-name: InsightID
   schemas:
-    PlatformInsight:
-      title: Insight
+    PlatformSilencedInsight:
+      title: Silenced Insight
       type: object
-      description: Security or compliance insight summary
+      description: An insight shown in the silenced view, with its silence metadata.
       additionalProperties: false
       required:
-      - id
-      - title
-      - severity
-      - insight_category
-      - source
-      - source_category
-      - resource_types
-      - resources_count
-      - accounts_count
-      - created_at
-      - detected_at
-      - last_synced_at
+      - insight
+      - silence
+      - silenced_resource_count
       properties:
-        id:
-          $ref: '#/components/schemas/PlatformInsightID'
-        title:
-          type: string
-          description: Title of the insight
-        evidence:
-          type: string
-          description: Detailed evidence (description) of the insight (Markdown)
-        mitigation:
-          type: string
-          description: Mitigation steps for the insight (Markdown)
-        severity:
-          $ref: '#/components/schemas/PlatformInsightSeverity'
-        insight_category:
-          type: string
-          description: Category (e.g. Security, FinOps)
-        source:
-          type: string
-          description: Source (e.g. Platform, Wiz, Lacework)
-        source_category:
-          type: string
-          description: Source category (e.g. Platform, Third Party, Custom)
-        subcategory:
-          type: string
-          nullable: true
-        resource_types:
-          type: string
-          description: Resource types affected
-        resources_count:
+        insight:
+          $ref: '#/components/schemas/PlatformInsight'
+        silence:
+          $ref: '#/components/schemas/PlatformInsightSilence'
+        silenced_resource_count:
           type: integer
           format: int64
-          description: Number of resources affected
-        accounts_count:
-          type: integer
-          format: int64
-          description: Number of accounts affected
-        additional_properties:
-          type: object
-          description: Insight-specific metadata summed for all affected resources (e.g. cost insight fields).
-          additionalProperties: true
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags associated with the insight
-        created_at:
-          type: string
-          format: date-time
-          description: When the insight record was created
-        detected_at:
-          type: string
-          format: date-time
-          description: When the insight was first detected
-        last_synced_at:
-          type: string
-          format: date-time
-          description: When the insight was last synced
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformTableRowID:
-      description: ID of the Resource
-      type: string
-      example: table_12345678-1234-1234-1234-1234567890ab
-    PlatformInsightFilterUpdate:
-      title: Insight Filter Update
-      type: object
-      description: Definition for updating an existing saved insight filter
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        search:
-          type: string
-        insight_category:
-          type: array
-          items:
-            type: string
-        severities:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformInsightSeverity'
-        resource_types:
-          type: array
-          items:
-            type: string
-        source:
-          type: array
-          items:
-            type: string
-        source_category:
-          type: array
-          items:
-            type: string
-        clouds:
-          type: array
-          items:
-            type: string
-        accounts:
-          type: array
-          items:
-            type: string
-        regions:
-          type: array
-          items:
-            type: string
-        tags:
-          type: array
-          items:
-            type: string
-        ownership_tags:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          description: Ownership tag filters keyed by tag name
-          example:
-            team:
-            - engineering
-            - platform
-            org:
-            - cloud
-        group_by:
-          type: array
-          items:
-            type: string
+          description: Currently-present resources covered by the silence.
     PlatformInsightFilter:
       title: Insight Filter
       type: object
@@ -1212,55 +1401,50 @@ components:
           type: string
           format: date-time
           example: '2017-07-14T16:53:42Z'
-    PlatformPolicyViolation:
-      title: Policy Violation
+    PlatformInsightAppCount:
+      title: InsightAppCount
       type: object
-      description: Policy violation resource information
+      description: Per-app rollup of insights — how many insights and affected assets belong to an app.
       additionalProperties: false
       required:
-      - cloud
-      - resource_type_label
-      - _cq_account_name
-      - name
-      - region
-      - _cq_platform_id
+      - app_id
+      - app_name
+      - insight_count
+      - resources_count
       properties:
-        cloud:
+        app_id:
           type: string
-          example: aws
-        resource_type_label:
+          format: uuid
+          description: The app's unique ID.
+          x-go-name: AppID
+        app_name:
           type: string
-          example: EC2 Instance
-        _cq_account_name:
-          type: string
-          example: my-account
-        name:
-          type: string
-          example: my-resource
-        region:
-          type: string
-          example: us-east-1
-        _cq_platform_id:
-          type: string
-          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
-        tags:
-          type: array
-          items:
-            type: string
-          description: Tags associated with the resource (e.g. for insights)
-        additional_properties:
-          type: object
-          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
-          additionalProperties: true
-    PlatformInsightID:
-      description: Unique identifier for the insight
-      type: string
-      x-go-name: InsightID
-    PlatformListMetadata:
+          description: Display name for the app (title when set, otherwise the canonical name).
+        insight_count:
+          type: integer
+          format: int64
+          description: Number of distinct insights affecting assets that belong to this app.
+        resources_count:
+          type: integer
+          format: int64
+          description: Number of distinct affected assets belonging to this app.
+        silenced_resource_count:
+          type: integer
+          format: int64
+          description: Number of this app's affected resources that are hidden by active silences (total resources minus those surviving the silence exclusion).
+        cost_last_30_days:
+          type: number
+          format: double
+          description: Summed 30-day unblended cost across the app's affected assets. Present only when at least one contributing asset carries cost data.
+    PlatformInsightsListMetadata:
       required:
       - page_size
       properties:
         total_count:
+          type: integer
+        resource_count:
+          type: integer
+        resource_types:
           type: integer
         last_page:
           type: integer
@@ -1268,11 +1452,245 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformInsightFilterID:
-      description: The unique ID for the insight filter
+    PlatformInsightFilterUpdate:
+      title: Insight Filter Update
+      type: object
+      description: Definition for updating an existing saved insight filter
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        search:
+          type: string
+        insight_category:
+          type: array
+          items:
+            type: string
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSeverity'
+        resource_types:
+          type: array
+          items:
+            type: string
+        source:
+          type: array
+          items:
+            type: string
+        source_category:
+          type: array
+          items:
+            type: string
+        clouds:
+          type: array
+          items:
+            type: string
+        accounts:
+          type: array
+          items:
+            type: string
+        regions:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ownership_tags:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: Ownership tag filters keyed by tag name
+          example:
+            team:
+            - engineering
+            - platform
+            org:
+            - cloud
+        group_by:
+          type: array
+          items:
+            type: string
+    PlatformInsightSeverity:
+      description: Insight severity level
+      type: string
+      enum:
+      - Low
+      - Medium
+      - High
+      - Critical
+      x-go-name: InsightSeverity
+    PlatformInsightSilenceList:
+      title: Insight Silence List
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformInsightSilence'
+    PlatformInsightSilenceResourceSelection:
+      title: Insight Silence Resource Selection
+      type: object
+      description: Resources to silence. Provide exactly one of resource_ids (a fixed selection, scope=resource) or filter (a stored, dynamically-evaluated asset filter, scope=filter) — the two are mutually exclusive.
+      additionalProperties: false
+      minProperties: 1
+      maxProperties: 1
+      properties:
+        resource_ids:
+          type: array
+          items:
+            type: string
+          description: Explicit resource identifiers (_cq_platform_id) to silence (scope=resource).
+        filter:
+          $ref: '#/components/schemas/PlatformInsightSilenceResourceFilter'
+    PlatformInsightSilenceID:
+      description: The unique ID for the insight silence
       type: string
       format: uuid
-      x-go-name: InsightFilterID
+      x-go-name: InsightSilenceID
+    PlatformInsightSilenceScope:
+      description: Scope of a silence. insight suppresses the whole insight (including resources from future syncs); resource suppresses a fixed set of selected resources; filter suppresses resources matching a stored asset filter, re-evaluated on every read (so resources appearing later are covered).
+      type: string
+      enum:
+      - insight
+      - resource
+      - filter
+      x-go-name: InsightSilenceScope
+    PlatformInsight:
+      title: Insight
+      type: object
+      description: Security or compliance insight summary
+      additionalProperties: false
+      required:
+      - id
+      - title
+      - severity
+      - insight_category
+      - source
+      - source_category
+      - resource_types
+      - resources_count
+      - accounts_count
+      - created_at
+      - detected_at
+      - last_synced_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformInsightID'
+        title:
+          type: string
+          description: Title of the insight
+        evidence:
+          type: string
+          description: Detailed evidence (description) of the insight (Markdown)
+        mitigation:
+          type: string
+          description: Mitigation steps for the insight (Markdown)
+        severity:
+          $ref: '#/components/schemas/PlatformInsightSeverity'
+        insight_category:
+          type: string
+          description: Category (e.g. Security, FinOps)
+        source:
+          type: string
+          description: Source (e.g. Platform, Wiz, Lacework)
+        source_category:
+          type: string
+          description: Source category (e.g. Platform, Third Party, Custom)
+        subcategory:
+          type: string
+          nullable: true
+        resource_types:
+          type: string
+          description: Resource types affected
+        resources_count:
+          type: integer
+          format: int64
+          description: Number of resources affected
+        accounts_count:
+          type: integer
+          format: int64
+          description: Number of accounts affected
+        silenced_resource_count:
+          type: integer
+          format: int64
+          description: Number of this insight's currently-present resources that are hidden by active silences (total resources minus those surviving the silence exclusion).
+        additional_properties:
+          type: object
+          description: Insight-specific metadata summed for all affected resources (e.g. cost insight fields).
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the insight
+        created_at:
+          type: string
+          format: date-time
+          description: When the insight record was created
+        detected_at:
+          type: string
+          format: date-time
+          description: When the insight was first detected
+        last_synced_at:
+          type: string
+          format: date-time
+          description: When the insight was last synced
+    PlatformInsightSilenceCreate:
+      title: Insight Silence Create
+      type: object
+      description: Silence one or more insights. Insight-level scope suppresses the whole insight including future resources and accepts multiple insight_ids (bulk). Resource-level scope suppresses only the selected resources of a single insight.
+      additionalProperties: false
+      required:
+      - scope
+      - insight_ids
+      properties:
+        scope:
+          $ref: '#/components/schemas/PlatformInsightSilenceScope'
+        insight_ids:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PlatformInsightID'
+          description: Insights to silence. Insight-level scope may list many; resource-level scope must list exactly one.
+        resources:
+          $ref: '#/components/schemas/PlatformInsightSilenceResourceSelection'
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the silence re-surfaces. Omit or null to silence indefinitely; a value snoozes until then and must be in the future.
+        note:
+          type: string
+          description: Optional free-text note.
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
+    PlatformCreatedBy:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformUserID'
+        name:
+          $ref: '#/components/schemas/PlatformUserName'
+        email:
+          type: string
     PlatformInsightFilterCreate:
       title: Insight Filter Create
       type: object
@@ -1343,12 +1761,171 @@ components:
           type: array
           items:
             type: string
-    PlatformUserID:
-      description: ID of the User
+    PlatformPolicyViolation:
+      title: Policy Violation
+      type: object
+      description: Policy violation resource information
+      additionalProperties: false
+      required:
+      - cloud
+      - resource_type_label
+      - _cq_account_name
+      - name
+      - region
+      - _cq_platform_id
+      properties:
+        cloud:
+          type: string
+          example: aws
+        resource_type_label:
+          type: string
+          example: EC2 Instance
+        _cq_account_name:
+          type: string
+          example: my-account
+        account_id:
+          type: string
+          description: Cloud account identifier (e.g. AWS account ID). May be absent for resources whose source table does not expose an account column.
+          example: '123456789012'
+        name:
+          type: string
+          example: my-resource
+        region:
+          type: string
+          example: us-east-1
+        _cq_platform_id:
+          type: string
+          example: aws_ec2_instances_12345678-1234-1234-1234-123456789abc
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource (e.g. for insights)
+        additional_properties:
+          type: object
+          description: Insight-specific metadata per affected resource (e.g. AWS Health or cost insight fields)
+          additionalProperties: true
+    PlatformInsightID:
+      description: Unique identifier for the insight
+      type: string
+      x-go-name: InsightID
+    PlatformInsightSilenceResourceFilter:
+      title: Insight Silence Resource Filter
+      type: object
+      description: Asset-inventory filter for a filter-scope silence. It is stored as-is and re-evaluated on every read, so resources matching it are silenced even if they appear after the silence was created.
+      additionalProperties: false
+      properties:
+        accounts:
+          type: array
+          items:
+            type: string
+        clouds:
+          type: array
+          items:
+            type: string
+        regions:
+          type: array
+          items:
+            type: string
+        resource_types:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags as key:value strings; all pairs must match.
+    PlatformTableRowID:
+      description: ID of the Resource
+      type: string
+      example: table_12345678-1234-1234-1234-1234567890ab
+    PlatformInsightSilence:
+      title: Insight Silence
+      type: object
+      description: A silence record for an insight.
+      additionalProperties: false
+      required:
+      - id
+      - insight_id
+      - scope
+      - resource_ids
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformInsightSilenceID'
+        insight_id:
+          $ref: '#/components/schemas/PlatformInsightID'
+        scope:
+          $ref: '#/components/schemas/PlatformInsightSilenceScope'
+        resource_ids:
+          type: array
+          items:
+            type: string
+          description: Silenced resource identifiers; empty for insight-level scope.
+        filter:
+          $ref: '#/components/schemas/PlatformInsightSilenceResourceFilter'
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the silence re-surfaces; null for indefinite.
+        note:
+          type: string
+          nullable: true
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformInsightFilterID:
+      description: The unique ID for the insight filter
       type: string
       format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
+      x-go-name: InsightFilterID
+    PlatformInsightSilenceDelete:
+      title: Insight Silence Delete
+      type: object
+      description: Delete insight silences. Provide exactly one of insight_silence_ids (delete those specific silence records) or insight_ids (delete every active silence for those insights).
+      additionalProperties: false
+      properties:
+        insight_silence_ids:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PlatformInsightSilenceID'
+          description: Silence record IDs to delete.
+        insight_ids:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PlatformInsightID'
+          description: Delete all active silences belonging to these insights.
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -1362,97 +1939,64 @@ components:
               type: string
             type: object
         type: object
-    PlatformInsightSeverity:
-      description: Insight severity level
-      type: string
-      enum:
-      - Low
-      - Medium
-      - High
-      - Critical
-      x-go-name: InsightSeverity
-    PlatformInsightsListMetadata:
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
       required:
-      - page_size
+      - message
+      - status
       properties:
-        total_count:
+        message:
+          type: string
+        status:
           type: integer
-        resource_count:
-          type: integer
-        resource_types:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-  parameters:
-    platform_asset_id:
-      in: path
-      name: asset_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableRowID'
-      x-go-name: AssetID
-    platform_insight_filter_id:
-      in: path
-      name: insight_filter_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformInsightFilterID'
-      x-go-name: InsightFilterID
-    platform_insight_column_name:
-      in: path
-      name: column_name
-      required: true
-      description: Column for distinct values. Can be a standard column (severity, insight-category, source-category, source, resource-type, account, tag) or an arbitrary owner tag key when is_owner=true.
-      schema:
-        type: string
-      x-go-name: InsightColumnName
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_insight_asset_column_name:
-      in: path
-      name: column_name
-      required: true
-      description: 'Filter dimension for distinct asset values. Allowed values: cloud, region, account, resource-type, instance-type, tag.'
-      schema:
-        type: string
-        enum:
-        - cloud
-        - region
-        - account
-        - resource-type
-        - instance-type
-        - tag
-      x-go-name: InsightAssetColumnName
-    platform_insight_id:
-      in: path
-      name: insight_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformInsightID'
-      x-go-name: InsightID
+      title: Basic Error
+      type: object
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+      type: string
+      example: Sarah O'Connor
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
   securitySchemes:
     bearerAuth:
       scheme: bearer

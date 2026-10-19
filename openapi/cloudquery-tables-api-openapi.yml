@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -136,7 +148,7 @@ paths:
       x-summary-source: derived
   /tables/{table_name}/data:
     get:
-      description: List Table Rows
+      description: 'List Table Rows. The reserved `_cq_owner`, `_cq_apps`, `_cq_environments`, `_cq_envzero_environments` and `_cq_envzero_projects` names in `select` are not physical columns: each appends a column resolved for the returned page from the membership table behind the dimension, by a lookup keyed on the page''s platform ids rather than a join. `_cq_owner` appends a `Nullable(String)` of the resolved owner, null when no ownership rule claimed the resource. `_cq_apps` appends an `Array(String)` of the resolved display labels of the apps the resource belongs to, empty when it is unallocated. `_cq_environments` appends an `Array(String)` of the environment names the tenant''s environment identification rules put on the resource, empty when no rule named it. `_cq_envzero_environments` and `_cq_envzero_projects` append an `Array(String)` of the names of the env0 environments and projects that deployed the resource, empty when env0 did not deploy it. None is ever included implicitly, none can be combined with `group_by`, and none can be sorted on.'
       operationId: PlatformTableListRows
       parameters:
       - $ref: '#/components/parameters/platform_table_name'
@@ -149,6 +161,7 @@ paths:
       - $ref: '#/components/parameters/platform_table_group_bys'
       - $ref: '#/components/parameters/platform_per_page'
       - $ref: '#/components/parameters/platform_page'
+      - $ref: '#/components/parameters/platform_table_cursor'
       responses:
         '200':
           description: Response
@@ -249,11 +262,11 @@ paths:
                     type: array
                     description: 'Resolved per-table column layout for the UI''s column picker.
 
-                      Primary slots come first in canonical order (Cloud / Account
+                      The canonical columns come first in a fixed order (Cloud /
 
-                      / Name / Region / Tags), each pointing at the physical
+                      Account / Name / Region / Tags), each pointing at the
 
-                      column the slot resolves to for this table. Details columns
+                      physical column it reads for this table. Details columns
 
                       follow in schema order.'
                     items:
@@ -343,6 +356,112 @@ paths:
       - Tables
       summary: Platform get tables related resources
       x-summary-source: derived
+  /tables/{table_name}/rows/{platform_id}/related-resources:
+    get:
+      description: 'Walk the `shared/topology` corpus outgoing from the given source row,
+
+        returning related rows grouped by target resource type. Each outgoing
+
+        edge at salience >= floor (primary + secondary) is executed against the
+
+        source row; rows from multiple edges into the same target table are
+
+        coalesced into one group and deduplicated by `_cq_platform_id`. Per-edge
+
+        errors are logged server-side and do not abort the request.
+
+
+        Each group carries a `via` array. The array names the edges that the
+
+        walk used for that group, with the relationship verb, the direction
+
+        and the weight. A consumer can then say how a resource is related,
+
+        and not only that it is related. An edge that matched no rows is
+
+        still named.
+
+
+        A few corpus nodes hold an event stream rather than an inventory of
+
+        resources — AWS CloudTrail events, GCP audit logs. A walk into one of
+
+        these reads the last `window_days` days and no more. Each `via` entry
+
+        for such an edge carries a `time_bound` that names the window that ran.
+
+
+        The window never applies to the row named in the path. Asking about one
+
+        event returns what that event touched, however old the event is: one row
+
+        read by its id is not a scan, so there is nothing to narrow.
+
+
+        This endpoint supersedes `POST /tables/{table_name}/related-resources`
+
+        by walking the topology corpus instead of hand-curated relation
+
+        templates under `api/relations/configs/`.'
+      operationId: PlatformGetTablesRowRelatedResources
+      x-mcp:
+        name: get_related_resources
+        description: 'Resources related to one row: what this resource references and what references it, with the join that connects each pair. Takes table_name and the row''s _cq_platform_id. Use after run_query or list_insight_assets to walk from a resource to its dependencies; use topology_neighborhood for the type-level picture. Event-stream neighbours such as CloudTrail events are limited to the last window_days days, 7 by default and up to 30; ask for more and you get 30. Read time_bound in each via entry for the window that ran. The window never applies to the row you asked about, so walking out of an old event still returns what it touched.'
+      parameters:
+      - name: table_name
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Source table name (e.g. `aws_ec2_instances`).
+      - name: platform_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The `_cq_platform_id` of the source row to walk from.
+      - name: window_days
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 7
+        description: 'How many days of an event stream to read, counted back from the time
+
+          of the request. It applies only to an edge that touches an
+
+          event-stream table, such as AWS CloudTrail events; every other edge
+
+          reads all of the data.
+
+
+          The endpoint grants up to 30 days. A larger value is answered with
+
+          30 rather than refused, and each `via` entry reports the window that
+
+          ran.
+
+          '
+      responses:
+        '200':
+          description: Related resources grouped by target resource type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformRelatedResourcesByRowResponse'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Tables
+      summary: Platform get tables row related resources
+      x-summary-source: derived
   /tables/schemas:
     get:
       description: Get Table Schemas
@@ -429,7 +548,13 @@ paths:
       x-summary-source: derived
   /tables/{table_name}/columns/{column_name}/values:
     get:
-      description: Get Table Column Values
+      description: 'Get Table Column Values.
+
+
+        Values always come from the physical column the requested name resolves to, so `filter_mode` is accepted for compatibility and ignored: one column returns one set of values in every mode.
+
+
+        The reserved column name `_cq_owner` returns the distinct owners the tenant''s ownership rules resolved, read from `resource_ownership` rather than from a physical column, so the `_cq_owner` filter has a value list. Resources no rule claimed contribute nothing; filter those with `_cq_owner IS EMPTY`.'
       operationId: PlatformTableColumnListValues
       parameters:
       - $ref: '#/components/parameters/platform_table_name'
@@ -470,11 +595,21 @@ paths:
       x-summary-source: derived
   /tables/{table_name}/columns/{column_name}/grouped:
     get:
-      description: Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory's Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.
+      description: 'Group rows of a table by the distinct non-empty values of a column and return one item per group with an exact row count. Used by the asset inventory''s Group-by selector. Always runs in column-filter mode because exact per-row counts cannot be produced from the search index.
+
+
+        The reserved column name `apps` groups by app membership instead of a physical column: each item is an app with its `app_id`, resolved `title`, `owner_name` and a distinct-resource `count`, plus a synthetic `is_unallocated` bucket for resources in no app. Counts honor any `filter` arguments, so the grouping reflects the currently filtered resource set.
+
+
+        The reserved column name `_cq_owner` groups by resolved resource owner instead of a physical column: each item is an owner string with a distinct-resource `count`, plus a synthetic `is_unowned` bucket for resources no ownership rule claimed. Counts honor any `filter` arguments, and an active `_cq_owner` filter also pins which owners are returned.
+
+
+        The reserved column name `_cq_environment` groups by the environment the tenant''s environment identification rules named, instead of a physical column: each item is an environment name with a distinct-resource `count`, plus a synthetic `is_unclassified` bucket for resources no rule named. Counts honor any `filter` arguments, and an active `_cq_environment` filter also pins which environments are returned.'
       operationId: PlatformTableColumnListGrouped
       parameters:
       - $ref: '#/components/parameters/platform_table_name'
       - $ref: '#/components/parameters/platform_column_name'
+      - $ref: '#/components/parameters/platform_table_filter_mode'
       - $ref: '#/components/parameters/platform_table_filters'
       - $ref: '#/components/parameters/platform_table_filter_ids'
       - $ref: '#/components/parameters/platform_page'
@@ -591,23 +726,313 @@ paths:
       summary: Platform table save filter
       x-summary-source: derived
 components:
+  parameters:
+    platform_table_filters:
+      name: filter
+      in: query
+      description: 'Table filters. This filters the rows that are returned in the result set.
+
+
+        The reserved pseudo-column `_cq_app_id` filters by app membership, e.g. `_cq_app_id = "<uuid>"`. Select multiple apps (union) within a single filter using `_cq_app_id IN ("<uuid>", "<uuid>")` or `_cq_app_id = "<a>" OR _cq_app_id = "<b>"`. Exclude apps with `_cq_app_id != "<uuid>"` or `_cq_app_id NOT IN ("<uuid>", "<uuid>")`, which match resources that do not belong to the named app(s); a negated form must be a standalone filter (not OR/AND-combined). Use `_cq_app_id IS EMPTY` to scope to unallocated resources (those belonging to no app); it cannot be combined with a positive `_cq_app_id` filter. `_cq_app_id` cannot be mixed with other columns inside one filter — combine it with other filters by passing them as separate `filter` parameters, which AND together. It is reserved in CloudQuery''s `_cq_` namespace, so it never shadows a plugin''s physical `app_id` column.
+
+
+        The reserved pseudo-column `_cq_environment` filters by environment membership the same way, e.g. `_cq_environment = "prod"`, `_cq_environment IN ("prod", "staging")`, `_cq_environment != "prod"`, `_cq_environment NOT IN ("dev", "staging")` and `_cq_environment IS EMPTY` for resources classified into no environment. Environments are identified by NAME (an exact, case-sensitive match on a name the warehouse holds), not by id — unlike apps they have no registry. The same composition rules apply: negated forms must stand alone, `IS EMPTY` cannot be combined with a positive value, and it cannot be mixed with other columns inside one filter. `_cq_app_id` and `_cq_environment` in separate `filter` parameters AND together, so an app and an environment filter compose.
+
+
+        The reserved pseudo-column `_cq_owner` filters by the owner the tenant''s ownership rules resolved onto each resource, e.g. `_cq_owner = "platform@example.com"`, `_cq_owner IN ("a@example.com", "b@example.com")`, `_cq_owner != "a@example.com"`, `_cq_owner NOT IN ("a@example.com", "b@example.com")` and `_cq_owner IS EMPTY` for resources no rule claimed. Owners are free-form values produced by the rules (an exact, case-sensitive match), so like environments they have no registry and an empty value is rejected — ask for unowned resources with `IS EMPTY`. The same composition rules apply. A tenant with no ownership policy has no owned resources, so every positive `_cq_owner` filter matches nothing and `_cq_owner IS EMPTY` matches everything. This is the same key the single-resource detail endpoint returns the resolved owner under; the list/grid endpoint accepts it as a filter but does not yet return it on rows.
+
+
+        All three pseudo-columns are filter-only: they resolve through a subquery against a side table rather than a column of the queried table, so passing one to `sort_by` or `group_by` is rejected.
+
+
+        They are honored by the table-data endpoints and by `/tables/{table_name}/columns/{column_name}/grouped`, whichever column is grouped, so a filtered listing and its group counts agree. The remaining endpoints that accept this parameter — ad-hoc and saved query execution, log queries, and distinct column values — treat an unknown column as an error, so passing one there is rejected rather than silently ignored.'
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterExpression'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Filters
+    platform_table_filter_mode:
+      name: filter_mode
+      in: query
+      description: 'Table filter mode.
+
+
+        Smart mode switches between column and search mode based on the filtered table and
+
+
+        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
+
+        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
+
+        Search mode may also be used against cloud_assets but it will only return results from resource tables.
+
+
+        Column mode searches purely using the columns in the table.
+
+        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
+
+        '
+      schema:
+        type: string
+        enum:
+        - smart
+        - search
+        - column
+        default: smart
+    platform_table_sort_bys:
+      name: sort_by
+      in: query
+      description: Table sort by options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortBys
+    platform_table_selects:
+      name: select
+      in: query
+      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSelect'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: Selects
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_filter_tags:
+      name: tag
+      in: query
+      description: Filter tags
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterTag'
+      x-go-name: FilterTags
+    platform_table_group_bys:
+      name: group_by
+      in: query
+      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableGroupBy'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: GroupBys
+    platform_table_filter_ids:
+      name: filter_id
+      in: query
+      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
+
+        will be applied to the query results before returning them.
+
+        '
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformFilterID'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: FilterIDs
+    platform_column_name:
+      in: path
+      name: column_name
+      required: true
+      schema:
+        description: The name of a table column.
+        type: string
+    platform_table_cursor:
+      description: 'Opaque keyset-pagination cursor. Pass the `next_cursor` from a previous response
+
+        to fetch the next page. When set, `page` is ignored and the query uses keyset
+
+        pagination (seek by `_cq_id`), which is constant-cost regardless of depth and
+
+        omits `total_count`/`last_page`. Not supported together with `sort_by`,
+
+        `group_by`, or the app-scoped `cloud_assets` view.
+
+        '
+      in: query
+      name: cursor
+      required: false
+      schema:
+        type: string
+    platform_table_column_value_filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        description: Filter by column value.
+        type: string
+    platform_table_name:
+      in: path
+      name: table_name
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableName'
+    platform_table_row_id:
+      in: path
+      name: table_row_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformTableRowID'
+    platform_table_sort_dirs:
+      name: sort_dir
+      in: query
+      description: Table sort direction options. This sorts the rows that are returned in the result set.
+      allowEmptyValue: true
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/PlatformTableSortDirection'
+      x-go-type-skip-optional-pointer: true
+      x-go-name: SortDirections
+    platform_table_column_name_filter:
+      name: filter
+      in: query
+      required: false
+      schema:
+        description: Filter by column name
+        type: string
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
   schemas:
+    PlatformRelationDef:
+      type: object
+      required:
+      - title
+      - resource_type
+      - columns
+      - sql_query
+      properties:
+        title:
+          type: string
+          description: Display title for the relation tab/section.
+        resource_type:
+          type: string
+          description: Target CloudQuery table name.
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRelationColumnDef'
+          description: Column definitions for the relation view.
+        sql_query:
+          type: string
+          description: ClickHouse SQL template with {{field_name}} placeholders.
+    PlatformQueryExpression:
+      title: QueryExpression
+      type: string
+      description: Query expression
+      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
+    PlatformTableColumnValueListItem:
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+      required:
+      - name
+      - kind
+      title: TableColumnValueListItem
+      type: object
+    PlatformQueryID:
+      description: The unique ID for the query.
+      type: string
+      format: uuid
+      x-go-name: QueryID
+    PlatformTableListItem:
+      additionalProperties: false
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformTableName'
+      required:
+      - name
+      title: TableListItem
+      type: object
+    PlatformRelatedResourcesByRowResponse:
+      type: object
+      description: 'Topology-walked related resources for a source row, grouped by target
+
+        resource type. Multiple corpus edges into the same target table are
+
+        coalesced into a single group with rows deduplicated by
+
+        `_cq_platform_id`.
+
+        '
+      required:
+      - table_name
+      - platform_id
+      - related_resources
+      properties:
+        table_name:
+          type: string
+          description: The source table the walk originated from.
+        platform_id:
+          type: string
+          description: The `_cq_platform_id` of the source row.
+        related_resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRelatedResourcesByRowGroup'
+    PlatformTableGroupBy:
+      title: TableGroupBy
+      type: string
+    PlatformSyncPluginPath:
+      type: string
+      description: Plugin path in CloudQuery registry
+      pattern: ^cloudquery/[^/]+
+      x-pattern-message: should be in the format cloudquery/<name>
     PlatformTableDisplayColumn:
       title: TableDisplayColumn
       description: 'One entry in the resolved per-table column layout for the UI''s column picker.
 
 
-        For primary slots (Cloud / Account / Name / Region / Tags) the `id` is a
+        For the canonical columns (Cloud / Account / Name / Region / Tags) the `id`
 
-        stable slot identifier and `resolved_column` is the physical column the
+        is the canonical identifier and `resolved_column` is the physical column it
 
-        slot points to for this table. The slot id may differ from the resolved
+        reads for this table: `_cq_<id>` on a plugin table, which is where the sync
 
-        column — e.g. for a table that has a resource-specific `name` column the
+        writes the normalized value, and the short form on `cloud_assets` and the
 
-        Name slot will resolve to `name`; for a table that has only `_cq_name` the
+        other managed projections, which carry no `_cq_` copy. So the Name column
 
-        Name slot resolves to `_cq_name`. Either way the slot id is always `name`.
+        resolves to `_cq_name` on `aws_route53_hosted_zones` and to `name` on
+
+        `cloud_assets`, and the `id` is `name` either way.
 
 
         For details columns (the resource-specific columns rendered below the fold)
@@ -617,11 +1042,11 @@ components:
 
         The `/tables/{table_name}/data` and `/tables/{table_name}/columns/{column_name}/values`
 
-        endpoints accept either the slot id or the resolved column name in
+        endpoints accept either the canonical `id` or a physical column name in
 
-        `select`, `sort_by`, `filter` and the column path; the API rewrites slot
+        `select`, `sort_by`, `filter` and the column path. A selected canonical
 
-        ids to physical columns server-side.'
+        `id` is returned under the name it was requested with.'
       type: object
       required:
       - id
@@ -631,19 +1056,19 @@ components:
       properties:
         id:
           type: string
-          description: 'Stable identifier for this slot or column. Use this in URLs (e.g.
+          description: 'Stable identifier for this column. Use this in URLs (e.g.
 
-            `?select=name`) — the API resolves slot ids to physical columns.'
+            `?select=name`) — the API resolves it to the physical column.'
         label:
           type: string
           description: Human-readable label for the column picker.
         resolved_column:
           type: string
-          description: 'Physical column name in the warehouse for this slot. May equal `id`
+          description: 'Physical column name in the warehouse. May equal `id` (details
 
-            (details columns), or differ (primary slots that aliased to a
+            columns, and the canonical columns on `cloud_assets`), or differ (the
 
-            resource-specific column or fell back to `_cq_*`).'
+            canonical columns on a plugin table, which read `_cq_*`).'
         group:
           type: string
           enum:
@@ -654,63 +1079,92 @@ components:
             Account / Name / Region / Tags layout). `details` columns are
 
             rendered below in schema order.'
-    PlatformTableSchema:
-      items:
-        $ref: '#/components/schemas/PlatformTableSchemaColumn'
-      title: TableSchema
-      type: array
+    PlatformRelationColumnDef:
+      type: object
+      required:
+      - field
+      - label
+      properties:
+        field:
+          type: string
+          description: Column field name in the query result.
+        label:
+          type: string
+          description: Display label for the column.
+        type:
+          type: string
+          description: Column render type (e.g. text, tags, boolean, json, code).
+        hidden:
+          type: boolean
+          description: Whether the column is present for navigation but not displayed.
+    PlatformTableSortBy:
+      title: TableSortBy
+      type: string
+    PlatformTableSelect:
+      title: TableSelect
+      type: string
+    PlatformTableSchemaColumnKind:
+      description: The kind of the schema column type
+      type: string
+      enum:
+      - any
+      - array
+      - bool
+      - date
+      - datetime
+      - enum
+      - map
+      - number
+      - string
+      - tuple
+      - unknown
+      - uuid
+    PlatformTableSortDirection:
+      title: TableSortDirection
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
     PlatformFilterTag:
       description: A table column filter tag.
       type: string
-    PlatformTableRowFieldMatch:
-      type: object
-      title: TableRowFieldMatch
-      required:
-      - key
-      - value
+    PlatformTableSchemaColumn:
+      additionalProperties: false
       properties:
-        key:
+        name:
           type: string
-        value:
+          example: column_name
+          description: Column name
+        type:
           type: string
-        start_index:
-          type: integer
-          format: int64
-        end_index:
-          type: integer
-          format: int64
-    PlatformTableRow:
-      additionalProperties: true
-      title: TableRow
-      type: object
-    PlatformTableDataAction:
-      description: Request body for performing actions on table data
-      type: object
+          example: Nullable(String)
+          description: Column type
+        default_kind:
+          type: string
+          description: Expression type (DEFAULT, MATERIALIZED, ALIAS) for the default value, or an empty string if it is not defined.
+          example: DEFAULT
+        default_expression:
+          type: string
+          description: Expression for the default value, or an empty string if it is not defined.
+        comment:
+          type: string
+          description: Comment on the column, or an empty string if it is not defined.
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        nullable:
+          type: boolean
+          description: Whether the column is nullable.
       required:
-      - action
-      - sources
-      properties:
-        action:
-          type: string
-          enum:
-          - delete
-          description: The action to perform on the table data
-        sources:
-          type: object
-          description: Map of source names to arrays of table names
-          additionalProperties:
-            type: array
-            items:
-              type: string
-              description: Table name to perform action on
-      example:
-        action: delete
-        sources:
-          source_name_1:
-          - table_1
-          - table_2
-          source_name_2:
-          - table_3
+      - name
+      - type
+      - default_kind
+      - default_expression
+      - comment
+      - kind
+      - nullable
+      title: TableSchemaColumn
+      type: object
     PlatformFilterCreate:
       title: Filter definition for creating a filter
       type: object
@@ -739,11 +1193,271 @@ components:
         description:
           type: string
           example: Filter to find all EC2 instances of type t2.micro from the aws_ec2_instance raw table
-    PlatformSyncPluginPath:
+    PlatformTableColumnName:
+      description: The name of the table column.
       type: string
-      description: Plugin path in CloudQuery registry
-      pattern: ^cloudquery/[^/]+
-      x-pattern-message: should be in the format cloudquery/<name>
+      example: region
+    PlatformTableColumnGroupedItem:
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          description: The distinct value of the grouped column. For the `apps` group this is the app's id; drill into a specific app via `filter=_cq_app_id = "<value>"`. The unallocated bucket has an empty value (`_cq_app_id = ""` is rejected as a non-UUID) — drill into it with `filter=_cq_app_id IS EMPTY`. For the `_cq_owner` group this is the owner string; drill in via `filter=_cq_owner = "<value>"`. The unowned bucket has an empty value — drill into it with `filter=_cq_owner IS EMPTY`. For the `_cq_environment` group this is the environment name; drill in via `filter=_cq_environment = "<value>"`. The unclassified bucket has an empty value — drill into it with `filter=_cq_environment IS EMPTY`.
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        count:
+          type: integer
+          format: int64
+          description: Exact number of rows in the group.
+        app_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 'Only set for the `apps` group: the app''s id, or null for the synthetic unallocated bucket.'
+        title:
+          type: string
+          description: 'Only set for the `apps`, `_cq_owner` and `_cq_environment` groups: the app''s resolved display label (COALESCE(title, name)), the owner string or the environment name, and "Unallocated" / "Unowned" / "Unclassified" for the synthetic buckets.'
+        owner_name:
+          type: string
+          nullable: true
+          description: 'Only set for the `apps` group: the app''s free-form owner-team label. Null when unset or for the unallocated bucket.'
+        owner_contact:
+          type: string
+          nullable: true
+          description: 'Only set for the `apps` group: the app''s free-form owner contact. Null when unset or for the unallocated bucket.'
+        criticality:
+          $ref: '#/components/schemas/PlatformAppCriticality'
+        is_unallocated:
+          type: boolean
+          description: 'Only set for the `apps` group: true for the synthetic bucket of resources that belong to no app.'
+        is_unowned:
+          type: boolean
+          description: 'Only set for the `_cq_owner` group: true for the synthetic bucket of resources no ownership rule claimed.'
+        is_unclassified:
+          type: boolean
+          description: 'Only set for the `_cq_environment` group: true for the synthetic bucket of resources no environment identification rule named.'
+      required:
+      - value
+      - kind
+      - count
+      title: TableColumnGroupedItem
+      type: object
+    PlatformTableRowFieldMatch:
+      type: object
+      title: TableRowFieldMatch
+      required:
+      - key
+      - value
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        start_index:
+          type: integer
+          format: int64
+        end_index:
+          type: integer
+          format: int64
+    PlatformRelatedResourcesGroup:
+      type: object
+      description: 'Result for one curated relation defined on the source table — the
+
+        relation''s metadata plus the rows returned by executing its substituted
+
+        SQL template against the warehouse. `error` is set in place of `data`
+
+        when the substituted query failed (e.g. unresolved placeholder, missing
+
+        referenced table).
+
+        '
+      required:
+      - title
+      - resource_type
+      - sql_query
+      - columns
+      properties:
+        title:
+          type: string
+          description: Display title for the relation.
+        resource_type:
+          type: string
+          description: Target CloudQuery table name.
+        sql_query:
+          type: string
+          description: The relation's ClickHouse SQL with its placeholders substituted, before the caller's data permissions are applied to it.
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRelationColumnDef'
+          description: Column definitions for the relation view.
+        data:
+          $ref: '#/components/schemas/PlatformTableData'
+        error:
+          type: string
+          description: Populated when the relation query failed to execute.
+    PlatformTableName:
+      description: The name of the table.
+      type: string
+      example: cloud_assets
+    PlatformFilterID:
+      description: The unique ID for the filter.
+      type: string
+      format: uuid
+      x-go-name: FilterID
+    PlatformFilterExpression:
+      description: A table column filter.
+      type: string
+      example: resource_type=aws_s3_buckets
+    PlatformRelatedResourcesByRowGroup:
+      type: object
+      description: 'Related-resource rows for one target resource type, coalesced across
+
+        every topology corpus edge that lands on this target from the source
+
+        row. Rows are deduplicated by `_cq_platform_id` so a target reachable
+
+        via multiple edges (e.g. both `ATTACHES` and `HAS_INTERFACE` into
+
+        `aws_ec2_network_interfaces`) appears once.
+
+
+        `via` names the corpus edges that the endpoint walked to build this
+
+        group, with the verb, the direction of the walk and the weight. It
+
+        describes the group and not the individual rows. Because of the
+
+        deduplication above, a row that two edges reach cannot be attributed
+
+        to one of them.
+
+        '
+      required:
+      - resource_type
+      - title
+      - columns
+      - rows
+      - via
+      properties:
+        resource_type:
+          type: string
+          description: Target CloudQuery table name.
+        title:
+          type: string
+          description: 'Human-readable display title for the group (e.g. "EC2 EBS
+
+            Volumes"). Sourced from the same label registry used by the
+
+            rest of the platform UI.
+
+            '
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRelationColumnDef'
+          description: 'Column layout for the rows below — one entry per element in each
+
+            row array, in matching order. Curated labels and render types
+
+            come from `shared/displaycolumns` (curated labels for the canonical
+
+            columns; humaniser + ClickHouse-type → render-type map for the
+
+            rest). Internal `_cq_*` columns appear with `hidden: true`.
+
+            '
+        rows:
+          type: array
+          description: 'Row data. Each row is a positional array aligned with `columns`.
+
+            Deduplicated by `_cq_platform_id` across contributing edges.
+
+            '
+          items:
+            type: array
+            items: {}
+        via:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PlatformRelatedResourcesVia'
+          description: 'The corpus edges that the endpoint walked for this group, in order
+
+            of `salience` from high to low, and then by `verb`. The array is
+
+            never empty, because a group exists only where an edge was walked.
+
+            More than one entry means that the endpoint reached the neighbour
+
+            several ways, and the verbs can differ. An entry does not promise a
+
+            matching row. Read `rows` for that.
+
+            '
+    PlatformAppCriticality:
+      title: AppCriticality
+      type: string
+      enum:
+      - standard
+      - low
+      - high
+      - critical
+      description: User-assigned business criticality of an app. Free metadata (does not affect identification); surfaced in the asset inventory. Defaults to `standard`.
+    PlatformBatchTableSchemaItem:
+      title: BatchTableSchemaItem
+      type: object
+      required:
+      - table_name
+      - schema
+      - default_columns
+      - display_columns
+      properties:
+        table_name:
+          type: string
+          description: Table name
+        schema:
+          $ref: '#/components/schemas/PlatformTableSchema'
+        default_columns:
+          type: array
+          items:
+            type: string
+            description: Column name
+        display_columns:
+          type: array
+          description: 'Resolved per-table column layout for the UI''s column picker. See
+
+            TableDisplayColumn for how each entry resolves.'
+          items:
+            $ref: '#/components/schemas/PlatformTableDisplayColumn'
+    PlatformTableRow:
+      additionalProperties: true
+      title: TableRow
+      type: object
+      description: 'A single resource row, keyed by column name; each value mirrors its column''s type (string, number, boolean, array, nested object, or null). The single-resource detail endpoint (`GET /tables/{table_name}/data/{table_row_id}`) additionally injects a reserved `_cq_apps` key holding the app(s) this resource belongs to: an array of objects shaped `{ "id": <uuid>, "name": <string>, "title": <string>, "owner_team_name": <string|null> }`, where `title` is the resolved display label (server-side COALESCE(title, name)). The array is empty when the resource is unallocated, and may contain more than one app when shared infrastructure is attributed to several apps via topology forward-walk. It also injects a reserved `_cq_environments` key holding the environment names classified onto the resource: an array of strings, empty when environment inference classified nothing, and carrying more than one name when several environment rules claim the resource. It also injects a reserved `_cq_owner` key holding the resource''s resolved owner: an object shaped `{ "owner": <string>, "rule_id": <uuid>, "source": <string>, "source_metadata": <object> }`, or `null` when no ownership rule claimed the resource (which is also what a tenant with no ownership policy sees). `source` is the kind of the rule that produced the owner (`static`, `sql` or `tags`) and `source_metadata` is that kind''s evidence: `{}` for `static`, the matched tag key for `tags`, the matched column values for `sql`. The list/grid endpoint includes none of the three keys implicitly, and where it shares a name the shape is flatter: it returns `_cq_owner` as a plain string, and `_cq_apps` as an array of app display labels rather than objects, each only when that name is passed in `select`. `_cq_environments` is an array of names on both.'
+    PlatformTableColumnListItem:
+      additionalProperties: false
+      properties:
+        name:
+          $ref: '#/components/schemas/PlatformTableColumnName'
+        kind:
+          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
+        nullable:
+          type: boolean
+          description: Whether the column is nullable.
+      required:
+      - name
+      - kind
+      - nullable
+      title: TableColumnListItem
+      type: object
+    PlatformUserID:
+      description: ID of the User
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
     PlatformTableData:
       additionalProperties: false
       properties:
@@ -771,10 +1485,6 @@ components:
       - rows
       title: TableData
       type: object
-    PlatformTableName:
-      description: The name of the table.
-      type: string
-      example: cloud_assets
     PlatformTableDataListItem:
       description: Sync with its associated tables
       type: object
@@ -824,95 +1534,104 @@ components:
           deletion_pending: false
         - name: aws_iam_users
           deletion_pending: true
-    PlatformRelatedResourcesGroup:
+    PlatformRelatedResourcesVia:
       type: object
-      description: 'Result for one curated relation defined on the source table — the
+      description: 'One topology corpus edge that the endpoint walked to build a
 
-        relation''s metadata plus the rows returned by executing its substituted
+        related-resources group. `verb` names the relationship. `direction`
 
-        SQL template against the warehouse. `error` is set in place of `data`
+        says which way the edge was walked to reach the neighbour.
 
-        when the substituted query failed (e.g. unresolved placeholder, missing
 
-        referenced table).
+        An entry means that the edge ran against the source row without an
+
+        error. It does not mean that the edge matched a row. An edge that
+
+        matched nothing is still named here, and the group can hold no rows.
+
+        Count the related resources from `rows`.
+
+
+        The corpus authors most relationships from one side only, and this
+
+        endpoint walks both ways. A group therefore often holds the same verb
+
+        twice, with a different direction and weight.
+
+
+        `time_bound` is present only on an edge that touches an event-stream
+
+        table, such as AWS CloudTrail events. It names the window that ran. Every
+
+        other edge reads all of the data and carries no `time_bound`.
 
         '
       required:
-      - title
-      - resource_type
-      - sql_query
-      - columns
+      - verb
+      - direction
+      - salience
       properties:
-        title:
+        verb:
           type: string
-          description: Display title for the relation.
-        resource_type:
+          description: 'The corpus relationship verb, e.g. `ATTACHES`, `CONTAINS`,
+
+            `ENCRYPTED_BY`. Drawn from a closed, curated vocabulary.
+
+            '
+          example: ATTACHES
+        direction:
           type: string
-          description: Target CloudQuery table name.
-        sql_query:
+          enum:
+          - outgoing
+          - incoming
+          description: 'How the edge was walked from the source row. `outgoing` follows the
+
+            direction in which the corpus authors the edge. `incoming` walks
+
+            the edge backwards. The backward walk is what finds a neighbour
+
+            whose only authored relationship points at the source, such as a
+
+            subnet that reaches its VPC.
+
+            '
+        salience:
+          type: number
+          format: double
+          description: 'The edge''s relevance weight in [0, 1] for the direction actually
+
+            walked: the forward weight on an `outgoing` edge, the reverse
+
+            weight on an `incoming` one. 1.0 is canonical and 0.5 is the
+
+            lowest weight this endpoint walks. Use it to rank the entries, or
+
+            to choose one verb when a group carries several.
+
+            '
+          example: 1
+        description:
           type: string
-          description: The substituted ClickHouse SQL that was executed.
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRelationColumnDef'
-          description: Column definitions for the relation view.
-        data:
-          $ref: '#/components/schemas/PlatformTableData'
-        error:
-          type: string
-          description: Populated when the relation query failed to execute.
-    PlatformTableColumnValueListItem:
-      additionalProperties: false
-      properties:
-        value:
-          type: string
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-      required:
-      - name
-      - kind
-      title: TableColumnValueListItem
-      type: object
-    PlatformFilterExpression:
-      description: A table column filter.
+          description: 'The description that the corpus author wrote for this edge, for a
+
+            person to read. For example, "An EC2 instance attaches the EBS
+
+            volumes referenced in its block_device_mappings entries." The field
+
+            is empty when the edge has no description.
+
+            '
+        time_bound:
+          $ref: '#/components/schemas/PlatformRelatedResourcesTimeBound'
+    PlatformTableSchema:
+      items:
+        $ref: '#/components/schemas/PlatformTableSchemaColumn'
+      title: TableSchema
+      type: array
+    PlatformTableRowID:
+      description: ID of the Resource
       type: string
-      example: resource_type=aws_s3_buckets
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformRelationDef:
-      type: object
-      required:
-      - title
-      - resource_type
-      - columns
-      - sql_query
-      properties:
-        title:
-          type: string
-          description: Display title for the relation tab/section.
-        resource_type:
-          type: string
-          description: Target CloudQuery table name.
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRelationColumnDef'
-          description: Column definitions for the relation view.
-        sql_query:
-          type: string
-          description: ClickHouse SQL template with {{field_name}} placeholders.
+      example: table_12345678-1234-1234-1234-1234567890ab
     PlatformRelatedResourcesRequest:
       type: object
       description: 'Inputs for executing the curated relation queries defined for a source
@@ -941,14 +1660,6 @@ components:
             `{{field_name}}` placeholders in the relation SQL templates.
 
             '
-    PlatformQueryID:
-      description: The unique ID for the query.
-      type: string
-      format: uuid
-      x-go-name: QueryID
-    PlatformTableSortBy:
-      title: TableSortBy
-      type: string
     PlatformRelatedResourcesResponse:
       type: object
       description: 'Curated relation results for a source row, grouped by relation title.
@@ -965,36 +1676,103 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformRelatedResourcesGroup'
-    PlatformQueryExpression:
-      title: QueryExpression
-      type: string
-      description: Query expression
-      example: SELECT account_id, instance_id, instance_type, region, name, tags FROM aws_ec2_instance WHERE instance_type = 't2.micro'
-    PlatformTableRowID:
-      description: ID of the Resource
-      type: string
-      example: table_12345678-1234-1234-1234-1234567890ab
-    PlatformRelationColumnDef:
-      type: object
+    PlatformListMetadata:
       required:
-      - field
-      - label
+      - page_size
       properties:
-        field:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
           type: string
-          description: Column field name in the query result.
-        label:
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformRelatedResourcesTimeBound:
+      type: object
+      description: 'The time window that the endpoint applied to one corpus edge.
+
+
+        A few corpus nodes hold an event stream rather than an inventory of
+
+        resources — AWS CloudTrail events, GCP audit logs. Their row count grows
+
+        with time instead of with the size of the account, so a walk into one is
+
+        always narrowed to a window. Every other edge runs unnarrowed and carries
+
+        no `time_bound`.
+
+
+        Read `window_days` to learn the window that ran. It is the value asked for
+
+        in the request when that value was granted, and the ceiling when it was
+
+        more than the endpoint grants.
+
+        '
+      required:
+      - table_name
+      - column
+      - window_days
+      properties:
+        table_name:
           type: string
-          description: Display label for the column.
-        type:
+          description: The event-stream table that the window narrowed.
+          example: aws_cloudtrail_events
+        column:
           type: string
-          description: Column render type (e.g. text, tags, boolean, json, code).
-        hidden:
-          type: boolean
-          description: Whether the column is present for navigation but not displayed.
-    PlatformTableSelect:
-      title: TableSelect
-      type: string
+          description: 'The column the window was applied to. It is the time the event
+
+            records, not the time the row was synced.
+
+            '
+          example: event_time
+        window_days:
+          type: integer
+          description: 'The width of the window in days, counted back from the time of the
+
+            request. This is the window that ran, which can be smaller than the
+
+            `window_days` in the request.
+
+            '
+          example: 7
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
     PlatformFilter:
       title: Filter
       type: object
@@ -1035,178 +1813,53 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformTableColumnName:
-      description: The name of the table column.
-      type: string
-      example: region
-    PlatformBatchTableSchemaItem:
-      title: BatchTableSchemaItem
+    PlatformTableDataAction:
+      description: Request body for performing actions on table data
       type: object
       required:
-      - table_name
-      - schema
-      - default_columns
-      - display_columns
+      - action
+      - sources
       properties:
-        table_name:
+        action:
           type: string
-          description: Table name
-        schema:
-          $ref: '#/components/schemas/PlatformTableSchema'
-        default_columns:
-          type: array
-          items:
-            type: string
-            description: Column name
-        display_columns:
-          type: array
-          description: 'Resolved per-table column layout for the UI''s column picker. See
-
-            TableDisplayColumn for the slot resolution model.'
-          items:
-            $ref: '#/components/schemas/PlatformTableDisplayColumn'
-    PlatformTableColumnListItem:
-      additionalProperties: false
-      properties:
-        name:
-          $ref: '#/components/schemas/PlatformTableColumnName'
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        nullable:
-          type: boolean
-          description: Whether the column is nullable.
-      required:
-      - name
-      - kind
-      - nullable
-      title: TableColumnListItem
-      type: object
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
-    PlatformTableSortDirection:
-      title: TableSortDirection
-      type: string
-      enum:
-      - asc
-      - desc
-      default: asc
-    PlatformFieldError:
-      allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
+          enum:
+          - delete
+          description: The action to perform on the table data
+        sources:
+          type: object
+          description: Map of source names to arrays of table names
+          additionalProperties:
+            type: array
             items:
               type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
-    PlatformTableSchemaColumnKind:
-      description: The kind of the schema column type
-      type: string
-      enum:
-      - any
-      - array
-      - bool
-      - date
-      - datetime
-      - enum
-      - map
-      - number
-      - string
-      - tuple
-      - unknown
-      - uuid
-    PlatformTableSchemaColumn:
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          example: column_name
-          description: Column name
-        type:
-          type: string
-          example: Nullable(String)
-          description: Column type
-        default_kind:
-          type: string
-          description: Expression type (DEFAULT, MATERIALIZED, ALIAS) for the default value, or an empty string if it is not defined.
-          example: DEFAULT
-        default_expression:
-          type: string
-          description: Expression for the default value, or an empty string if it is not defined.
-        comment:
-          type: string
-          description: Comment on the column, or an empty string if it is not defined.
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        nullable:
-          type: boolean
-          description: Whether the column is nullable.
-      required:
-      - name
-      - type
-      - default_kind
-      - default_expression
-      - comment
-      - kind
-      - nullable
-      title: TableSchemaColumn
-      type: object
-    PlatformTableColumnGroupedItem:
-      additionalProperties: false
-      properties:
-        value:
-          type: string
-          description: The distinct value of the grouped column.
-        kind:
-          $ref: '#/components/schemas/PlatformTableSchemaColumnKind'
-        count:
-          type: integer
-          format: int64
-          description: Exact number of rows in the group.
-      required:
-      - value
-      - kind
-      - count
-      title: TableColumnGroupedItem
-      type: object
-    PlatformTableGroupBy:
-      title: TableGroupBy
-      type: string
-    PlatformTableListItem:
-      additionalProperties: false
-      properties:
-        name:
-          $ref: '#/components/schemas/PlatformTableName'
-      required:
-      - name
-      title: TableListItem
-      type: object
-    PlatformFilterID:
-      description: The unique ID for the filter.
-      type: string
-      format: uuid
-      x-go-name: FilterID
+              description: Table name to perform action on
+      example:
+        action: delete
+        sources:
+          source_name_1:
+          - table_1
+          - table_2
+          source_name_2:
+          - table_3
   responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
     PlatformBadRequest:
       content:
         application/json:
@@ -1219,199 +1872,12 @@ components:
           schema:
             $ref: '#/components/schemas/PlatformBasicError'
       description: Requires authentication
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
     PlatformUnprocessableEntity:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PlatformFieldError'
       description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-  parameters:
-    platform_table_filter_mode:
-      name: filter_mode
-      in: query
-      description: 'Table filter mode.
-
-
-        Smart mode switches between column and search mode based on the filtered table and
-
-
-        Search mode allows searching deeply nested data but is not available on all tables as it requires a separate indexing step.
-
-        Search mode is only available on resource tables or queries derived from resource tables results that contain _cq_id and _cq_source_id.
-
-        Search mode may also be used against cloud_assets but it will only return results from resource tables.
-
-
-        Column mode searches purely using the columns in the table.
-
-        It will work on all table results but it is not optimized for arbitrary substring searches and so may be slow on larger tables.
-
-        '
-      schema:
-        type: string
-        enum:
-        - smart
-        - search
-        - column
-        default: smart
-    platform_table_column_name_filter:
-      name: filter
-      in: query
-      required: false
-      schema:
-        description: Filter by column name
-        type: string
-    platform_table_column_value_filter:
-      name: filter
-      in: query
-      required: false
-      schema:
-        description: Filter by column value.
-        type: string
-    platform_table_sort_bys:
-      name: sort_by
-      in: query
-      description: Table sort by options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortBys
-    platform_filter_tags:
-      name: tag
-      in: query
-      description: Filter tags
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterTag'
-      x-go-name: FilterTags
-    platform_page:
-      description: Page number of the results to fetch
-      in: query
-      name: page
-      required: false
-      schema:
-        default: 1
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_name:
-      in: path
-      name: table_name
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableName'
-    platform_per_page:
-      description: The number of results per page (max 1000).
-      in: query
-      name: per_page
-      required: false
-      schema:
-        default: 100
-        maximum: 1000
-        minimum: 1
-        type: integer
-        format: int64
-    platform_table_group_bys:
-      name: group_by
-      in: query
-      description: Table group by options. This groups the rows that are returned in the result set by the given columns.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableGroupBy'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: GroupBys
-    platform_table_filter_ids:
-      name: filter_id
-      in: query
-      description: 'Table filter IDs. These should be valid Saved Filter IDs. These filters
-
-        will be applied to the query results before returning them.
-
-        '
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterID'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: FilterIDs
-    platform_table_selects:
-      name: select
-      in: query
-      description: Table selects. This filters the columns that are returned in the result set. If empty, all default columns + internal _cq_* columns are returned. To select all columns, use the `*` wildcard.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSelect'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Selects
-    platform_column_name:
-      in: path
-      name: column_name
-      required: true
-      schema:
-        description: The name of a table column.
-        type: string
-    platform_table_filters:
-      name: filter
-      in: query
-      description: Table filters. This filters the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformFilterExpression'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: Filters
-    platform_table_row_id:
-      in: path
-      name: table_row_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformTableRowID'
-    platform_table_sort_dirs:
-      name: sort_dir
-      in: query
-      description: Table sort direction options. This sorts the rows that are returned in the result set.
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformTableSortDirection'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: SortDirections
   securitySchemes:
     bearerAuth:
       scheme: bearer

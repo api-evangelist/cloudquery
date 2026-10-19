@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -17,79 +29,49 @@ security:
 tags:
 - name: Alerts
 paths:
-  /alerts:
+  /notifications/defaults/{type}:
     get:
-      description: List all alerts
-      operationId: PlatformListAllAlerts
+      description: Get the tenant-global default notification destinations for a type
+      operationId: PlatformGetDefaultNotificationDestinations
       parameters:
-      - $ref: '#/components/parameters/platform_per_page'
-      - $ref: '#/components/parameters/platform_page'
-      - $ref: '#/components/parameters/platform_alert_states'
-      - $ref: '#/components/parameters/platform_enabled'
-      - $ref: '#/components/parameters/platform_query_tags'
+      - $ref: '#/components/parameters/platform_default_destination_type'
       responses:
         '200':
           description: Response
           content:
             application/json:
               schema:
-                required:
-                - items
-                - metadata
-                properties:
-                  items:
-                    items:
-                      $ref: '#/components/schemas/PlatformAlertDetail'
-                    type: array
-                  metadata:
-                    $ref: '#/components/schemas/PlatformListMetadata'
+                $ref: '#/components/schemas/PlatformDefaultNotificationDestinations'
         '401':
           $ref: '#/components/responses/PlatformRequiresAuthentication'
         '403':
           $ref: '#/components/responses/PlatformForbidden'
         '404':
           $ref: '#/components/responses/PlatformNotFound'
-        '422':
-          $ref: '#/components/responses/PlatformUnprocessableEntity'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
       - Alerts
-      summary: Platform list all alerts
+      summary: Platform get default notification destinations
       x-summary-source: derived
-  /alerts/test:
-    post:
-      description: Test an unsaved alert
-      operationId: PlatformTestUnsavedAlert
+    put:
+      description: Set the tenant-global default notification destinations for a type
+      operationId: PlatformSetDefaultNotificationDestinations
       parameters:
-      - in: query
-        name: query_id
-        required: false
-        description: ID of the query to fill in the alert
-        schema:
-          $ref: '#/components/schemas/PlatformQueryID'
-        x-go-name: QueryID
+      - $ref: '#/components/parameters/platform_default_destination_type'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlatformAlertCreate'
+              $ref: '#/components/schemas/PlatformDefaultNotificationDestinationsUpdate'
       responses:
         '200':
           description: Response
           content:
             application/json:
               schema:
-                type: object
-                required:
-                - results
-                properties:
-                  results:
-                    type: array
-                    description: Notification results for the test alert
-                    items:
-                      $ref: '#/components/schemas/PlatformAlertTestResponse'
+                $ref: '#/components/schemas/PlatformDefaultNotificationDestinations'
         '400':
           $ref: '#/components/responses/PlatformBadRequest'
         '401':
@@ -104,12 +86,35 @@ paths:
           $ref: '#/components/responses/PlatformInternalError'
       tags:
       - Alerts
-      summary: Platform test unsaved alert
+      summary: Platform set default notification destinations
+      x-summary-source: derived
+    delete:
+      description: Clear the tenant-global default notification destinations for a type
+      operationId: PlatformDeleteDefaultNotificationDestinations
+      parameters:
+      - $ref: '#/components/parameters/platform_default_destination_type'
+      responses:
+        '204':
+          description: Success
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Alerts
+      summary: Platform delete default notification destinations
       x-summary-source: derived
   /notifications/destinations:
     get:
       description: List all notification destinations
       operationId: PlatformListAllNotificationDestinations
+      x-mcp:
+        name: list_notification_destinations
+        description: List the notification destinations (Slack, Microsoft Teams, email, webhook) that policies and alerts can send to.
       parameters:
       - $ref: '#/components/parameters/platform_per_page'
       - $ref: '#/components/parameters/platform_page'
@@ -183,7 +188,7 @@ paths:
       - name: notification_destination_id
         in: query
         required: false
-        description: Optional ID of an existing notification destination. When provided, secret headers with empty values are resolved from the existing destination's stored encrypted values. This supports the editing flow where the frontend receives masked (empty) secret header values.
+        description: Optional ID of an existing notification destination. When provided, secret headers with empty values are resolved from the existing destination's stored encrypted values, only while url matches the stored destination. This supports the editing flow where the frontend receives masked (empty) secret header values.
         schema:
           type: string
           format: uuid
@@ -211,6 +216,8 @@ paths:
           $ref: '#/components/responses/PlatformNotFound'
         '422':
           $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
@@ -299,44 +306,6 @@ paths:
       - Alerts
       summary: Platform delete notification destination
       x-summary-source: derived
-  /notifications/destination/{notification_destination_id}/alerts:
-    get:
-      description: Get notification destination alerts
-      operationId: PlatformGetNotificationDestinationAlerts
-      parameters:
-      - $ref: '#/components/parameters/platform_notification_destination_id'
-      - $ref: '#/components/parameters/platform_per_page'
-      - $ref: '#/components/parameters/platform_page'
-      responses:
-        '200':
-          description: Response
-          content:
-            application/json:
-              schema:
-                required:
-                - items
-                - metadata
-                properties:
-                  items:
-                    items:
-                      $ref: '#/components/schemas/PlatformAlertDetail'
-                    type: array
-                  metadata:
-                    $ref: '#/components/schemas/PlatformListMetadata'
-        '401':
-          $ref: '#/components/responses/PlatformRequiresAuthentication'
-        '403':
-          $ref: '#/components/responses/PlatformForbidden'
-        '404':
-          $ref: '#/components/responses/PlatformNotFound'
-        '422':
-          $ref: '#/components/responses/PlatformUnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/PlatformInternalError'
-      tags:
-      - Alerts
-      summary: Platform get notification destination alerts
-      x-summary-source: derived
   /notifications/destination/{notification_destination_id}/test:
     post:
       description: Test a notification destination
@@ -367,6 +336,64 @@ paths:
       tags:
       - Alerts
       summary: Platform test notification destination
+      x-summary-source: derived
+  /notifications/rules/default:
+    get:
+      description: 'List the tenant-global default notification rules, in evaluation order. Same shape as an insight''s list; this is the tier a resource falls through to when the insight''s own list leaves it unmatched. A tenant with no global rules returns 200 with an empty `rules` list rather than 404.
+
+
+        This tier supersedes `PUT /notifications/defaults/{type}` for insight alerts. While notification rules v2 is enabled for the tenant, these rules are the only routing input; the v1 default-destination rows stay readable and writable, are what the pre-v2 path uses, and have already been carried into this list by the one-time migration - so a v1 write after that point does not change v2 routing.'
+      operationId: PlatformGetDefaultNotificationRules
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationRuleList'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Alerts
+      summary: Platform get default notification rules
+      x-summary-source: derived
+    put:
+      description: 'Replace the whole tenant-global default rule list. Identical semantics to the per-insight PUT: the array index becomes `ord`, the server reconciles by rule ID, and a rule missing from the list is deleted along with its per-resource notification state. Because it is the delete mechanism for every tenant-wide default at once, it requires the same admin write access as `PUT /notifications/defaults/{type}`.
+
+
+        Send the write shape, not the read shape: `ord`, `created_at` and `updated_at` are server-assigned and rejected on the way in.
+
+
+        400 is returned when an unconditional rule is not last, more than one rule is unconditional, a condition type is unknown, an `app` condition''s values are not app IDs, a `tag` condition has no `key` or a non-tag condition carries one, a `destination_id` names no destination, a template is sent alongside `body_format: structured` (the structured envelope is built from the event, so the template would never be sent), a template exceeds 32 KB, a `liquid` webhook template''s sample render does not produce valid JSON, a `subject` is sent for a destination that is not email, an email row carries only one of `subject` and `template`, or a subject is over 1 KB, has a line break or does not render. 403 is an insufficient role.'
+      operationId: PlatformSetDefaultNotificationRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformNotificationRuleListUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationRuleList'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Alerts
+      summary: Platform set default notification rules
       x-summary-source: derived
   /slack:
     post:
@@ -447,391 +474,67 @@ paths:
       - Alerts
       summary: Platform list slack channels
       x-summary-source: derived
-  /queries/{query_id}/alert:
-    delete:
-      description: Delete an alert associated with a saved query
-      operationId: PlatformDeleteAlert
+  /insights/{insight_id}/notification-rules:
+    get:
+      description: List the notification rules for one insight, in evaluation order. Rules are first-match-wins per affected resource; a resource the list leaves unmatched - possible only when the list has no unconditional rule - continues into the tenant-global default list. An insight with no rules of its own returns 200 with an empty `rules` list rather than 404, which is also how "inherits the global default" is represented, so callers can read uniformly.
+      operationId: PlatformGetInsightNotificationRules
       parameters:
-      - $ref: '#/components/parameters/platform_query_id'
+      - $ref: '#/components/parameters/platform_insight_id'
       responses:
-        '204':
-          description: Success
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationRuleList'
         '401':
           $ref: '#/components/responses/PlatformRequiresAuthentication'
         '403':
           $ref: '#/components/responses/PlatformForbidden'
-        '404':
-          $ref: '#/components/responses/PlatformNotFound'
-        '422':
-          $ref: '#/components/responses/PlatformUnprocessableEntity'
         '500':
           $ref: '#/components/responses/PlatformInternalError'
       tags:
       - Alerts
-      summary: Platform delete alert
+      summary: Platform get insight notification rules
+      x-summary-source: derived
+    put:
+      description: 'Replace the whole rule list for one insight. The array index becomes each rule''s `ord`, so this is also the reorder call. The server reconciles by rule ID - a rule whose ID is echoed back is updated in place, one with no ID is created, and one missing from the list is deleted along with its per-resource notification state. Edits take effect at the next evaluation cycle; nothing is evaluated at save.
+
+
+        Send the write shape, not the read shape: `ord`, `created_at` and `updated_at` are server-assigned and rejected on the way in, so a GET response cannot be echoed back verbatim. Strip those three and keep `id`.
+
+
+        400 is returned when an unconditional rule is not last, more than one rule is unconditional, a condition type is unknown, an `app` condition''s values are not app IDs, a `tag` condition has no `key` or a non-tag condition carries one, a `destination_id` names no destination, a template is sent alongside `body_format: structured` (the structured envelope is built from the event, so the template would never be sent), a template exceeds 32 KB, a `liquid` webhook template''s sample render does not produce valid JSON, a `subject` is sent for a destination that is not email, an email row carries only one of `subject` and `template`, or a subject is over 1 KB, has a line break or does not render. 403 is an insufficient role.'
+      operationId: PlatformSetInsightNotificationRules
+      parameters:
+      - $ref: '#/components/parameters/platform_insight_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformNotificationRuleListUpdate'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformNotificationRuleList'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Alerts
+      summary: Platform set insight notification rules
       x-summary-source: derived
 components:
-  responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformTooManyRequests:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Too Many Requests
   schemas:
-    PlatformAlertSeverity:
-      type: string
-      enum:
-      - low
-      - medium
-      - high
-      - critical
-    PlatformNotificationDestinationCreate:
-      title: Create Notification Destination
-      type: object
-      description: Create Notification Destination
-      allOf:
-      - $ref: '#/components/schemas/PlatformNotificationDestinationData'
-      - type: object
-        required:
-        - name
-        - enabled
-        properties:
-          name:
-            type: string
-            example: Send to Slack
-          enabled:
-            type: boolean
-    PlatformAlertTestResponse:
-      title: Alert Test Response
-      type: object
-      description: Alert Test Response
-      additionalProperties: false
-      required:
-      - destination_id
-      - response
-      properties:
-        destination_id:
-          type: string
-          description: The ID of the notification destination.
-          x-go-name: DestinationID
-        error:
-          type: string
-          description: An error message if the test failed, otherwise null.
-        response:
-          $ref: '#/components/schemas/PlatformNotificationDestinationTestResponse'
-    PlatformNotificationDestinationData:
-      title: Notification Destination Data
-      type: object
-      description: Notification Destination Data
-      properties:
-        type:
-          type: string
-          enum:
-          - webhook
-          - slack
-          default: webhook
-          description: Type of notification destination
-        slack_connection_id:
-          type: string
-          format: uuid
-          description: Slack connection ID (required for slack type)
-          x-go-name: SlackConnectionID
-        slack_channels:
-          type: array
-          items:
-            type: string
-          description: List of Slack channel IDs to send notifications to (required for slack type)
-          x-go-name: SlackChannels
-        custom_message:
-          type: string
-          description: Optional custom message prepended to the alert when sending to Slack (only for slack type, must not be set for webhook)
-          x-go-name: CustomMessage
-        url:
-          type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
-          description: Webhook URL (required for webhook type, must not be set for slack type)
-          x-go-name: URL
-        http_headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: HTTP headers (required for webhook type, must not be set for slack type)
-          x-go-name: HTTPHeaders
-          x-go-type-skip-optional-pointer: true
-        http_secret_headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: Secret HTTP headers with encrypted values. Values are encrypted at rest and returned as empty strings in responses. For updates, send empty string to keep existing value, or new value to replace. Must not be set for slack type.
-          x-go-name: HTTPSecretHeaders
-          x-go-type-skip-optional-pointer: true
-        http_body:
-          type: string
-          example: '{"text": "Alert: {{alert_message}}"}'
-          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
-          x-go-name: HTTPBody
-    PlatformBasicError:
-      additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
-      properties:
-        message:
-          type: string
-        status:
-          type: integer
-      title: Basic Error
-      type: object
-    PlatformAlertCreate:
-      title: Alert Create
-      type: object
-      description: Create an alert
-      additionalProperties: false
-      required:
-      - message
-      - severity
-      - enabled
-      properties:
-        message:
-          type: string
-          example: All resources need to be tagged
-        severity:
-          $ref: '#/components/schemas/PlatformAlertSeverity'
-        enabled:
-          type: boolean
-          description: Indicates if the alert is enabled
-        notification_destinations:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformNotificationDestinationID'
-          description: List of notification destinations to send alerts to
-          x-go-type-skip-optional-pointer: true
-          allowEmptyValue: true
-          explode: true
-    PlatformQueryID:
-      description: The unique ID for the query.
-      type: string
-      format: uuid
-      x-go-name: QueryID
-    PlatformNotificationDestinationUpdate:
-      title: Update Notification Destination
-      type: object
-      description: Update Notification Destination
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          example: Send to Slack
-        enabled:
-          type: boolean
-        url:
-          type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
-          x-go-name: URL
-        http_headers:
-          type: object
-          additionalProperties:
-            type: string
-          x-go-name: HTTPHeaders
-        http_secret_headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: Secret HTTP headers. Send empty string value to keep existing encrypted value, or new value to replace. Must not be set for slack type.
-          x-go-name: HTTPSecretHeaders
-        http_body:
-          type: string
-          example: '{"text": "Alert: {{alert_message}}"}'
-          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
-          x-go-name: HTTPBody
-        custom_message:
-          type: string
-          description: Optional custom message prepended to the alert when sending to Slack (only for slack type, must not be set for webhook)
-          x-go-name: CustomMessage
-        slack_connection_id:
-          type: string
-          format: uuid
-          description: Slack connection ID (only for slack type, must not be set for webhook)
-          x-go-name: SlackConnectionID
-        slack_channels:
-          type: array
-          items:
-            type: string
-          description: List of Slack channel IDs to send notifications to (only for slack type, must not be set for webhook)
-          x-go-name: SlackChannels
-    PlatformQueryTag:
-      description: A saved query tag.
-      type: string
-    PlatformSlackChannel:
-      title: Slack Channel
-      type: object
-      description: Slack Channel
-      additionalProperties: false
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          description: Channel ID
-        name:
-          type: string
-          description: Channel name
-        is_private:
-          type: boolean
-          description: Whether the channel is private
-          x-go-name: IsPrivate
-        is_archived:
-          type: boolean
-          description: Whether the channel is archived
-          x-go-name: IsArchived
-    PlatformListMetadata:
-      required:
-      - page_size
-      properties:
-        total_count:
-          type: integer
-        last_page:
-          type: integer
-        page_size:
-          type: integer
-        time_ms:
-          type: integer
-    PlatformNotificationDestination:
-      title: Notification Destination
-      type: object
-      description: Notification Destination
-      additionalProperties: false
-      required:
-      - id
-      - name
-      - enabled
-      - type
-      - url
-      - created_at
-      - updated_at
-      properties:
-        id:
-          $ref: '#/components/schemas/PlatformNotificationDestinationID'
-        name:
-          type: string
-          example: Send to Slack
-        enabled:
-          type: boolean
-        type:
-          type: string
-          enum:
-          - webhook
-          - slack
-          description: Type of notification destination
-        url:
-          type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
-          x-go-name: URL
-        http_headers:
-          type: object
-          additionalProperties:
-            type: string
-          x-go-name: HTTPHeaders
-          x-go-type-skip-optional-pointer: true
-        http_secret_headers:
-          type: object
-          additionalProperties:
-            type: string
-          description: Secret HTTP headers. Keys are visible but values are always returned as empty strings. The actual values are encrypted at rest.
-          x-go-name: HTTPSecretHeaders
-          x-go-type-skip-optional-pointer: true
-        http_body:
-          type: string
-          example: '{"text": "Alert: {{alert_message}}"}'
-          description: 'HTTP body template (required for webhook type, must not be set for slack type). Supports simple variable interpolation using {{variable}} syntax. Available variables: {{query_name}}, {{query_url}}, {{alert_status}}, {{alert_message}}, {{alert_severity}}, {{alert_violations}}.'
-          x-go-name: HTTPBody
-        slack_connection_id:
-          type: string
-          format: uuid
-          nullable: true
-          description: Slack connection ID (only for slack type)
-          x-go-name: SlackConnectionID
-        slack_channels:
-          type: array
-          items:
-            type: string
-          description: List of Slack channel IDs (only for slack type)
-          x-go-name: SlackChannels
-        custom_message:
-          type: string
-          nullable: true
-          description: Optional custom message prepended to the alert when sending to Slack (only for slack type)
-          x-go-name: CustomMessage
-        last_notification_error_timestamp:
-          type: string
-          format: date-time
-          nullable: true
-          description: Timestamp of the last notification error
-          x-go-name: LastNotificationErrorTimestamp
-        last_notification_error_code:
-          type: string
-          nullable: true
-          description: Error code of the last notification error
-          x-go-name: LastNotificationErrorCode
-        last_notification_error_message:
-          type: string
-          nullable: true
-          description: Error message of the last notification error
-          x-go-name: LastNotificationErrorMessage
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-    PlatformAlertState:
-      type: string
-      enum:
-      - unknown
-      - pending
-      - inactive
-      - triggered
     PlatformNotificationDestinationListItem:
       title: Notification Destination List Item
       type: object
@@ -858,10 +561,12 @@ components:
           enum:
           - webhook
           - slack
+          - msteams
+          - email
           description: Type of notification destination
         url:
           type: string
-          example: https://hooks.slack.com/services/EXAMPLE_T/EXAMPLE_B/EXAMPLE_SECRET_REDACTED
+          example: https://hooks.slack.com/services/REDACTED
           x-go-name: URL
         slack_channels:
           type: array
@@ -869,6 +574,22 @@ components:
             type: string
           description: List of Slack channel names (only for slack type)
           x-go-name: SlackChannels
+        last_notification_error_timestamp:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last notification error
+          x-go-name: LastNotificationErrorTimestamp
+        last_notification_error_code:
+          type: string
+          nullable: true
+          description: Error code of the last notification error
+          x-go-name: LastNotificationErrorCode
+        last_notification_error_message:
+          type: string
+          nullable: true
+          description: Error message of the last notification error
+          x-go-name: LastNotificationErrorMessage
         created_at:
           example: '2017-07-14T16:53:42Z'
           format: date-time
@@ -877,19 +598,354 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
-    PlatformFieldError:
+    PlatformDefaultNotificationDestinationsUpdate:
+      title: Default Notification Destinations Update
+      type: object
+      additionalProperties: false
+      required:
+      - notification_destination_ids
+      properties:
+        notification_destination_ids:
+          type: array
+          description: Destination IDs to set as the default for this type. An empty list clears the default.
+          items:
+            type: string
+            format: uuid
+    PlatformDefaultDestinationType:
+      title: Default Destination Type
+      type: string
+      enum:
+      - sync_failures
+      description: The family of events a default destination set applies to. 'sync_failures' receives one message per sync run that ends failed.
+    PlatformNotificationRuleDestination:
+      title: Notification Rule Destination
+      type: object
+      description: One destination a rule delivers to, with the content to send it. Destinations are connected once and reused by any number of rules; the content lives here, on the (rule, destination) pair, because one template cannot serve both Slack text and a webhook JSON body.
+      additionalProperties: false
+      required:
+      - destination_id
+      properties:
+        destination_id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        body_format:
+          allOf:
+          - $ref: '#/components/schemas/PlatformNotificationRuleBodyFormat'
+          nullable: true
+          description: Webhook destinations only; null for chat destinations. Omitted or null on a webhook destination means `structured`.
+        template:
+          type: string
+          maxLength: 32768
+          nullable: true
+          description: 'Liquid template for the message body (chat text, or the webhook body when `body_format` is `liquid`). Null means the built-in default content: text with per-status wording for a chat destination, the structured envelope for a webhook. At most 32 KB.'
+        subject:
+          type: string
+          maxLength: 1024
+          nullable: true
+          x-omitempty: true
+          description: 'Email destinations only: the subject as one line of Liquid, at most 1 KB. Rendered like chat text, with line breaks in the output collapsed to spaces and the result cut at 200 characters. Set together with `template`, or leave both null for the built-in subject and body. Omitted when null.'
+    PlatformNotificationRuleBodyFormat:
+      title: Notification Rule Body Format
+      type: string
+      description: 'How a webhook body is built. `structured` sends the canonical versioned JSON envelope (`cq.notification.v1`) and is the default for new rules; `liquid` renders the row''s `template`, JSON-escaping every interpolation. Either body is sent with `Content-Type: application/json` unless the destination''s own headers set one. Chat destinations (Slack, Teams) never set it - their content is always the rendered `template`.'
+      enum:
+      - structured
+      - liquid
+    PlatformNotificationRuleTagCondition:
+      title: Notification Rule Tag Condition
+      type: object
+      description: A condition on one resource tag. The only condition type that carries a `key`. A tag `env:prod` and an inferred environment `prod` are deliberately distinct condition types.
+      additionalProperties: false
+      required:
+      - type
+      - key
+      - values
+      properties:
+        type:
+          type: string
+          enum:
+          - tag
+        key:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The tag key to read. At most 128 characters.
+        values:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            minLength: 1
+          description: Tag values to match, any-of. Between 1 and 50 per condition.
+    PlatformNotificationDestination:
+      title: Notification Destination
+      type: object
+      description: Notification Destination
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - enabled
+      - type
+      - url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformNotificationDestinationID'
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          - msteams
+          - email
+          description: Type of notification destination
+        url:
+          type: string
+          example: https://hooks.slack.com/services/REDACTED
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          x-go-name: HTTPHeaders
+          x-go-type-skip-optional-pointer: true
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers. Keys are visible but values are always returned as empty strings. The actual values are encrypted at rest.
+          x-go-name: HTTPSecretHeaders
+          x-go-type-skip-optional-pointer: true
+        slack_connection_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Slack connection ID (only for slack type)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs (only for slack type)
+          x-go-name: SlackChannels
+        email_recipients:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 254
+          description: The addresses an email destination sends to, lower-cased and deduplicated (only for email type; omitted for other types). Each address receives its own copy.
+        msteams_webhook_url:
+          type: string
+          description: Microsoft Teams Power Automate Workflow URL (only for msteams type). The actual URL is encrypted at rest and never returned. For msteams destinations the field is emitted as the empty string ("") so clients can detect that the value exists without ever seeing it; for non-msteams destinations the field is omitted from the response entirely.
+          x-go-name: MSTeamsWebhookURL
+        webhook_signing_secret:
+          type: string
+          description: 'HMAC-SHA256 secret used to sign webhook deliveries (only for webhook type). Write-only: emitted as the empty string ("") when a secret is stored and omitted when none is. Deliveries carry `X-CloudQuery-Signature: t=<unix>,v1=<hex HMAC-SHA256(secret, t + "." + body)>`.'
+          x-go-name: WebhookSigningSecret
+        last_notification_error_timestamp:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last notification error
+          x-go-name: LastNotificationErrorTimestamp
+        last_notification_error_code:
+          type: string
+          nullable: true
+          description: Error code of the last notification error
+          x-go-name: LastNotificationErrorCode
+        last_notification_error_message:
+          type: string
+          nullable: true
+          description: Error message of the last notification error
+          x-go-name: LastNotificationErrorMessage
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+    PlatformNotificationRuleResourceCondition:
+      title: Notification Rule Resource Condition
+      type: object
+      description: A condition on a plain resource attribute. The rule matches a resource when any of `values` matches (any-of); a resource attribute that is itself multi-valued (`environment`) matches on intersection.
+      additionalProperties: false
+      required:
+      - type
+      - values
+      properties:
+        type:
+          type: string
+          enum:
+          - environment
+          - owner
+          - account
+          - region
+          - resource_type
+          - cloud
+        values:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            minLength: 1
+          description: Values to match, any-of. Between 1 and 50 per condition.
+    PlatformNotificationRuleList:
+      title: Notification Rule List
+      type: object
+      additionalProperties: false
+      required:
+      - rules
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRuleRead'
+          description: Ordered by `ord` ascending - the order they are evaluated in.
+    PlatformNotificationDestinationCreate:
+      title: Create Notification Destination
+      type: object
+      description: Create Notification Destination
       allOf:
-      - $ref: '#/components/schemas/PlatformBasicError'
-      - properties:
-          errors:
-            items:
-              type: string
-            type: array
-          field_errors:
-            additionalProperties:
-              type: string
-            type: object
-        type: object
+      - $ref: '#/components/schemas/PlatformNotificationDestinationData'
+      - type: object
+        required:
+        - name
+        - enabled
+        properties:
+          name:
+            type: string
+            example: Send to Slack
+          enabled:
+            type: boolean
+    PlatformNotificationDestinationID:
+      description: The unique ID for the notification destination.
+      type: string
+      format: uuid
+      x-go-name: NotificationDestinationID
+    PlatformNotificationRuleRead:
+      title: Notification Rule Read
+      type: object
+      description: A stored notification rule. Same shape the client sends, with the server-assigned ID, list position and timestamps.
+      additionalProperties: false
+      required:
+      - id
+      - enabled
+      - conditions
+      - outcome
+      - destinations
+      - ord
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+        conditions:
+          type: array
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRuleCondition'
+          description: Empty for the unconditional rule.
+        outcome:
+          type: string
+          enum:
+          - deliver
+          - suppress
+        destinations:
+          type: array
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRuleDestination'
+        ord:
+          type: integer
+          description: Evaluation position, ascending. Assigned from the PUT array index, so it is 0..n over the returned list.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PlatformSlackChannel:
+      title: Slack Channel
+      type: object
+      description: Slack Channel
+      additionalProperties: false
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: Channel ID
+        name:
+          type: string
+          description: Channel name
+        is_private:
+          type: boolean
+          description: Whether the channel is private
+          x-go-name: IsPrivate
+        is_archived:
+          type: boolean
+          description: Whether the channel is archived
+          x-go-name: IsArchived
+    PlatformNotificationRule:
+      title: Notification Rule
+      type: object
+      description: One notification rule as the client sends it. Rules are ordered and first-match-wins per resource; the insight default and the global default are both simply unconditional rules pinned last.
+      additionalProperties: false
+      required:
+      - enabled
+      - conditions
+      - outcome
+      - destinations
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Omitted or null creates a new rule and the server assigns the ID. Echo an existing ID back to update that rule in place - the whole-list PUT reconciles by ID, so an ID that disappears from the list is deleted along with its per-resource notification state.
+        name:
+          type: string
+          nullable: true
+          description: Optional label shown in the rules list.
+        enabled:
+          type: boolean
+          description: A disabled rule is skipped during evaluation but keeps its per-resource state, so re-enabling it does not re-fire everything it already matched.
+        conditions:
+          type: array
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRuleCondition'
+          description: 'Conditions on the affected resource, ANDed together. An empty array is an unconditional rule: it matches every resource, so it must be the last rule in the list and there can only be one.'
+        outcome:
+          type: string
+          enum:
+          - deliver
+          - suppress
+          description: '`deliver` sends to `destinations`; `suppress` records the match and sends nothing. Suppress never touches alert state - that is what silencing is for.'
+        destinations:
+          type: array
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRuleDestination'
+          description: May be empty when `outcome` is `suppress`.
     PlatformSlackConnection:
       title: Slack Connection
       type: object
@@ -922,6 +978,268 @@ components:
           example: '2017-07-14T16:53:42Z'
           format: date-time
           type: string
+    PlatformDefaultNotificationDestinations:
+      title: Default Notification Destinations
+      type: object
+      description: The tenant-global default notification destinations for a family of alerts. Alerts of this type with no destinations of their own fall back to this set. An empty list means no default is configured and nothing fires.
+      additionalProperties: false
+      required:
+      - type
+      - notification_destinations
+      properties:
+        type:
+          $ref: '#/components/schemas/PlatformDefaultDestinationType'
+        notification_destinations:
+          type: array
+          description: The destinations alerts of this type fall back to.
+          items:
+            $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
+    PlatformInsightID:
+      description: Unique identifier for the insight
+      type: string
+      x-go-name: InsightID
+    PlatformNotificationDestinationData:
+      title: Notification Destination Data
+      type: object
+      description: Notification Destination Data
+      properties:
+        type:
+          type: string
+          enum:
+          - webhook
+          - slack
+          - msteams
+          - email
+          default: webhook
+          description: Type of notification destination
+        slack_connection_id:
+          type: string
+          format: uuid
+          description: Slack connection ID (required for slack type)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs to send notifications to (required for slack type)
+          x-go-name: SlackChannels
+        custom_message:
+          type: string
+          maxLength: 0
+          deprecated: true
+          description: 'Deprecated: must be empty or omitted. A notification rule carries the message content.'
+          x-go-name: CustomMessage
+        email_recipients:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 254
+          description: 1 to 20 addresses (required for email type, must not be set for other types). Addresses are trimmed, lower-cased and deduplicated; each receives its own copy.
+        msteams_webhook_url:
+          type: string
+          example: https://prod-12.westus.logic.azure.com:443/workflows/abc/triggers/manual/paths/invoke?api-version=2016-06-01
+          description: Microsoft Teams Power Automate Workflow URL (required for msteams type, must not be set for webhook/slack). Accepts either the legacy Logic Apps direct form (*.logic.azure.{com,us,cn}/workflows/.../triggers/...) or the newer Power Platform API gateway form (*.environment.api.powerplatform.{com,us,cn}/powerautomate/automations/direct/workflows/.../triggers/...). Deprecated outlook.office.com Office 365 Connector URLs (retired April 2026) are rejected. When testing an existing destination, send an empty string together with the notification_destination_id query parameter to reuse the stored encrypted URL (the GET response masks this field to "").
+          x-go-name: MSTeamsWebhookURL
+        url:
+          type: string
+          example: https://hooks.slack.com/services/REDACTED
+          description: Webhook URL (required for webhook type, must not be set for slack type)
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP headers (required for webhook type, must not be set for slack type). User-Agent and X-CloudQuery-Signature are reserved for CloudQuery and rejected in any casing.
+          x-go-name: HTTPHeaders
+          x-go-type-skip-optional-pointer: true
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers with encrypted values. Values are encrypted at rest and returned as empty strings in responses. For updates, send empty string to keep existing value, or new value to replace. Must not be set for slack type. When testing an existing destination, send an empty string together with the notification_destination_id query parameter to reuse the stored value; reuse is allowed only while url matches the stored destination. User-Agent and X-CloudQuery-Signature are reserved for CloudQuery and rejected in any casing.
+          x-go-name: HTTPSecretHeaders
+          x-go-type-skip-optional-pointer: true
+        webhook_signing_secret:
+          type: string
+          description: HMAC-SHA256 secret used to sign webhook deliveries (only for webhook type, must not be set for slack or msteams). At least 16 characters. Stored encrypted and never returned. When testing an existing destination, send an empty string together with the notification_destination_id query parameter to reuse the stored secret; reuse is allowed only while url matches the stored destination.
+          x-go-name: WebhookSigningSecret
+        http_body:
+          type: string
+          maxLength: 0
+          deprecated: true
+          description: 'Deprecated: must be empty or omitted. A notification rule carries the webhook body.'
+          x-go-name: HTTPBody
+    PlatformNotificationRuleAppCondition:
+      title: Notification Rule App Condition
+      type: object
+      description: 'A condition on app membership. Values are app IDs, never app names: apps are renameable, and matching on the name would silently stop a rule when someone renames the app. A resource belongs to any number of apps, so the condition matches on intersection.'
+      additionalProperties: false
+      required:
+      - type
+      - values
+      properties:
+        type:
+          type: string
+          enum:
+          - app
+        values:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+          description: App IDs to match, any-of. Between 1 and 50 per condition.
+    PlatformNotificationRuleCondition:
+      title: Notification Rule Condition
+      description: 'One condition on the affected resource, tagged on `type`: each variant pins `type` to its own literal values, so exactly one matches any valid condition. Conditions on a rule AND together; the values inside a condition are any-of. The vocabulary is a closed set: `app`, `environment`, `owner`, `tag`, `account`, `region`, `resource_type`, `cloud`.'
+      oneOf:
+      - $ref: '#/components/schemas/PlatformNotificationRuleResourceCondition'
+      - $ref: '#/components/schemas/PlatformNotificationRuleAppCondition'
+      - $ref: '#/components/schemas/PlatformNotificationRuleTagCondition'
+    PlatformNotificationDestinationUpdate:
+      title: Update Notification Destination
+      type: object
+      description: Update Notification Destination
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          example: Send to Slack
+        enabled:
+          type: boolean
+        url:
+          type: string
+          example: https://hooks.slack.com/services/REDACTED
+          x-go-name: URL
+        http_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP headers. User-Agent and X-CloudQuery-Signature are reserved for CloudQuery and rejected in any casing.
+          x-go-name: HTTPHeaders
+        http_secret_headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Secret HTTP headers. Send empty string value to keep existing encrypted value, or new value to replace. Must not be set for slack type. User-Agent and X-CloudQuery-Signature are reserved for CloudQuery and rejected in any casing.
+          x-go-name: HTTPSecretHeaders
+        webhook_signing_secret:
+          type: string
+          description: 'HMAC-SHA256 secret used to sign webhook deliveries (only for webhook type). At least 16 characters. Rotation is a plain replace: send a new value to replace the stored secret. Omit the field or send the empty string to keep it.'
+          x-go-name: WebhookSigningSecret
+        http_body:
+          type: string
+          maxLength: 0
+          deprecated: true
+          description: 'Deprecated: must be empty or omitted. A notification rule carries the webhook body.'
+          x-go-name: HTTPBody
+        custom_message:
+          type: string
+          maxLength: 0
+          deprecated: true
+          description: 'Deprecated: must be empty or omitted. A notification rule carries the message content.'
+          x-go-name: CustomMessage
+        msteams_webhook_url:
+          type: string
+          description: Microsoft Teams Power Automate Workflow URL (only for msteams type, must not be set for webhook/slack). Accepts either the legacy Logic Apps direct form (*.logic.azure.{com,us,cn}/workflows/.../triggers/...) or the newer Power Platform API gateway form (*.environment.api.powerplatform.{com,us,cn}/powerautomate/automations/direct/workflows/.../triggers/...). Deprecated outlook.office.com Office 365 Connector URLs (retired April 2026) are rejected. To keep the existing encrypted value, either omit the field or send the empty string — the GET response masks this field to "" so frontends that re-submit the form blindly will not accidentally rotate the URL.
+          x-go-name: MSTeamsWebhookURL
+        email_recipients:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 254
+          description: Replaces the addresses of an email destination (only for email type, must not be set for other types). Addresses are trimmed, lower-cased and deduplicated.
+        slack_connection_id:
+          type: string
+          format: uuid
+          description: Slack connection ID (only for slack type, must not be set for webhook)
+          x-go-name: SlackConnectionID
+        slack_channels:
+          type: array
+          items:
+            type: string
+          description: List of Slack channel IDs to send notifications to (only for slack type, must not be set for webhook)
+          x-go-name: SlackChannels
+    PlatformNotificationRuleListUpdate:
+      title: Notification Rule List Update
+      type: object
+      description: The complete rule list for one tier. The array index becomes each rule's `ord`, so this is also how the list is reordered.
+      additionalProperties: false
+      required:
+      - rules
+      properties:
+        rules:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/PlatformNotificationRule'
+          description: At most 100 rules per tier.
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformSlackConnectionCreate:
+      title: Create Slack Connection
+      type: object
+      description: Create Slack Connection
+      additionalProperties: false
+      required:
+      - code
+      properties:
+        code:
+          type: string
+          description: OAuth code from Slack authorization
+        redirect_uri:
+          type: string
+          description: Redirect URI that was used when obtaining the OAuth code (required by Slack when exchanging the code)
     PlatformNotificationDestinationTestResponse:
       title: Notification Destination Test Response
       type: object
@@ -955,91 +1273,22 @@ components:
             type: string
           description: Headers returned by the notification destination
           x-go-name: HTTPHeaders
-    PlatformSlackConnectionCreate:
-      title: Create Slack Connection
-      type: object
-      description: Create Slack Connection
-      additionalProperties: false
-      required:
-      - code
-      properties:
-        code:
-          type: string
-          description: OAuth code from Slack authorization
-        redirect_uri:
-          type: string
-          description: Redirect URI that was used when obtaining the OAuth code (required by Slack when exchanging the code)
-    PlatformAlertDetail:
-      title: Alert Detail
-      type: object
-      description: An alert instance that can be triggered by a query including notification destinations for the alert
-      additionalProperties: false
-      required:
-      - id
-      - query_id
-      - enabled
-      - message
-      - severity
-      - state
-      - total_violations
-      - created_at
-      - updated_at
-      - notification_destinations
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the alert
-          x-go-name: ID
-        query_id:
-          type: string
-          format: uuid
-          description: Reference to the associated query
-          x-go-name: QueryID
-        enabled:
-          type: boolean
-          description: Indicates if the alert is enabled
-        message:
-          type: string
-          description: Alert message content
-        severity:
-          $ref: '#/components/schemas/PlatformAlertSeverity'
-        state:
-          $ref: '#/components/schemas/PlatformAlertState'
-        total_violations:
-          type: integer
-          format: int64
-          description: Number of violations that triggered the alert
-        last_evaluated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the alert was last evaluated
-        triggered_at:
-          type: string
-          format: date-time
-          description: Timestamp when the alert was triggered
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the alert was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the alert was last updated
-        notification_destinations:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformNotificationDestinationListItem'
-          description: List of notification destinations this alert is configured to send to
-          x-go-type-skip-optional-pointer: true
-          allowEmptyValue: true
-          explode: true
-    PlatformNotificationDestinationID:
-      description: The unique ID for the notification destination.
-      type: string
-      format: uuid
-      x-go-name: NotificationDestinationID
   parameters:
+    platform_default_destination_type:
+      in: path
+      name: type
+      required: true
+      description: The family of alerts the default destination set applies to.
+      schema:
+        $ref: '#/components/schemas/PlatformDefaultDestinationType'
+      x-go-name: Type
+    platform_insight_id:
+      in: path
+      name: insight_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformInsightID'
+      x-go-name: InsightID
     platform_page:
       description: Page number of the results to fetch
       in: query
@@ -1050,18 +1299,12 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_query_tags:
-      name: tag
-      in: query
-      description: Query tags
-      allowEmptyValue: true
-      explode: true
+    platform_notification_destination_id:
+      in: path
+      name: notification_destination_id
+      required: true
       schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformQueryTag'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: QueryTags
+        $ref: '#/components/schemas/PlatformNotificationDestinationID'
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -1073,37 +1316,49 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_query_id:
-      in: path
-      name: query_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformQueryID'
-      x-go-name: QueryID
-    platform_enabled:
-      name: enabled
-      in: query
-      description: Enabled
-      schema:
-        type: boolean
-    platform_notification_destination_id:
-      in: path
-      name: notification_destination_id
-      required: true
-      schema:
-        $ref: '#/components/schemas/PlatformNotificationDestinationID'
-    platform_alert_states:
-      name: state
-      in: query
-      description: Alert states
-      allowEmptyValue: true
-      explode: true
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/PlatformAlertState'
-      x-go-type-skip-optional-pointer: true
-      x-go-name: AlertStates
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
   securitySchemes:
     bearerAuth:
       scheme: bearer

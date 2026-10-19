@@ -107,18 +107,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cloudquery-api-keys-api-openapi.yml
-- aid: cloudquery:cloudquery-apps-api
-  name: CloudQuery Apps API
-  description: The apps API from CloudQuery — 1 operation(s) for apps.
-  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
-  baseURL: https://api.cloudquery.io
-  tags:
-  - Application
-  tags_raw:
-  - apps
-  properties:
-  - type: OpenAPI
-    url: openapi/cloudquery-apps-api-openapi.yml
 - aid: cloudquery:cloudquery-audit-logs-api
   name: CloudQuery Audit Logs API
   description: The audit-logs API from CloudQuery — 2 operation(s) for audit-logs.
@@ -131,18 +119,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cloudquery-audit-logs-api-openapi.yml
-- aid: cloudquery:cloudquery-chat-api
-  name: CloudQuery Chat API
-  description: The chat API from CloudQuery — 7 operation(s) for chat.
-  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
-  baseURL: https://api.cloudquery.io
-  tags:
-  - Chat
-  tags_raw:
-  - chat
-  properties:
-  - type: OpenAPI
-    url: openapi/cloudquery-chat-api-openapi.yml
 - aid: cloudquery:cloudquery-custom-columns-api
   name: CloudQuery Custom Columns API
   description: The custom-columns API from CloudQuery — 2 operation(s) for custom-columns.
@@ -353,6 +329,36 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/cloudquery-users-api-openapi.yml
+- aid: cloudquery:cloudquery-billing-api
+  name: CloudQuery Billing API
+  description: The billing API from CloudQuery — 2 operation(s) for billing.
+  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
+  baseURL: https://api.cloudquery.io
+  tags:
+  - billing
+  properties:
+  - type: OpenAPI
+    url: openapi/cloudquery-billing-api-openapi.yml
+- aid: cloudquery:cloudquery-external-syncs-api
+  name: CloudQuery External Syncs API
+  description: The external-syncs API from CloudQuery — 9 operation(s) for external-syncs.
+  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
+  baseURL: https://api.cloudquery.io
+  tags:
+  - external-syncs
+  properties:
+  - type: OpenAPI
+    url: openapi/cloudquery-external-syncs-api-openapi.yml
+- aid: cloudquery:cloudquery-table-exports-api
+  name: CloudQuery Table Exports API
+  description: The table-exports API from CloudQuery — 6 operation(s) for table-exports.
+  humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
+  baseURL: https://api.cloudquery.io
+  tags:
+  - table-exports
+  properties:
+  - type: OpenAPI
+    url: openapi/cloudquery-table-exports-api-openapi.yml
 - aid: cloudquery:cloudquery-health-check-api
   name: CloudQuery Health Check API
   description: The Health Check API from CloudQuery — 2 operation(s) for health check.

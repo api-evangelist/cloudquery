@@ -1,0 +1,735 @@
+openapi: 3.2.0
+info:
+  contact:
+    email: support@cloudquery.io
+    name: CloudQuery Support Team
+    url: https://cloudquery.io
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT
+  termsOfService: https://www.cloudquery.io/terms
+  title: CloudQuery Platform OpenAPI Spec Table Exports API
+  version: 1.0.0
+security:
+- bearerAuth: []
+- cookieAuth: []
+tags:
+- name: table-exports
+paths:
+  /table-exports:
+    get:
+      summary: List table exports
+      description: List table export runs, most recent first. A user sees their own runs; admins with write access see every user's runs. The tenant is resolved from the host.
+      operationId: PlatformListTableExports
+      tags:
+      - table-exports
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - name: status
+        in: query
+        required: false
+        description: Optional filter by lifecycle status.
+        schema:
+          type: string
+          enum:
+          - created
+          - started
+          - completed
+          - failed
+          - cancelled
+      - $ref: '#/components/parameters/platform_export_compressed'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformTableExportRun'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Start an async export of a SQL query result to object storage in the chosen format. The query is validated and authorized against the caller's roles; the export runs in the background. Poll `GET /table-exports/runs/{run_id}` for status and a download URL. The tenant is resolved from the host.
+      operationId: PlatformCreateTableExport
+      tags:
+      - table-exports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - query
+              - format
+              properties:
+                query:
+                  type: string
+                  example: SELECT account_id, instance_id, instance_type, region FROM aws_ec2_instance WHERE instance_type = 't2.micro'
+                format:
+                  type: string
+                  enum:
+                  - parquet
+                  - csv
+                  - jsonl
+                csv_delimiter:
+                  type: string
+                  description: CSV field delimiter (single character). Only applies when format is `csv`. Defaults to a comma.
+                  minLength: 1
+                  maxLength: 1
+                csv_include_header:
+                  type: boolean
+                  description: Whether the CSV output includes a header row. Only applies when format is `csv`. Defaults to true.
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportRun'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform create table export
+      x-summary-source: derived
+  /table-exports/runs/{run_id}:
+    get:
+      description: Get a single export run, including its live status and, once completed, a short-lived presigned download URL. The tenant is resolved from the host.
+      operationId: PlatformGetTableExportRun
+      tags:
+      - table-exports
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        description: The export run ID returned from `POST /table-exports`.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/platform_export_compressed'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportRun'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform get table export run
+      x-summary-source: derived
+    delete:
+      description: Delete an export run and its exported object. A user can delete their own runs; admins with write access can delete any. The tenant is resolved from the host.
+      operationId: PlatformDeleteTableExportRun
+      tags:
+      - table-exports
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        description: The export run ID.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: The export run was deleted.
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform delete table export run
+      x-summary-source: derived
+  /table-export-definitions:
+    get:
+      summary: List table export definitions
+      description: List export definitions, most recent first. A user sees their own definitions; admins with write access see every user's. The tenant is resolved from the host.
+      operationId: PlatformListTableExportDefinitions
+      tags:
+      - table-exports
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformTableExportDefinition'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      description: Create an export definition. The query is validated and authorized against the caller's roles; if a schedule is given the cron expression is validated. The tenant is resolved from the host.
+      operationId: PlatformCreateTableExportDefinition
+      tags:
+      - table-exports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - name
+              - query
+              - format
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                query:
+                  type: string
+                  example: SELECT * FROM aws_ec2_instances
+                format:
+                  type: string
+                  enum:
+                  - parquet
+                  - csv
+                  - jsonl
+                schedule:
+                  type: string
+                  description: Standard cron expression (UTC), e.g. `0 6 * * *`. Empty for no schedule.
+                  example: 0 6 * * *
+                enabled:
+                  type: boolean
+                  description: Whether the schedule is active. Defaults to true when a schedule is set.
+                csv_delimiter:
+                  type: string
+                  minLength: 1
+                  maxLength: 1
+                csv_include_header:
+                  type: boolean
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportDefinition'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform create table export definition
+      x-summary-source: derived
+  /table-export-definitions/{definition_id}:
+    get:
+      description: Get a single export definition. The tenant is resolved from the host.
+      operationId: PlatformGetTableExportDefinition
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportDefinition'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform get table export definition
+      x-summary-source: derived
+    patch:
+      description: Update an export definition. Any subset of fields may be provided. Changing the query, format or CSV options re-points its ad-hoc identity. The tenant is resolved from the host.
+      operationId: PlatformUpdateTableExportDefinition
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                query:
+                  type: string
+                format:
+                  type: string
+                  enum:
+                  - parquet
+                  - csv
+                  - jsonl
+                schedule:
+                  type: string
+                enabled:
+                  type: boolean
+                csv_delimiter:
+                  type: string
+                  minLength: 1
+                  maxLength: 1
+                csv_include_header:
+                  type: boolean
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportDefinition'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform update table export definition
+      x-summary-source: derived
+    delete:
+      description: Delete an export definition and all its runs. A user can delete their own definitions; admins with write access can delete any. The tenant is resolved from the host.
+      operationId: PlatformDeleteTableExportDefinition
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: The export definition was deleted.
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      summary: Platform delete table export definition
+      x-summary-source: derived
+  /table-export-definitions/{definition_id}/runs:
+    get:
+      summary: List runs for an export definition
+      description: List the export runs produced by a definition, most recent first. The tenant is resolved from the host.
+      operationId: PlatformListTableExportDefinitionRuns
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - created
+          - started
+          - completed
+          - failed
+          - cancelled
+      - $ref: '#/components/parameters/platform_export_compressed'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlatformTableExportRun'
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+    post:
+      summary: Run an export definition now
+      description: Enqueue an export run for the definition immediately, independent of its schedule. The tenant is resolved from the host.
+      operationId: PlatformCreateTableExportDefinitionRun
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTableExportRun'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+  /table-export-definitions/{definition_id}/runs/latest/download:
+    get:
+      summary: Download the latest completed export
+      description: Redirect to a short-lived presigned URL for the most recent completed run of the definition, so the exported file can be fetched in a single request (for example `curl -L`). The tenant is resolved from the host.
+      operationId: PlatformDownloadLatestTableExportDefinitionRun
+      tags:
+      - table-exports
+      parameters:
+      - name: definition_id
+        in: path
+        required: true
+        description: The export definition ID.
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/platform_export_compressed'
+      responses:
+        '302':
+          description: Redirect to the presigned download URL.
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+components:
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+  schemas:
+    PlatformListMetadata:
+      required:
+      - page_size
+      properties:
+        total_count:
+          type: integer
+        last_page:
+          type: integer
+        page_size:
+          type: integer
+        time_ms:
+          type: integer
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
+    PlatformFieldError:
+      allOf:
+      - $ref: '#/components/schemas/PlatformBasicError'
+      - properties:
+          errors:
+            items:
+              type: string
+            type: array
+          field_errors:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
+      required:
+      - message
+      - status
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+      title: Basic Error
+      type: object
+    PlatformTableExportRun:
+      description: An async export of a SQL query result to object storage. The platform runs the query through ClickHouse's native S3 writer in the background; poll this resource for status and, once completed, a short-lived download URL.
+      type: object
+      required:
+      - id
+      - status
+      - format
+      - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Server-assigned export run ID.
+        definition_id:
+          type: string
+          format: uuid
+          description: The export definition this run belongs to.
+        status:
+          type: string
+          enum:
+          - created
+          - started
+          - completed
+          - failed
+          - cancelled
+          description: Lifecycle state of the export run.
+        format:
+          type: string
+          enum:
+          - parquet
+          - csv
+          - jsonl
+        query:
+          type: string
+          description: The SQL query the export ran. Used to re-run or edit an export.
+        csv_delimiter:
+          type: string
+          description: CSV field delimiter, when one was set. Only present for csv exports.
+        csv_include_header:
+          type: boolean
+          description: Whether the CSV output includes a header row. Only present for csv exports.
+        created_by_email:
+          type: string
+          description: Email of the user who created the export run.
+        rows_written:
+          type: integer
+          format: int64
+          description: Rows written to the export object.
+        bytes_written:
+          type: integer
+          format: int64
+          description: Size of the export object in bytes.
+        download_url:
+          type: string
+          description: Short-lived presigned URL to download the export object. Present only when status is `completed`.
+        error:
+          type: string
+          description: Failure reason, present only when status is `failed`.
+        created_at:
+          type: string
+          format: date-time
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+    PlatformTableExportDefinition:
+      description: 'An editable table export: a saved query + format + options, optionally on a cron schedule. Its executions are table export runs.'
+      type: object
+      required:
+      - id
+      - name
+      - query
+      - format
+      - schedule
+      - enabled
+      - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Server-assigned definition ID.
+        name:
+          type: string
+          description: Human-friendly name for the export.
+        query:
+          type: string
+          description: The SQL query the export runs.
+        format:
+          type: string
+          enum:
+          - parquet
+          - csv
+          - jsonl
+        schedule:
+          type: string
+          description: Standard cron expression (UTC), or empty for no schedule. Must not fire more often than every 5 minutes.
+        enabled:
+          type: boolean
+          description: Whether the schedule is active. Ignored when schedule is empty.
+        csv_delimiter:
+          type: string
+          description: CSV field delimiter, when one was set. Only present for csv exports.
+        csv_include_header:
+          type: boolean
+          description: Whether the CSV output includes a header row. Only present for csv exports.
+        created_by_email:
+          type: string
+          description: Email of the user who created the definition.
+        last_run_at:
+          type: string
+          format: date-time
+          description: When the schedule last enqueued an export run.
+        next_run_at:
+          type: string
+          format: date-time
+          description: When the schedule will next enqueue an export run.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+  parameters:
+    platform_page:
+      description: Page number of the results to fetch
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+        format: int64
+    platform_per_page:
+      description: The number of results per page (max 1000).
+      in: query
+      name: per_page
+      required: false
+      schema:
+        default: 100
+        maximum: 1000
+        minimum: 1
+        type: integer
+        format: int64
+    platform_export_compressed:
+      name: compressed
+      in: query
+      description: 'Controls how the presigned download URL serves a gzip-compressed export. When false (the default) the URL sets `Content-Encoding: gzip`, so HTTP clients decompress transparently and receive plain JSONL/CSV. When true the stored gzip bytes are served as-is under a `.gz` filename, so `Content-Length` matches the bytes transferred and download progress is measurable. Has no effect on Parquet exports or on runs exported before compression, which are not compressed at rest.'
+      required: false
+      schema:
+        type: boolean
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+    basicAuth:
+      scheme: basic
+      type: http
+    cookieAuth:
+      scheme: cookie
+      type: http

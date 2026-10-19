@@ -4,7 +4,19 @@ info:
     email: support@cloudquery.io
     name: CloudQuery Support Team
     url: https://cloudquery.io
-  description: Welcome to the CloudQuery Platform API documentation!
+  description: 'Welcome to the CloudQuery Platform API documentation! This API can be used to interact with the CloudQuery platform. As a user, the API allows you to search the CloudQuery asset inventory, run SQL queries against the data warehouse, save and load searches, and much more. As an administrator, it allows you to manage your teams, syncs, and other objects.
+
+    ### Authentication
+
+    The API is secured using bearer tokens. To get started, you can generate an API key for your Platform deployment from your platform dashboard. For a step-by-step guide, see: https://www.cloudquery.io/docs/cli/managing-cloudquery/deployments/generate-api-key.
+
+    The base URL for the API depends on where your CloudQuery Platform is hosted. If running locally, this is usually http://localhost:3000/api. In a production deployment it should be an HTTPS URL. For purposes of illustration, we will assume the platform instance is available at https://cloudquery.mycompany.com. In this case, the base API endpoint will be https://cloudquery.mycompany.com/api.
+
+    ### Example Request
+
+    To test your connection to the API, we can use the `/plugins` endpoint. For example:
+
+    `curl -v -H "Authorization: Bearer $CLOUDQUERY_API_KEY" \ https://cloudquery.mycompany.com/api/plugins`'
   license:
     name: MIT
     url: https://spdx.org/licenses/MIT
@@ -264,12 +276,23 @@ paths:
                     registered_team_name:
                       type: string
                       description: The name of the team that the platform is registered with
+                    tenant_source:
+                      type: string
+                      description: Present when the tenant was provisioned by another product in the family (e.g. `envzero`). Omitted for regular tenants. Frontends and analytics use it to tailor the source-specific experience.
+                    tenant_source_url:
+                      type: string
+                      format: uri
+                      x-go-name: TenantSourceURL
+                      description: Where the source product's UI lives for this tenant, so the frontend can offer a way back (e.g. the env0 app for an `envzero` tenant). Set per deployment, so staging tenants point at env0's dev environment. Omitted when `tenant_source` is omitted.
                     registered_team_internal:
                       type: boolean
                       description: Whether the team is internal or not
                     can_set_password:
                       type: boolean
                       description: True only when the user has no password set and is eligible to set one (local provider, enabled). Frontends can use this after a magic-link login to optionally prompt for an initial password. False when a password is already set, for SSO-managed accounts, and for disabled users. Expired-password reset is handled separately via the `password_expired` token claim and is not affected by this field.
+                    login_method:
+                      type: string
+                      description: How the current session was established. `magic-link` for sessions started from a cloud magic link; omitted for password and SAML logins. Frontends use this to route magic-link users back to cloud's login on logout.
           description: Response
         '401':
           content:
@@ -474,6 +497,245 @@ paths:
       tags:
       - Users
       summary: Platform change user password
+      x-summary-source: derived
+  /user/request-password-reset:
+    post:
+      description: Request a password reset email. Always returns 204, whether or not the email belongs to an account. When Cloudflare Turnstile is configured for the deployment, this endpoint requires a valid X-Turnstile-Response header.
+      operationId: PlatformRequestUserPasswordReset
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+      responses:
+        '204':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      security: []
+      summary: Platform request user password reset
+      x-summary-source: derived
+  /user/reset-password:
+    post:
+      description: Reset a user password using a token from a password reset email
+      operationId: PlatformResetUserPassword
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - token
+              - new_password
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '204':
+          description: Password reset
+          headers:
+            Set-Cookie:
+              description: Clears the session cookie
+              schema:
+                type: string
+                example: __session=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      security: []
+      summary: Platform reset user password
+      x-summary-source: derived
+  /invitations:
+    get:
+      description: List pending user invitations. Requires an admin role.
+      operationId: PlatformListUserInvitations
+      parameters:
+      - $ref: '#/components/parameters/platform_per_page'
+      - $ref: '#/components/parameters/platform_page'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                required:
+                - items
+                - metadata
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/PlatformInvitation'
+                    type: array
+                  metadata:
+                    $ref: '#/components/schemas/PlatformListMetadata'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      summary: Platform list user invitations
+      x-summary-source: derived
+    post:
+      description: Invite a user by email
+      operationId: PlatformCreateUserInvitation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              - roles
+              properties:
+                email:
+                  type: string
+                roles:
+                  description: Roles for the invited user
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/PlatformRoleID'
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformInvitation'
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      summary: Platform create user invitation
+      x-summary-source: derived
+  /invitations/{invitation_id}:
+    delete:
+      description: Revoke a pending user invitation
+      operationId: PlatformDeleteUserInvitation
+      parameters:
+      - $ref: '#/components/parameters/platform_invitation_id'
+      responses:
+        '204':
+          description: Invitation revoked
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      summary: Platform delete user invitation
+      x-summary-source: derived
+  /invitations/accept:
+    post:
+      description: Accept a user invitation and create the account. When Cloudflare Turnstile is configured for the deployment, this endpoint requires a valid X-Turnstile-Response header.
+      operationId: PlatformAcceptUserInvitation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - token
+              - name
+              - password
+              properties:
+                token:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Invitation accepted, user created and logged in
+          content:
+            application/json:
+              schema:
+                required:
+                - id_token
+                properties:
+                  id_token:
+                    type: string
+                    x-go-name: IDToken
+        '400':
+          $ref: '#/components/responses/PlatformBadRequest'
+        '401':
+          $ref: '#/components/responses/PlatformRequiresAuthentication'
+        '403':
+          $ref: '#/components/responses/PlatformForbidden'
+        '404':
+          $ref: '#/components/responses/PlatformNotFound'
+        '405':
+          $ref: '#/components/responses/PlatformMethodNotAllowed'
+        '422':
+          $ref: '#/components/responses/PlatformUnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/PlatformTooManyRequests'
+        '500':
+          $ref: '#/components/responses/PlatformInternalError'
+      tags:
+      - Users
+      security: []
+      summary: Platform accept user invitation
       x-summary-source: derived
   /user/totp/verify:
     post:
@@ -701,69 +963,134 @@ paths:
       summary: Platform magic login user
       x-summary-source: derived
 components:
-  responses:
-    PlatformBadRequest:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Bad request
-    PlatformRequiresAuthentication:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Requires authentication
-    PlatformMethodNotAllowed:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Method not allowed
-    PlatformForbidden:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: Forbidden
-    PlatformNotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Resource not found
-    PlatformUnprocessableEntity:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformFieldError'
-      description: UnprocessableEntity
-    PlatformInternalError:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Internal Error
-    PlatformTooManyRequests:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PlatformBasicError'
-      description: Too Many Requests
   schemas:
-    PlatformBasicError:
+    PlatformInvitation:
       additionalProperties: false
-      description: Basic Error
-      required:
-      - message
-      - status
+      description: Invitation
       properties:
-        message:
+        id:
+          $ref: '#/components/schemas/PlatformInvitationID'
+        email:
           type: string
-        status:
-          type: integer
-      title: Basic Error
+          example: user@example.com
+        invited_by:
+          description: ID of the inviting user. Absent when the invitation was created by an API key. Deleting the inviting user revokes their pending invitations.
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+        invited_by_api_key:
+          description: ID of the inviting API key, for invitations created programmatically. Deleting the API key revokes its pending invitations.
+          type: string
+          format: uuid
+          example: 12345678-1234-1234-1234-1234567890ab
+          x-go-name: InvitedByAPIKey
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRole'
+        accept_link:
+          description: Invitation acceptance link. Only returned on creation.
+          type: string
+        expires_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+      required:
+      - id
+      - email
+      - roles
+      - expires_at
+      - created_at
+      title: Invitation
       type: object
+    PlatformRBACPermissionID:
+      description: The unique ID for the data permission.
+      type: string
+      format: uuid
+      x-go-name: RBACPermissionID
+    PlatformRBACPermission:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - query
+      - created_by
+      - created_at
+      - updated_at
+      - number_of_affected_roles
+      - number_of_affected_users
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformRBACPermissionID'
+        name:
+          type: string
+        description:
+          type: string
+        query:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        number_of_affected_roles:
+          type: integer
+        number_of_affected_users:
+          type: integer
+    PlatformRole:
+      type: object
+      description: Role
+      required:
+      - id
+      - name
+      - description
+      - permissions
+      - created_by
+      - created_at
+      - updated_at
+      - type
+      properties:
+        id:
+          description: The unique ID for the role.
+          type: string
+          format: uuid
+          x-go-name: ID
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformRBACPermission'
+        created_by:
+          $ref: '#/components/schemas/PlatformCreatedBy'
+        created_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        updated_at:
+          example: '2017-07-14T16:53:42Z'
+          format: date-time
+          type: string
+        type:
+          $ref: '#/components/schemas/PlatformRoleType'
+    PlatformInvitationID:
+      description: ID of the Invitation
+      type: string
+      format: uuid
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: InvitationID
     PlatformUser:
       additionalProperties: false
       description: User
@@ -819,19 +1146,32 @@ components:
       - roles
       title: User
       type: object
-    PlatformUserName:
-      description: The unique name for the user.
-      minLength: 1
-      maxLength: 255
-      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
-      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
+    PlatformRoleType:
       type: string
-      example: Sarah O'Connor
-    PlatformRBACPermissionID:
-      description: The unique ID for the data permission.
+      enum:
+      - admin:write
+      - admin:read
+      - general:read
+      - general:write
+      - ci
+      - schema-only
+      - custom
+      - envzero
+      x-enum-varnames:
+      - AdminWrite
+      - AdminRead
+      - GeneralRead
+      - GeneralWrite
+      - CI
+      - SchemaOnly
+      - Custom
+      - EnvZero
+    PlatformUserID:
+      description: ID of the User
       type: string
       format: uuid
-      x-go-name: RBACPermissionID
+      example: 12345678-1234-1234-1234-1234567890ab
+      x-go-name: UserID
     PlatformCreatedBy:
       type: object
       required:
@@ -845,6 +1185,18 @@ components:
           $ref: '#/components/schemas/PlatformUserName'
         email:
           type: string
+    PlatformRoleID:
+      description: The unique ID for the role.
+      type: string
+      format: uuid
+      x-go-name: RoleID
+    PlatformUserProvider:
+      title: LocalUserProvider
+      type: string
+      enum:
+      - local
+      - saml
+      default: local
     PlatformListMetadata:
       required:
       - page_size
@@ -857,17 +1209,15 @@ components:
           type: integer
         time_ms:
           type: integer
-    PlatformRoleID:
-      description: The unique ID for the role.
-      type: string
-      format: uuid
-      x-go-name: RoleID
-    PlatformUserID:
-      description: ID of the User
-      type: string
-      format: uuid
-      example: 12345678-1234-1234-1234-1234567890ab
-      x-go-name: UserID
+        next_cursor:
+          type: string
+          description: 'Opaque cursor for the next page when using keyset pagination. Present only
+
+            for keyset-eligible list queries (default order, no group_by); omitted on
+
+            the last page. Pass it back as the `cursor` query parameter.
+
+            '
     PlatformFieldError:
       allOf:
       - $ref: '#/components/schemas/PlatformBasicError'
@@ -881,105 +1231,35 @@ components:
               type: string
             type: object
         type: object
-    PlatformRBACPermission:
-      type: object
+    PlatformBasicError:
+      additionalProperties: false
+      description: Basic Error
       required:
-      - id
-      - name
-      - description
-      - query
-      - created_by
-      - created_at
-      - updated_at
-      - number_of_affected_roles
-      - number_of_affected_users
+      - message
+      - status
       properties:
-        id:
-          $ref: '#/components/schemas/PlatformRBACPermissionID'
-        name:
+        message:
           type: string
-        description:
-          type: string
-        query:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        number_of_affected_roles:
+        status:
           type: integer
-        number_of_affected_users:
-          type: integer
-    PlatformRoleType:
-      type: string
-      enum:
-      - admin:write
-      - admin:read
-      - general:read
-      - general:write
-      - ci
-      - schema-only
-      - custom
-      x-enum-varnames:
-      - AdminWrite
-      - AdminRead
-      - GeneralRead
-      - GeneralWrite
-      - CI
-      - SchemaOnly
-      - Custom
-    PlatformRole:
+      title: Basic Error
       type: object
-      description: Role
-      required:
-      - id
-      - name
-      - description
-      - permissions
-      - created_by
-      - created_at
-      - updated_at
-      - type
-      properties:
-        id:
-          description: The unique ID for the role.
-          type: string
-          format: uuid
-          x-go-name: ID
-        name:
-          type: string
-        description:
-          type: string
-        permissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlatformRBACPermission'
-        created_by:
-          $ref: '#/components/schemas/PlatformCreatedBy'
-        created_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        updated_at:
-          example: '2017-07-14T16:53:42Z'
-          format: date-time
-          type: string
-        type:
-          $ref: '#/components/schemas/PlatformRoleType'
-    PlatformUserProvider:
-      title: LocalUserProvider
+    PlatformUserName:
+      description: The unique name for the user.
+      minLength: 1
+      maxLength: 255
+      pattern: ^[a-zA-Z\p{L}][a-zA-Z\p{L} \-']*$
+      x-pattern-message: can contain only letters, spaces, hyphens, and apostrophes, starting with a letter
       type: string
-      enum:
-      - local
-      - saml
-      default: local
+      example: Sarah O'Connor
   parameters:
+    platform_user_id:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlatformUserID'
+      x-go-name: UserID
     platform_page:
       description: Page number of the results to fetch
       in: query
@@ -990,13 +1270,13 @@ components:
         minimum: 1
         type: integer
         format: int64
-    platform_user_id:
-      name: user_id
+    platform_invitation_id:
+      name: invitation_id
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/PlatformUserID'
-      x-go-name: UserID
+        $ref: '#/components/schemas/PlatformInvitationID'
+      x-go-name: InvitationID
     platform_per_page:
       description: The number of results per page (max 1000).
       in: query
@@ -1008,6 +1288,55 @@ components:
         minimum: 1
         type: integer
         format: int64
+  responses:
+    PlatformNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Resource not found
+    PlatformInternalError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Internal Error
+    PlatformForbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Forbidden
+    PlatformBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: Bad request
+    PlatformMethodNotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Method not allowed
+    PlatformTooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Too Many Requests
+    PlatformRequiresAuthentication:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformBasicError'
+      description: Requires authentication
+    PlatformUnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlatformFieldError'
+      description: UnprocessableEntity
   securitySchemes:
     bearerAuth:
       scheme: bearer
