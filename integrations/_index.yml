@@ -16,3 +16,37 @@
   relationship: platform-app
   status: not-a-workflow
   arazzo: null
+- slug: cloudquery-arch-user-repository-aur
+  label: Arch User Repository (AUR)
+  partner_name: Arch User Repository (AUR)
+  category: official CLI (Arch User Repository (AUR))
+  type: register
+  channel: package-registry
+  evidence: https://aur.archlinux.org/packages/cloudquery-cli
+  source: edge
+  relationship: distribution-channel
+  contract_reference:
+    register: Arch User Repository (AUR) (public package index)
+    spec_file: null
+    packages:
+    - name: cloudquery-cli
+      kind: aur
+      version: 6.49.2-1
+      released: '2026-10-22'
+      released_field: AUR LastModified
+      out_of_date: false
+      lapsed: false
+      page: https://aur.archlinux.org/packages/cloudquery-cli
+      upstream: https://github.com/cloudquery/cloudquery
+      cli: 'AUR description: The open source high performance ELT framework powered by Apache Arrow'
+      repo_leg: github-org:cloudquery
+      publisher_leg: artifact-github-org:cloudquery
+      matched_by: github-org
+    current: true
+    signal_note: 'the provider''s own command-line tool packaged for Arch Linux (community-maintained PKGBUILD whose
+      upstream and source artifact are the provider''s): distribution, not an integration; lapsed = flagged out-of-date
+      or not updated in 24 months'
+    detected_by: sweep-aur-vendor-cli-packages.py
+    detected: '2026-10-23'
+  status: not-a-workflow
+  arazzo: null
