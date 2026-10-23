@@ -1888,3 +1888,9 @@ components:
     cookieAuth:
       scheme: cookie
       type: http
+x-provenance:
+  method: harvested
+  publisher: CloudQuery
+  source: https://platform-multi-tenant-api-docs.cloudquery.io/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
