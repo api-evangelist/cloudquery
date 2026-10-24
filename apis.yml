@@ -335,6 +335,8 @@ apis:
   humanURL: https://platform-multi-tenant-api-docs.cloudquery.io/
   baseURL: https://api.cloudquery.io
   tags:
+  - Billing
+  tags_raw:
   - billing
   properties:
   - type: OpenAPI
