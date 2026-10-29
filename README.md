@@ -1,4 +1,4 @@
-# CloudQuery (cloudquery)
+# CloudQuery
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,61 +66,150 @@
 
 CloudQuery is a cloud infrastructure data platform that gives platform engineering and cloud operations teams a queryable SQL data layer for visibility, governance, and automation. It syncs configuration data from AWS, GCP, Azure, and 70+ SaaS sources into normalized tables, powering cloud asset inventory, security and compliance monitoring, and FinOps use cases. CloudQuery exposes Platform REST APIs for managing tenants, syncs, destinations, and API keys, authenticated via API key.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/cloudquery/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/cloudquery/refs/heads/main/apis.yml)
+**Areas:** Cloud Infrastructure · Cloud Asset Inventory · CSPM · Cloud Governance · FinOps · Data Integration · Platform Engineering
 
-## Scope
+## CloudQuery on APIs.io
 
-- **Type:** Index
+Everything profiled for CloudQuery is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/cloudquery/](https://apis.io/providers/cloudquery/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (26)
 
-- Cloud Infrastructure
-- Cloud Asset Inventory
-- CSPM
-- Cloud Governance
-- FinOps
-- Data Integration
-- Platform Engineering
+- [CloudQuery Platform API](https://apis.io/apis/cloudquery/platform-api/) — REST API for managing CloudQuery Platform multi-tenant accounts, syncs, sources, destinations, and API keys. Authentication uses API keys generated from the…
+- [CloudQuery Admin API](https://apis.io/apis/cloudquery/cloudquery-admin-api/) — The admin API from CloudQuery — 7 operation(s) for admin.
+- [CloudQuery Alerts API](https://apis.io/apis/cloudquery/cloudquery-alerts-api/) — The alerts API from CloudQuery — 10 operation(s) for alerts.
+- [CloudQuery API Keys API](https://apis.io/apis/cloudquery/cloudquery-api-keys-api/) — The api-keys API from CloudQuery — 2 operation(s) for api-keys.
+- [CloudQuery Apps API](https://apis.io/apis/cloudquery/cloudquery-apps-api/) — The apps API from CloudQuery — 1 operation(s) for apps.
+- [CloudQuery Audit Logs API](https://apis.io/apis/cloudquery/cloudquery-audit-logs-api/) — The audit-logs API from CloudQuery — 2 operation(s) for audit-logs.
+- [CloudQuery Chat API](https://apis.io/apis/cloudquery/cloudquery-chat-api/) — The chat API from CloudQuery — 7 operation(s) for chat.
+- [CloudQuery Custom Columns API](https://apis.io/apis/cloudquery/cloudquery-custom-columns-api/) — The custom-columns API from CloudQuery — 2 operation(s) for custom-columns.
+- [CloudQuery Filters API](https://apis.io/apis/cloudquery/cloudquery-filters-api/) — The filters API from CloudQuery — 7 operation(s) for filters.
+- [CloudQuery Insights API](https://apis.io/apis/cloudquery/cloudquery-insights-api/) — The insights API from CloudQuery — 8 operation(s) for insights.
+- [CloudQuery Notifications API](https://apis.io/apis/cloudquery/cloudquery-notifications-api/) — The notifications API from CloudQuery — 1 operation(s) for notifications.
+- [CloudQuery Onboardings API](https://apis.io/apis/cloudquery/cloudquery-onboardings-api/) — The onboardings API from CloudQuery — 21 operation(s) for onboardings.
+- [CloudQuery Openapi.json API](https://apis.io/apis/cloudquery/cloudquery-openapi-json-api/) — The Openapi.json API from CloudQuery — 1 operation(s) for openapi.json.
+- [CloudQuery Platform API](https://apis.io/apis/cloudquery/cloudquery-platform-api/) — The platform API from CloudQuery — 2 operation(s) for platform.
+- [CloudQuery Plugins API](https://apis.io/apis/cloudquery/cloudquery-plugins-api/) — The plugins API from CloudQuery — 8 operation(s) for plugins.
+- [CloudQuery Policies API](https://apis.io/apis/cloudquery/cloudquery-policies-api/) — The policies API from CloudQuery — 10 operation(s) for policies.
+- [CloudQuery Queries API](https://apis.io/apis/cloudquery/cloudquery-queries-api/) — The queries API from CloudQuery — 11 operation(s) for queries.
+- [CloudQuery Rbac API](https://apis.io/apis/cloudquery/cloudquery-rbac-api/) — The rbac API from CloudQuery — 4 operation(s) for rbac.
+- [CloudQuery Reports API](https://apis.io/apis/cloudquery/cloudquery-reports-api/) — The reports API from CloudQuery — 4 operation(s) for reports.
+- [CloudQuery Sync Integrations API](https://apis.io/apis/cloudquery/cloudquery-sync-integrations-api/) — The sync-integrations API from CloudQuery — 1 operation(s) for sync-integrations.
+- [CloudQuery Syncs API](https://apis.io/apis/cloudquery/cloudquery-syncs-api/) — The syncs API from CloudQuery — 37 operation(s) for syncs.
+- [CloudQuery Tables API](https://apis.io/apis/cloudquery/cloudquery-tables-api/) — The tables API from CloudQuery — 12 operation(s) for tables.
+- [CloudQuery Teams API](https://apis.io/apis/cloudquery/cloudquery-teams-api/) — The teams API from CloudQuery — 1 operation(s) for teams.
+- [CloudQuery Usage API](https://apis.io/apis/cloudquery/cloudquery-usage-api/) — The usage API from CloudQuery — 2 operation(s) for usage.
+- [CloudQuery Users API](https://apis.io/apis/cloudquery/cloudquery-users-api/) — The users API from CloudQuery — 11 operation(s) for users.
+- [CloudQuery Health Check API](https://apis.io/apis/cloudquery/cloudquery-health-check-api/) — The Health Check API from CloudQuery — 2 operation(s) for health check.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-05-11
-- **Modified:** 2026-05-11
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Agentic access (1)
 
-### CloudQuery Platform API
+Which operations an agent can call, which act, and which need a human in the loop.
 
-REST API for managing CloudQuery Platform multi-tenant accounts, syncs, sources, destinations, and API keys. Authentication uses API keys generated from the CloudQuery Platform UI.
+- [Cloudquery Agentic Access](https://apis.io/agentic-access/cloudquery/cloudquery-agentic-access/)
 
-- **Human URL:** [https://platform-multi-tenant-api-docs.cloudquery.io/](https://platform-multi-tenant-api-docs.cloudquery.io/)
-- **Base URL:** `https://api.cloudquery.io`
+#### Collections (26)
 
-#### Tags
+Postman and Open Collection request collections.
 
-- Cloud Infrastructure
-- Cloud Asset Inventory
-- Platform API
-- Data Integration
+- [CloudQuery Platform OpenAPI Spec](https://apis.io/collections/cloudquery/open-cloudquery/)
+- [CloudQuery Platform OpenAPI Spec admin API](https://apis.io/collections/cloudquery/open-cloudquery-admin-api/)
+- [CloudQuery Platform OpenAPI Spec admin alerts API](https://apis.io/collections/cloudquery/open-cloudquery-alerts-api/)
+- [CloudQuery Platform OpenAPI Spec admin api-keys API](https://apis.io/collections/cloudquery/open-cloudquery-api-keys-api/)
+- [CloudQuery Platform OpenAPI Spec admin apps API](https://apis.io/collections/cloudquery/open-cloudquery-apps-api/)
+- [CloudQuery Platform OpenAPI Spec admin audit-logs API](https://apis.io/collections/cloudquery/open-cloudquery-audit-logs-api/)
+- [CloudQuery Platform OpenAPI Spec admin chat API](https://apis.io/collections/cloudquery/open-cloudquery-chat-api/)
+- [CloudQuery Platform OpenAPI Spec admin custom-columns API](https://apis.io/collections/cloudquery/open-cloudquery-custom-columns-api/)
+- [CloudQuery Platform OpenAPI Spec admin filters API](https://apis.io/collections/cloudquery/open-cloudquery-filters-api/)
+- [CloudQuery Platform OpenAPI Spec admin healthcheck API](https://apis.io/collections/cloudquery/open-cloudquery-healthcheck-api/)
+- [CloudQuery Platform OpenAPI Spec admin insights API](https://apis.io/collections/cloudquery/open-cloudquery-insights-api/)
+- [CloudQuery Platform OpenAPI Spec admin notifications API](https://apis.io/collections/cloudquery/open-cloudquery-notifications-api/)
+- [CloudQuery Platform OpenAPI Spec admin onboardings API](https://apis.io/collections/cloudquery/open-cloudquery-onboardings-api/)
+- [CloudQuery Platform OpenAPI Spec admin Openapi.json API](https://apis.io/collections/cloudquery/open-cloudquery-openapi-json-api/)
+- [CloudQuery OpenAPI Spec admin platform API](https://apis.io/collections/cloudquery/open-cloudquery-platform-api/)
+- [CloudQuery Platform OpenAPI Spec admin plugins API](https://apis.io/collections/cloudquery/open-cloudquery-plugins-api/)
+- [CloudQuery Platform OpenAPI Spec admin policies API](https://apis.io/collections/cloudquery/open-cloudquery-policies-api/)
+- [CloudQuery Platform OpenAPI Spec admin queries API](https://apis.io/collections/cloudquery/open-cloudquery-queries-api/)
+- [CloudQuery Platform OpenAPI Spec admin rbac API](https://apis.io/collections/cloudquery/open-cloudquery-rbac-api/)
+- [CloudQuery Platform OpenAPI Spec admin reports API](https://apis.io/collections/cloudquery/open-cloudquery-reports-api/)
+- [CloudQuery Platform OpenAPI Spec admin sync-integrations API](https://apis.io/collections/cloudquery/open-cloudquery-sync-integrations-api/)
+- [CloudQuery Platform OpenAPI Spec admin syncs API](https://apis.io/collections/cloudquery/open-cloudquery-syncs-api/)
+- [CloudQuery Platform OpenAPI Spec admin tables API](https://apis.io/collections/cloudquery/open-cloudquery-tables-api/)
+- [CloudQuery Platform OpenAPI Spec admin teams API](https://apis.io/collections/cloudquery/open-cloudquery-teams-api/)
+- [CloudQuery Platform OpenAPI Spec admin usage API](https://apis.io/collections/cloudquery/open-cloudquery-usage-api/)
+- …and 1 more published on APIs.io
 
-#### Properties
+#### Security (4)
 
-- [Documentation](https://platform-multi-tenant-api-docs.cloudquery.io/)
-- [A P I  Keys](https://www.cloudquery.io/docs/platform/production-deployment/api-keys)
-- [Getting Started](https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account)
-- [Postman Collection](collections/cloudquery.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/cloudquery.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Authentication, trust centre, and vulnerability disclosure.
 
-## Common Properties
+- [Cloudquery Authentication](https://apis.io/security/cloudquery/cloudquery-authentication/)
+- [Cloudquery Domain Security](https://apis.io/security/cloudquery/cloudquery-domain-security/)
+- [Cloudquery Trust Center](https://apis.io/security/cloudquery/cloudquery-trust-center/)
+- [Cloudquery Vulnerability Disclosure](https://apis.io/security/cloudquery/cloudquery-vulnerability-disclosure/)
 
-- [GitHub Organization](https://github.com/cloudquery)
-- [LinkedIn](https://www.linkedin.com/company/cloudqueryio)
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://www.cloudquery.io)
 - [Documentation](https://www.cloudquery.io/docs/)
 - [Pricing](https://www.cloudquery.io/pricing)
-- [Sign Up](https://www.cloudquery.io/docs/platform/quickstart/creating-a-new-account)
+- [Blog](https://www.cloudquery.io/blog)
+- [GitHub](https://github.com/cloudquery)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 35.9** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 51.5 |
+| Contract governance | 0.0 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 35.7 |
+| Access clarity | 31.6 |
+
+**Agent readiness 19.8** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 22.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/cloudquery/](https://apis.io/providers/cloudquery/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for CloudQuery: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/cloudquery/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
